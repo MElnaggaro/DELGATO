@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar, Button, Icon } from '@/shared/ui';
+import { AppBar, Button, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
 
@@ -37,7 +36,7 @@ export default function Payment() {
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title={t('payment.title')} onBack={() => safeBack('/checkout')} />
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         {/* Card visual */}
         <View
           style={{
@@ -185,17 +184,7 @@ export default function Payment() {
         </View>
       </ScrollView>
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          paddingHorizontal: 18,
-          paddingTop: 12,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderTopWidth: 1,
-          borderTopColor: colors.canvas300,
-        }}
-      >
+      <StickyActionBar>
         <Button
           variant="primary"
           size="lg"
@@ -206,7 +195,7 @@ export default function Payment() {
         >
           {t('payment.payNow')}
         </Button>
-      </SafeAreaView>
+      </StickyActionBar>
     </View>
   );
 }

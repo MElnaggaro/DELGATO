@@ -28,7 +28,8 @@
       "Bash(Select-Object Name, Mode)",
       "Bash(Format-Table -AutoSize)",
       "Bash(cd /d D:\\\\PROJECTS\\\\DELGATO)",
-      "Bash(dir /B)"
+      "Bash(dir /B)",
+      "Bash(grep -v \"//\")"
     ]
   }
 }

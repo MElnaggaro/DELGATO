@@ -1,10 +1,21 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar, Badge, Button, Card, EmptyState, Icon, Row, Stepper } from '@/shared/ui';
+import {
+  AppBar,
+  Badge,
+  Button,
+  Card,
+  ConfirmDialog,
+  EmptyState,
+  Icon,
+  Row,
+  Stepper,
+  StickyActionBar,
+  STICKY_CTA_HEIGHT,
+} from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
@@ -47,7 +58,7 @@ export default function Cart() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title={t('cart.title')} onBack={() => safeBack('/(tabs)/home')} />
-      <ScrollView contentContainerStyle={{ paddingBottom: 12 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         {/* Shop strip */}
         <View style={{ paddingHorizontal: 18, paddingBottom: 14 }}>
           <View
@@ -215,7 +226,12 @@ export default function Cart() {
                   {t('cart.promoSub')}
                 </Text>
               </View>
-              <Pressable>
+              <Pressable
+                onPress={() =>
+                  Alert.alert('كود الخصم', 'هتقدر تضيف كود من تحديث قريب.', [{ text: 'تمام' }])
+                }
+                hitSlop={6}
+              >
                 <Text
                   style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.olive }}
                 >
@@ -237,17 +253,7 @@ export default function Cart() {
         </View>
       </ScrollView>
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          paddingHorizontal: 18,
-          paddingTop: 12,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderTopWidth: 1,
-          borderTopColor: colors.canvas300,
-        }}
-      >
+      <StickyActionBar>
         <Button
           variant="primary"
           size="lg"
@@ -267,66 +273,21 @@ export default function Cart() {
         >
           {t('cart.checkout')}
         </Button>
-      </SafeAreaView>
+      </StickyActionBar>
 
-      <Modal transparent visible={!!confirm} animationType="fade">
-        <Pressable
-          onPress={() => setConfirm(null)}
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(15,26,23,0.48)',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 24,
-          }}
-        >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: colors.canvas,
-              borderRadius: 16,
-              padding: 20,
-              width: '100%',
-              maxWidth: 320,
-            }}
-          >
-            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 17, color: colors.ink }}>
-              {t('cart.removeTitle')}
-            </Text>
-            <Text
-              style={{
-                fontFamily: fonts.arabic,
-                fontSize: 14,
-                color: colors.inkLight,
-                marginTop: 8,
-                lineHeight: 22,
-              }}
-            >
-              {t('cart.removeBody', { name: confirm?.name })}
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, marginTop: 20 }}>
-              <View style={{ flex: 1 }}>
-                <Button variant="tertiary" full onPress={() => setConfirm(null)}>
-                  {t('cart.removeCancel')}
-                </Button>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Button
-                  variant="primary"
-                  full
-                  style={{ backgroundColor: colors.statusIssue, borderColor: colors.statusIssue }}
-                  onPress={() => {
-                    if (confirm) setItemQty(confirm.id, 0);
-                    setConfirm(null);
-                  }}
-                >
-                  {t('cart.removeConfirm')}
-                </Button>
-              </View>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      <ConfirmDialog
+        visible={!!confirm}
+        title={t('cart.removeTitle')}
+        body={t('cart.removeBody', { name: confirm?.name })}
+        cancelLabel={t('cart.removeCancel')}
+        confirmLabel={t('cart.removeConfirm')}
+        destructive
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          if (confirm) setItemQty(confirm.id, 0);
+          setConfirm(null);
+        }}
+      />
     </View>
   );
 }

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar, Button, Card, Chip, EmptyState, Icon, Spinner } from '@/shared/ui';
+import { AppBar, Button, Card, Chip, EmptyState, Icon, Spinner, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
@@ -113,7 +113,7 @@ export default function AddressSetup() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title={t('address.confirmTitle')} onBack={() => safeBack('/(onboarding)/location-permission')} />
-      <ScrollView contentContainerStyle={{ padding: 18, paddingBottom: 28 }}>
+      <ScrollView contentContainerStyle={{ padding: 18, paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         {/* Map placeholder */}
         <View
           style={{
@@ -267,11 +267,11 @@ export default function AddressSetup() {
           ) : null}
         </FadeUp>
       </ScrollView>
-      <SafeAreaView edges={['bottom']} style={{ paddingHorizontal: 18, paddingBottom: 18 }}>
+      <StickyActionBar>
         <Button variant="primary" full size="lg" disabled={!canSave} onPress={onSave}>
           {t('address.done')}
         </Button>
-      </SafeAreaView>
+      </StickyActionBar>
     </View>
   );
 }

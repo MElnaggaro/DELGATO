@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { AppBar, Button, Chip, Icon } from '@/shared/ui';
+import { AppBar, Button, Chip, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
@@ -25,7 +24,7 @@ export default function Rate() {
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title="قيّم تجربتك" onBack={() => safeBack('/(tabs)/orders')} />
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         <View style={{ alignItems: 'center', marginTop: 20 }}>
           <View
             style={{
@@ -137,17 +136,7 @@ export default function Rate() {
         ) : null}
       </ScrollView>
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          paddingHorizontal: 18,
-          paddingTop: 12,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderTopWidth: 1,
-          borderTopColor: colors.canvas300,
-        }}
-      >
+      <StickyActionBar>
         <Button
           variant="primary"
           size="lg"
@@ -157,7 +146,7 @@ export default function Rate() {
         >
           إرسال التقييم
         </Button>
-      </SafeAreaView>
+      </StickyActionBar>
     </View>
   );
 }

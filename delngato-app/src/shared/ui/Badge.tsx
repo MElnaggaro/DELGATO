@@ -61,6 +61,7 @@ export function Badge({ variant = 'active', children, style }: Props) {
       ]}
     >
       <Text
+        numberOfLines={1}
         style={{
           fontFamily:
             variant === 'outline' ? fonts.arabicMedium : fonts.arabicSemiBold,

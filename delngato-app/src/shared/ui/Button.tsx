@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { isValidElement, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, Text, View, type ViewStyle } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
@@ -15,7 +15,10 @@ type Props = {
   loading?: boolean;
   leading?: ReactNode;
   trailing?: ReactNode;
-  children: ReactNode;
+  /** Button label. Accepts a string (most common), a number, or a custom node. */
+  children?: ReactNode;
+  /** Explicit label prop alternative — wins over `children` when set. Use when children would be a node accidentally. */
+  label?: string;
   onPress?: () => void;
   haptic?: boolean;
   style?: ViewStyle;
@@ -26,6 +29,12 @@ type Props = {
  * Primary CTAs in the brand. The "signature state" — 2px inset gold ring on
  * press — is encoded by toggling border styles, since RN doesn't have a true
  * inset box-shadow. The visual effect matches the reference.
+ *
+ * Label safety: we used to silently drop labels when callers passed a
+ * `<Text>` node as children (RN crashes on nested Text in some configs and
+ * renders blank in others). Now we accept either a string-like child (wrapped
+ * in Text) or a custom element (rendered as-is), and a separate `label` prop
+ * for clarity.
  */
 export function Button({
   variant = 'primary',
@@ -36,6 +45,7 @@ export function Button({
   leading,
   trailing,
   children,
+  label,
   onPress,
   haptic = true,
   style,
@@ -43,6 +53,7 @@ export function Button({
 }: Props) {
   const haptics = useHaptics();
   const isDisabled = disabled || loading;
+  const isLarge = size === 'lg';
 
   const surface = (pressed: boolean): ViewStyle => {
     if (variant === 'primary') {
@@ -73,7 +84,7 @@ export function Button({
         borderColor: 'transparent',
       };
     }
-    // ghost — legacy alias for secondary
+    // ghost
     return {
       backgroundColor: pressed ? colors.canvas200 : 'transparent',
       borderWidth: 1.5,
@@ -88,10 +99,13 @@ export function Button({
         ? colors.ink
         : colors.olive;
 
+  const labelText = label ?? (typeof children === 'string' || typeof children === 'number' ? String(children) : undefined);
+  const customNode = labelText === undefined && children != null && isValidElement(children) ? children : null;
+
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={accessibilityLabel ?? labelText}
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       onPress={() => {
@@ -102,9 +116,9 @@ export function Button({
       style={({ pressed }) => [
         {
           width: full ? '100%' : undefined,
-          minHeight: 48,
+          minHeight: isLarge ? 56 : 48,
           borderRadius: 12,
-          paddingVertical: 14,
+          paddingVertical: isLarge ? 16 : 14,
           paddingHorizontal: 24,
           alignItems: 'center',
           justifyContent: 'center',
@@ -121,16 +135,19 @@ export function Button({
       ) : (
         <>
           {leading ? <View>{leading}</View> : null}
-          <Text
-            style={{
-              color: textColor,
-              fontFamily: fonts.arabicSemiBold,
-              fontSize: 16,
-              includeFontPadding: false,
-            }}
-          >
-            {children}
-          </Text>
+          {labelText !== undefined ? (
+            <Text
+              numberOfLines={1}
+              style={{
+                color: textColor,
+                fontFamily: fonts.arabicSemiBold,
+                fontSize: isLarge ? 17 : 16,
+                includeFontPadding: false,
+              }}
+            >
+              {labelText}
+            </Text>
+          ) : customNode}
           {trailing ? <View>{trailing}</View> : null}
         </>
       )}

@@ -78,7 +78,17 @@ export default function Addresses() {
                     </Text>
                   ) : null}
                 </View>
-                <Pressable hitSlop={6} style={{ padding: 6 }}>
+                <Pressable
+                  hitSlop={6}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(onboarding)/address-setup',
+                      params: { manual: '1', id: a.id },
+                    })
+                  }
+                  accessibilityLabel="تعديل العنوان"
+                  style={{ padding: 6 }}
+                >
                   <Icon.edit size={18} color={colors.inkMute} />
                 </Pressable>
               </Pressable>

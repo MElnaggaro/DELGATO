@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 
-import { Button, Icon, ListRow } from '@/shared/ui';
+import { ConfirmDialog, Icon, ListRow } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
@@ -167,13 +167,21 @@ export default function Profile() {
             icon={<Icon.globe size={18} color={colors.olive} />}
             label={t('settings.languageTitle')}
             value={t('settings.ar')}
-            onPress={() => {}}
+            onPress={() =>
+              Alert.alert(t('settings.languageTitle'), t('settings.languageHint'), [
+                { text: t('common.ok') ?? 'تمام' },
+              ])
+            }
           />
           <Hairline />
           <ListRow
             icon={<Icon.shieldCheck size={18} color={colors.olive} />}
             label="الخصوصية والأمان"
-            onPress={() => {}}
+            onPress={() =>
+              Alert.alert(t('profile.comingSoonTitle'), t('profile.comingSoonBody'), [
+                { text: t('common.ok') ?? 'تمام' },
+              ])
+            }
           />
         </Group>
 
@@ -195,7 +203,11 @@ export default function Profile() {
             icon={<Icon.info size={18} color={colors.olive} />}
             label="عن دلنجاتُو"
             sub="إصدار ١٫٠٫٠"
-            onPress={() => {}}
+            onPress={() =>
+              Alert.alert('دلنجاتُو', 'من الدلنجات · لأهل الدلنجات\nإصدار ١٫٠٫٠', [
+                { text: 'تمام' },
+              ])
+            }
           />
         </Group>
 
@@ -230,70 +242,20 @@ export default function Profile() {
         </Text>
       </ScrollView>
 
-      <Modal
-        transparent
+      <ConfirmDialog
         visible={logoutVisible}
-        animationType="fade"
-        onRequestClose={() => setLogoutVisible(false)}
-      >
-        <Pressable
-          onPress={() => setLogoutVisible(false)}
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(15,26,23,0.48)',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 24,
-          }}
-        >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: colors.canvas,
-              borderRadius: 16,
-              padding: 20,
-              width: '100%',
-              maxWidth: 320,
-            }}
-          >
-            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 17, color: colors.ink }}>
-              تخرج من حسابك؟
-            </Text>
-            <Text
-              style={{
-                fontFamily: fonts.arabic,
-                fontSize: 14,
-                color: colors.inkLight,
-                marginTop: 8,
-                lineHeight: 22,
-              }}
-            >
-              هتحتاج تدخل رقم تليفونك تاني علشان ترجع.
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, marginTop: 20 }}>
-              <View style={{ flex: 1 }}>
-                <Button variant="tertiary" full onPress={() => setLogoutVisible(false)}>
-                  {t('common.cancel')}
-                </Button>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Button
-                  variant="primary"
-                  full
-                  style={{ backgroundColor: colors.statusIssue, borderColor: colors.statusIssue }}
-                  onPress={async () => {
-                    setLogoutVisible(false);
-                    await signOut();
-                    router.replace('/');
-                  }}
-                >
-                  خروج
-                </Button>
-              </View>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+        title="تخرج من حسابك؟"
+        body="هتحتاج تدخل رقم تليفونك تاني علشان ترجع."
+        cancelLabel={t('common.cancel')}
+        confirmLabel="خروج"
+        destructive
+        onCancel={() => setLogoutVisible(false)}
+        onConfirm={async () => {
+          setLogoutVisible(false);
+          await signOut();
+          router.replace('/');
+        }}
+      />
     </View>
   );
 }

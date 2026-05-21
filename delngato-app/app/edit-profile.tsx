@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { AppBar, Button, Icon } from '@/shared/ui';
+import { AppBar, Button, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
@@ -22,7 +21,7 @@ export default function EditProfile() {
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title="تعديل البيانات" onBack={() => safeBack('/(tabs)/profile')} />
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         <View style={{ alignItems: 'center', marginVertical: 28 }}>
           <View
             style={{
@@ -38,6 +37,13 @@ export default function EditProfile() {
               {name[0] ?? 'أ'}
             </Text>
             <Pressable
+              onPress={() =>
+                Alert.alert('تغيير الصورة', 'هتقدر ترفع صورة من معرض الصور في تحديث قريب.', [
+                  { text: 'تمام' },
+                ])
+              }
+              accessibilityLabel="تغيير الصورة"
+              hitSlop={6}
               style={{
                 position: 'absolute',
                 insetInlineEnd: -4,
@@ -85,21 +91,11 @@ export default function EditProfile() {
         </View>
       </ScrollView>
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          paddingHorizontal: 18,
-          paddingTop: 12,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderTopWidth: 1,
-          borderTopColor: colors.canvas300,
-        }}
-      >
+      <StickyActionBar>
         <Button variant="primary" size="lg" full onPress={() => router.back()}>
           حفظ
         </Button>
-      </SafeAreaView>
+      </StickyActionBar>
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AppBar, Badge, Chip, EmptyState, Icon, MiniCartBar, ProductTile } from '@/shared/ui';
@@ -58,14 +58,26 @@ export default function Shop() {
                 fill={isFav ? colors.statusIssue : 'transparent'}
               />
             </Pressable>
-            <Pressable hitSlop={6} style={{ padding: 6 }}>
+            <Pressable
+              onPress={() =>
+                void Share.share({
+                  message: `${shop.name} على دلنجاتُو — ${shop.desc}`,
+                })
+              }
+              accessibilityLabel="مشاركة"
+              hitSlop={6}
+              style={{ padding: 6 }}
+            >
               <Icon.share size={22} color={colors.ink} />
             </Pressable>
           </View>
         }
       />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: cartCount > 0 ? 120 : 24 }}>
+      <ScrollView
+        stickyHeaderIndices={[1]}
+        contentContainerStyle={{ paddingBottom: cartCount > 0 ? 120 : 24 }}
+      >
         {/* Hero */}
         <View style={{ paddingHorizontal: 18, paddingBottom: 16 }}>
           <View
@@ -130,18 +142,21 @@ export default function Shop() {
           </View>
         </View>
 
-        {/* Sections */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 18, gap: 6, paddingBottom: 12 }}
-        >
-          {sections.map((s) => (
-            <Chip key={s} active={section === s} onPress={() => setSection(s)}>
-              {s}
-            </Chip>
-          ))}
-        </ScrollView>
+        {/* Sticky section chips */}
+        <View style={{ backgroundColor: colors.canvas }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 18, gap: 6, paddingVertical: 10 }}
+          >
+            {sections.map((s) => (
+              <Chip key={s} active={section === s} onPress={() => setSection(s)}>
+                {s}
+              </Chip>
+            ))}
+          </ScrollView>
+          <View style={{ height: 1, backgroundColor: colors.canvas300 }} />
+        </View>
 
         {/* Grid */}
         <View style={{ paddingHorizontal: 18 }}>

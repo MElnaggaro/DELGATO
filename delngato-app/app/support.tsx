@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { AppBar, Button, Icon } from '@/shared/ui';
@@ -38,12 +38,18 @@ export default function Support() {
             title="اتصل بينا"
             sub="٩ ص — ١ ص"
             accent="olive"
+            onPress={() => void Linking.openURL('tel:+20221234567')}
           />
           <ContactTile
             icon={<Icon.message size={22} color={colors.statusPendingText} />}
             title="شات مباشر"
             sub="رد في دقايق"
             accent="gold"
+            onPress={() =>
+              Alert.alert('الشات', 'هنفتحلك الشات في تحديث قريب — في الوقت ده اتصل بينا.', [
+                { text: 'تمام' },
+              ])
+            }
           />
         </View>
 
@@ -166,15 +172,18 @@ function ContactTile({
   title,
   sub,
   accent,
+  onPress,
 }: {
   icon: React.ReactNode;
   title: string;
   sub: string;
   accent: 'olive' | 'gold';
+  onPress?: () => void;
 }) {
   const bg = accent === 'gold' ? 'rgba(232,177,79,0.18)' : 'rgba(31,74,61,0.08)';
   return (
     <Pressable
+      onPress={onPress}
       style={({ pressed }) => ({
         flex: 1,
         backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,

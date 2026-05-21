@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,16 @@ export default function Tracking() {
         title={t('tracking.title')}
         onBack={() => safeBack('/(tabs)/orders')}
         trailing={
-          <Pressable hitSlop={6} style={{ padding: 6 }}>
+          <Pressable
+            onPress={() =>
+              void Share.share({
+                message: `تتبع طلبي على دلنجاتُو — ${orderId}`,
+              })
+            }
+            accessibilityLabel="مشاركة الطلب"
+            hitSlop={6}
+            style={{ padding: 6 }}
+          >
             <Icon.share size={22} color={colors.ink} />
           </Pressable>
         }

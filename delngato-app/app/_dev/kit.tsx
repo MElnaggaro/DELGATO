@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import { Redirect } from 'expo-router';
 
 import {
   AppBar,
@@ -34,6 +35,10 @@ export default function Kit() {
   const [search, setSearch] = useState('');
   const [step, setStep] = useState<0 | 1 | 2 | 3>(1);
   const c = useCurrency();
+
+  if (!__DEV__) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>

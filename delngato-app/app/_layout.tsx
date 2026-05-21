@@ -1,7 +1,7 @@
 import '../global.css';
 
 import { useEffect, useState } from 'react';
-import { I18nManager, View } from 'react-native';
+import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -12,7 +12,7 @@ import { I18nextProvider } from 'react-i18next';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { i18n, initI18n, type SupportedLocale } from '@/services/i18n';
-import { resolveInitialLocale } from '@/services/i18n/rtl';
+import { applyRtlForLocale, resolveInitialLocale } from '@/services/i18n/rtl';
 import { queryClient } from '@/services/api/queryClient';
 import { colors } from '@/shared/theme';
 import { useAuthStore, wireAuthIntoApiClient } from '@/features/auth/store';
@@ -45,28 +45,22 @@ export default function RootLayout() {
     let cancelled = false;
     void (async () => {
       try {
-        // Ordering invariant: initI18n MUST resolve before hydrateSession, and both
-        // MUST resolve before i18nReady flips true. The splash route (`app/index.tsx`)
-        // reads the post-hydration `authed`/addresses flags to pick its redirect —
-        // parallelizing these (e.g. Promise.all) would race the splash redirect
-        // against an unrehydrated store and bounce authed users back to onboarding.
         const resolved = await resolveInitialLocale();
         if (cancelled) return;
+
+        // Arabic-first: lock native RTL before initializing anything that
+        // depends on direction (i18n, navigation, gesture handler). If the
+        // native flag is wrong, applyRtlForLocale triggers a one-time reload
+        // — bail out of the rest of bootstrap so we don't flash LTR layout
+        // before the reload lands.
+        const reloaded = await applyRtlForLocale(resolved);
+        if (reloaded || cancelled) return;
+
         await initI18n(resolved);
         await hydrateSession();
-        // Note: applying RTL via I18nManager.forceRTL would trigger a reload.
-        // On a cold boot, the native layer already matches the persisted locale
-        // (Expo respects the OS direction). The Settings > Language screen is
-        // the one place we ever call applyRtlForLocale.
-        if (resolved === 'ar' && !I18nManager.isRTL) {
-          // Best-effort: allow RTL for any newly-installed app; the real lock
-          // happens on the next launch through native config.
-          I18nManager.allowRTL(true);
-        }
         setLocale(resolved);
       } catch (e) {
         console.warn('[RootLayout] init error, falling back to defaults:', e);
-        // Ensure i18n is at least initialized with defaults
         await initI18n('ar');
       }
       if (!cancelled) setI18nReady(true);

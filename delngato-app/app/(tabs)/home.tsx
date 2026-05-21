@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Badge, Chip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
+import { Badge, Chip, EmptyState, Icon, SearchField, Section, ShopCard } from '@/shared/ui';
 import { FadeUp, Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
@@ -107,52 +107,53 @@ export default function Home() {
         contentContainerStyle={{ paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Category icon scroller */}
-        <View style={{ paddingHorizontal: 18, paddingTop: 6, paddingBottom: 14 }}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
-                <Pressable
-                  key={c.key}
-                  onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
-                  style={{ alignItems: 'center', gap: 8, minWidth: 64 }}
+        {/* Browse by category — titled icon scroller */}
+        <Section title={t('search.browseCategory')} paddingTop={8}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginHorizontal: -18 }}
+            contentContainerStyle={{ paddingHorizontal: 18, gap: 12 }}
+          >
+            {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
+              <Pressable
+                key={c.key}
+                onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
+                style={{ alignItems: 'center', gap: 8, minWidth: 64 }}
+              >
+                <View
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 16,
+                    backgroundColor: colors.canvas200,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  <View
-                    style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 16,
-                      backgroundColor: colors.canvas200,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {c.icon === 'store' ? (
-                      <Icon.store size={26} color={colors.olive} />
-                    ) : c.icon === 'pill' ? (
-                      <Icon.pill size={26} color={colors.olive} />
-                    ) : c.icon === 'utensils' ? (
-                      <Icon.utensils size={26} color={colors.olive} />
-                    ) : c.icon === 'cookie' ? (
-                      <Icon.cookie size={26} color={colors.olive} />
-                    ) : (
-                      <Icon.leaf size={26} color={colors.olive} />
-                    )}
-                  </View>
-                  <Text
-                    style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.ink }}
-                  >
-                    {c.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+                  {c.icon === 'store' ? (
+                    <Icon.store size={26} color={colors.olive} />
+                  ) : c.icon === 'pill' ? (
+                    <Icon.pill size={26} color={colors.olive} />
+                  ) : c.icon === 'utensils' ? (
+                    <Icon.utensils size={26} color={colors.olive} />
+                  ) : c.icon === 'cookie' ? (
+                    <Icon.cookie size={26} color={colors.olive} />
+                  ) : (
+                    <Icon.leaf size={26} color={colors.olive} />
+                  )}
+                </View>
+                <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.ink }}>
+                  {c.label}
+                </Text>
+              </Pressable>
+            ))}
           </ScrollView>
-        </View>
+        </Section>
 
         {/* Active order banner */}
         {liveOrder ? (
-          <View style={{ paddingHorizontal: 18, paddingBottom: 14 }}>
+          <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
             <Pressable
               onPress={() => router.push({ pathname: '/tracking', params: { orderId: liveOrder.id } })}
               style={({ pressed }) => ({
@@ -217,21 +218,8 @@ export default function Home() {
           </View>
         ) : null}
 
-        {/* Filter chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 18, gap: 8, paddingBottom: 8 }}
-        >
-          {CATEGORIES.map((c) => (
-            <Chip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
-              {c.label}
-            </Chip>
-          ))}
-        </ScrollView>
-
         {/* Hero offer */}
-        <Rise delay={120} style={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 14 }}>
+        <Rise delay={120} style={{ paddingHorizontal: 18, paddingTop: 14, paddingBottom: 6 }}>
           <View
             style={{
               backgroundColor: colors.olive,
@@ -281,47 +269,43 @@ export default function Home() {
           </View>
         </Rise>
 
-        {/* Section header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            paddingHorizontal: 18,
-            paddingTop: 4,
-            paddingBottom: 12,
-          }}
+        {/* Filter chips (below hero per design ref) */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 18, gap: 8, paddingTop: 12, paddingBottom: 4 }}
         >
-          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 18, color: colors.ink }}>
-            {t('home.nearbyShops')}
-          </Text>
-          <Pressable onPress={() => setCat('all')}>
-            <Text
-              style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.olive }}
-            >
-              {t('common.viewAll')}
-            </Text>
-          </Pressable>
-        </View>
+          {CATEGORIES.map((c) => (
+            <Chip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
+              {c.label}
+            </Chip>
+          ))}
+        </ScrollView>
 
-        {/* Shop list */}
-        <View style={{ paddingHorizontal: 18, gap: 10 }}>
-          {filtered.length === 0 ? (
-            <EmptyState
-              icon={<Icon.store size={28} color={colors.olive} />}
-              title={t('home.noShopsTitle')}
-              body={t('home.noShopsBody')}
-            />
-          ) : (
-            filtered.map((s) => (
-              <ShopCard
-                key={s.id}
-                shop={s}
-                onPress={() => router.push({ pathname: '/shop', params: { id: s.id } })}
+        {/* Nearby shops section */}
+        <Section
+          title={t('home.nearbyShops')}
+          action={{ label: t('common.viewAll'), onPress: () => setCat('all') }}
+          paddingTop={14}
+        >
+          <View style={{ gap: 10 }}>
+            {filtered.length === 0 ? (
+              <EmptyState
+                icon={<Icon.store size={28} color={colors.olive} />}
+                title={t('home.noShopsTitle')}
+                body={t('home.noShopsBody')}
               />
-            ))
-          )}
-        </View>
+            ) : (
+              filtered.map((s) => (
+                <ShopCard
+                  key={s.id}
+                  shop={s}
+                  onPress={() => router.push({ pathname: '/shop', params: { id: s.id } })}
+                />
+              ))
+            )}
+          </View>
+        </Section>
 
         <Text
           style={{

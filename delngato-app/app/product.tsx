@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 
-import { AppBar, Badge, Button, Icon, Stepper } from '@/shared/ui';
+import { AppBar, Badge, Button, Icon, Stepper, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
@@ -49,7 +48,7 @@ export default function Product() {
         }
       />
 
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         {/* Hero */}
         <View
           style={{
@@ -209,20 +208,7 @@ export default function Product() {
         </View>
       </ScrollView>
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          paddingHorizontal: 18,
-          paddingTop: 12,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderTopWidth: 1,
-          borderTopColor: colors.canvas300,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
+      <StickyActionBar style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <Stepper value={qty} min={1} onChange={setQty} />
         <View style={{ flex: 1 }}>
           <Button
@@ -245,7 +231,7 @@ export default function Product() {
             {inCart ? 'تحديث السلة' : 'أضف للسلة'}
           </Button>
         </View>
-      </SafeAreaView>
+      </StickyActionBar>
     </View>
   );
 }

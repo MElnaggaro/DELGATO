@@ -29,6 +29,7 @@ export function Chip({ active, icon, children, onPress }: Props) {
     >
       {icon ? <View>{icon}</View> : null}
       <Text
+        numberOfLines={1}
         style={{
           fontFamily: active ? fonts.arabicSemiBold : fonts.arabicMedium,
           fontSize: 14,

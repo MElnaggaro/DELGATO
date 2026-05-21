@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar, Button, Card, Icon, Row, Section } from '@/shared/ui';
+import {
+  AppBar,
+  Button,
+  Card,
+  Icon,
+  Row,
+  Section,
+  StickyActionBar,
+  STICKY_CTA_HEIGHT,
+} from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
@@ -43,7 +51,7 @@ export default function Checkout() {
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title={t('checkout.title')} onBack={() => safeBack('/cart')} />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         <Section label={t('checkout.addressSection')}>
           <Pressable
             onPress={() => router.push('/addresses')}
@@ -290,17 +298,7 @@ export default function Checkout() {
         </View>
       </ScrollView>
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          paddingHorizontal: 18,
-          paddingTop: 12,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderTopWidth: 1,
-          borderTopColor: colors.canvas300,
-        }}
-      >
+      <StickyActionBar>
         <Button
           variant="primary"
           size="lg"
@@ -324,7 +322,7 @@ export default function Checkout() {
         >
           {pay === 'card' ? t('checkout.continuePayment') : t('checkout.confirmOrder')}
         </Button>
-      </SafeAreaView>
+      </StickyActionBar>
     </View>
   );
 }

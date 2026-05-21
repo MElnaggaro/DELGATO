@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from '@/shared/ui';
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 
@@ -36,7 +37,7 @@ export default function Welcome() {
         }}
       >
         {/* Skip — top-start in RTL */}
-        <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, start: 0, padding: 24 }}>
+        <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, insetInlineStart: 0, padding: 24 }}>
           <Pressable onPress={() => router.push('/(onboarding)/auth')} hitSlop={8}>
             <Text
               style={{
@@ -119,27 +120,9 @@ export default function Welcome() {
             ))}
           </View>
 
-          <Pressable
-            onPress={next}
-            style={({ pressed }) => ({
-              backgroundColor: pressed ? colors.olive700 : colors.olive,
-              borderRadius: 12,
-              paddingVertical: 16,
-              alignItems: 'center',
-              borderWidth: pressed ? 2 : 0,
-              borderColor: colors.gold,
-            })}
-          >
-            <Text
-              style={{
-                color: colors.canvas,
-                fontFamily: fonts.arabicSemiBold,
-                fontSize: 16,
-              }}
-            >
-              {i < SLIDE_COUNT - 1 ? t('onboarding.next') : t('onboarding.start')}
-            </Text>
-          </Pressable>
+          <Button variant="primary" size="lg" full onPress={next}>
+            {i < SLIDE_COUNT - 1 ? t('onboarding.next') : t('onboarding.start')}
+          </Button>
 
           <Pressable onPress={() => router.push('/(onboarding)/auth')}>
             <Text
