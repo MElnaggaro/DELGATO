@@ -2,7 +2,6 @@ import { type ReactNode } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
-import { Button } from './Button';
 
 type Props = {
   visible: boolean;
@@ -17,11 +16,13 @@ type Props = {
 };
 
 /**
- * Brand confirm dialog matching design reference's .ConfirmDialog:
- *   - white surface, 16px radius, max-width 320, scrim 48% ink
+ * Matches design reference `.dl-dialog`:
+ *   - scrim rgba(15,26,23,0.48)
+ *   - surface canvas (not white), 16px radius, max 320, padding 20
  *   - title 17/700, body 14 light, 1.5 line-height
- *   - Cancel + Confirm row, flex 1 each, 44 min-height
- *   - destructive=true → red confirm
+ *   - buttons row: 8px gap, flex 1 each, min-height 44, radius 10, weight 600
+ *   - Cancel: bg canvas-200, color ink
+ *   - Confirm: bg olive (or #C53B2C destructive), color canvas
  */
 export function ConfirmDialog({
   visible,
@@ -56,10 +57,9 @@ export function ConfirmDialog({
           style={{
             width: '100%',
             maxWidth: 320,
-            backgroundColor: colors.bgElevated,
+            backgroundColor: colors.canvas,
             borderRadius: 16,
             padding: 20,
-            gap: 8,
           }}
         >
           <Text
@@ -80,37 +80,69 @@ export function ConfirmDialog({
                   fontSize: 14,
                   color: colors.inkLight,
                   lineHeight: 14 * 1.5,
+                  marginTop: 8,
                   includeFontPadding: false,
                 }}
               >
                 {body}
               </Text>
             ) : (
-              body
+              <View style={{ marginTop: 8 }}>{body}</View>
             )
           ) : null}
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 20 }}>
             {cancelLabel ? (
-              <View style={{ flex: 1 }}>
-                <Button variant="secondary" full onPress={onCancel}>
+              <Pressable
+                onPress={onCancel}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  minHeight: 44,
+                  borderRadius: 10,
+                  backgroundColor: pressed ? colors.canvas300 : colors.canvas200,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingHorizontal: 12,
+                })}
+              >
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicSemiBold,
+                    fontSize: 15,
+                    color: colors.ink,
+                    includeFontPadding: false,
+                  }}
+                >
                   {cancelLabel}
-                </Button>
-              </View>
+                </Text>
+              </Pressable>
             ) : null}
-            <View style={{ flex: 1 }}>
-              <Button
-                variant={destructive ? 'primary' : 'primary'}
-                full
-                onPress={onConfirm}
-                style={
-                  destructive
-                    ? { backgroundColor: colors.statusIssue, borderColor: colors.statusIssue }
-                    : undefined
-                }
+            <Pressable
+              onPress={onConfirm}
+              style={({ pressed }) => {
+                const base = destructive ? colors.statusIssue : colors.olive;
+                const pressedBg = destructive ? '#A1271C' : colors.olive700;
+                return {
+                  flex: 1,
+                  minHeight: 44,
+                  borderRadius: 10,
+                  backgroundColor: pressed ? pressedBg : base,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingHorizontal: 12,
+                };
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: fonts.arabicSemiBold,
+                  fontSize: 15,
+                  color: colors.canvas,
+                  includeFontPadding: false,
+                }}
               >
                 {confirmLabel}
-              </Button>
-            </View>
+              </Text>
+            </Pressable>
           </View>
         </Pressable>
       </Pressable>

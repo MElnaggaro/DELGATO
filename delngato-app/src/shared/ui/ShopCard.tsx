@@ -25,17 +25,19 @@ export function ShopCard({ shop, onPress, compact }: Props) {
         borderRadius: 12,
         backgroundColor: colors.bgElevated,
         overflow: 'hidden',
-        opacity: shop.open ? (pressed ? 0.92 : 1) : 0.7,
+        opacity: shop.open ? (pressed ? 0.92 : 1) : 0.78,
         ...shadow.card,
       })}
     >
       <View
         style={{
           width: tileWidth,
+          minWidth: tileWidth,
           backgroundColor: shop.bgFrom,
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
+          position: 'relative',
         }}
       >
         <Text
@@ -44,7 +46,7 @@ export function ShopCard({ shop, onPress, compact }: Props) {
             fontSize: phantomSize,
             fontFamily: fonts.arabicBold,
             color: 'rgba(250,248,243,0.10)',
-            top: -10,
+            top: -6,
             insetInlineEnd: 4,
             lineHeight: phantomSize,
           }}
@@ -61,7 +63,7 @@ export function ShopCard({ shop, onPress, compact }: Props) {
           {shop.letter}
         </Text>
       </View>
-      <View style={{ flex: 1, padding: 12, gap: 6 }}>
+      <View style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 14, gap: 6, minWidth: 0 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <Text
             numberOfLines={1}

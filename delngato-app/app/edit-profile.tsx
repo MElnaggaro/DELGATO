@@ -4,14 +4,12 @@ import { useRouter } from 'expo-router';
 
 import { AppBar, Button, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
-import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
 import { useAuthStore } from '@/features/auth/store';
 import { formatNationalDisplay } from '@/shared/utils/phone';
 
 export default function EditProfile() {
   const router = useRouter();
-  const arDigits = useArabicDigits();
   const phone = useAuthStore((s) => s.phone);
   const user = useAuthStore((s) => s.user);
   const [name, setName] = useState(user?.displayName ?? 'أحمد محمد');
@@ -69,7 +67,7 @@ export default function EditProfile() {
           </Field>
           <Field label="رقم التليفون">
             <CInput
-              value={`+20 ${arDigits(phone ? formatNationalDisplay(phone) : '10 234 5678')}`}
+              value={`+20 ${phone ? formatNationalDisplay(phone) : '10 234 5678'}`}
               editable={false}
               ltr
               style={{

@@ -20,11 +20,11 @@ export function Chip({ active, icon, children, onPress }: Props) {
         alignItems: 'center',
         gap: 6,
         paddingHorizontal: 16,
-        paddingVertical: 10,
+        paddingVertical: 9,
         borderRadius: 100,
         backgroundColor: active ? colors.olive : pressed ? colors.canvas200 : colors.bgElevated,
-        borderWidth: active ? 0 : 1,
-        borderColor: active ? 'transparent' : colors.canvas300,
+        borderWidth: active ? 1 : 1,
+        borderColor: active ? colors.olive : colors.canvas300,
       })}
     >
       {icon ? <View>{icon}</View> : null}

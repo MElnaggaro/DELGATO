@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
-import { colors, fonts } from '@/shared/theme';
+import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import {
   CATEGORIES,
@@ -152,7 +152,8 @@ export default function Search() {
                       backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
                       borderWidth: 1,
                       borderColor: colors.canvas300,
-                      width: '47%',
+                      flexBasis: '48%',
+                      flexGrow: 1,
                     })}
                   >
                     <View
@@ -253,8 +254,7 @@ export default function Search() {
                         padding: 10,
                         borderRadius: 12,
                         backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                        borderWidth: 1,
-                        borderColor: colors.canvas300,
+                        ...shadow.card,
                       })}
                     >
                       <View

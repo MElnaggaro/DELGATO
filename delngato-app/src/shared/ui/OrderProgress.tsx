@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -9,10 +10,12 @@ type Props = {
 };
 
 /**
- * Four-step horizontal progress: received → preparing → on the way → delivered.
- * Completed steps fill with olive + check glyph; current is outlined olive with
- * a live-dot center; future are canvas-200. Connector lines fill left-to-right
- * of progress (which the bidi engine flips correctly in RTL).
+ * Four-step horizontal progress. Mirrors design reference Atoms.jsx OrderProgress:
+ * circles are flex-rigid siblings, connectors are flex:1 between them.
+ *   - done: olive circle + check glyph
+ *   - current: white circle, 2px olive border, pulsing live-dot center
+ *   - future: canvas-200 circle, empty
+ *   - connector: 2px line, olive (done) / canvas-300 (future)
  */
 export function OrderProgress({ step }: Props) {
   const { t } = useTranslation();
@@ -26,17 +29,21 @@ export function OrderProgress({ step }: Props) {
   return (
     <View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-        {steps.map((_, i) => {
+        {steps.map((s, i) => {
           const done = i < step;
           const cur = i === step;
           return (
-            <View key={i} style={{ flex: i < steps.length - 1 ? 0 : 1, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Fragment key={s.key}>
               <View
                 style={{
                   width: 24,
                   height: 24,
                   borderRadius: 12,
-                  backgroundColor: done ? colors.olive : cur ? colors.bgElevated : colors.canvas200,
+                  backgroundColor: done
+                    ? colors.olive
+                    : cur
+                      ? colors.bgElevated
+                      : colors.canvas200,
                   borderWidth: cur ? 2 : 0,
                   borderColor: cur ? colors.olive : 'transparent',
                   alignItems: 'center',
@@ -44,9 +51,16 @@ export function OrderProgress({ step }: Props) {
                 }}
               >
                 {done ? (
-                  <Icon.check size={14} color={colors.canvas} />
+                  <Icon.check size={14} color={colors.canvas} strokeWidth={3} />
                 ) : cur ? (
-                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.olive }} />
+                  <View
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: colors.olive,
+                    }}
+                  />
                 ) : null}
               </View>
               {i < steps.length - 1 ? (
@@ -58,7 +72,7 @@ export function OrderProgress({ step }: Props) {
                   }}
                 />
               ) : null}
-            </View>
+            </Fragment>
           );
         })}
       </View>
@@ -69,10 +83,20 @@ export function OrderProgress({ step }: Props) {
             style={{
               flex: 1,
               textAlign: 'center',
-              fontFamily: i === step ? fonts.arabicBold : i < step ? fonts.arabicSemiBold : fonts.arabicMedium,
-              fontSize: 12,
+              fontFamily:
+                i === step
+                  ? fonts.arabicBold
+                  : i < step
+                    ? fonts.arabicSemiBold
+                    : fonts.arabicMedium,
+              fontSize: 11.5,
               color:
-                i === step ? colors.olive : i < step ? colors.ink : colors.inkLight,
+                i === step
+                  ? colors.olive
+                  : i < step
+                    ? colors.ink
+                    : colors.inkMute,
+              includeFontPadding: false,
             }}
           >
             {s.label}

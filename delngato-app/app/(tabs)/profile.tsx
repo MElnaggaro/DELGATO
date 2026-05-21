@@ -46,8 +46,23 @@ export default function Profile() {
               alignItems: 'center',
               gap: 14,
               overflow: 'hidden',
+              position: 'relative',
             }}
           >
+            {/* Decorative DAL letter watermark (gold @ 10%) — matches design reference */}
+            <Text
+              style={{
+                position: 'absolute',
+                top: -30,
+                insetInlineEnd: -20,
+                fontFamily: fonts.arabicBold,
+                fontSize: 180,
+                lineHeight: 180 * 0.85,
+                color: 'rgba(232,177,79,0.10)',
+              }}
+            >
+              د
+            </Text>
             <View
               style={{
                 width: 56,
@@ -72,9 +87,11 @@ export default function Profile() {
                   fontSize: 12,
                   color: 'rgba(250,248,243,0.7)',
                   marginTop: 2,
+                  writingDirection: 'ltr',
+                  textAlign: 'left',
                 }}
               >
-                +20 {arDigits(phoneDisplay)}
+                +20 {phoneDisplay}
               </Text>
             </View>
             <Pressable

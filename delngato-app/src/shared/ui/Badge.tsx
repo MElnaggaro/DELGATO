@@ -50,8 +50,8 @@ export function Badge({ variant = 'active', children, style }: Props) {
       style={[
         {
           alignSelf: 'flex-start',
-          paddingHorizontal: 12,
-          paddingVertical: 4,
+          paddingHorizontal: 10,
+          paddingVertical: 3,
           borderRadius: 100,
           backgroundColor: p.bg,
           borderWidth: p.border ? 1 : 0,

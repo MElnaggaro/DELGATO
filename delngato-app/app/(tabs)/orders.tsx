@@ -99,8 +99,8 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
         padding: 14,
         opacity: pressed ? 0.94 : 1,
         ...shadow.card,
-        borderLeftWidth: 3,
-        borderLeftColor: borderColor,
+        borderStartWidth: 3,
+        borderStartColor: borderColor,
       })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 }}>
@@ -159,7 +159,32 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
 }
 
 function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
-  if (status === 'live') return <Badge variant="pending">{text}</Badge>;
+  if (status === 'live') {
+    return (
+      <Badge variant="pending">
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <View
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: colors.olive,
+            }}
+          />
+          <Text
+            style={{
+              fontFamily: fonts.arabicSemiBold,
+              fontSize: 12,
+              color: colors.statusPendingText,
+              includeFontPadding: false,
+            }}
+          >
+            {text}
+          </Text>
+        </View>
+      </Badge>
+    );
+  }
   if (status === 'cancelled') return <Badge variant="issue">{text}</Badge>;
   return <Badge variant="active">{text}</Badge>;
 }

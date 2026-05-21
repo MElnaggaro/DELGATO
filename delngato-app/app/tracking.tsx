@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -169,10 +169,20 @@ export default function Tracking() {
                     موتوسيكل · لوحة ٢١٣٤ د ل
                   </Text>
                 </View>
-                <CircleButton variant="secondary">
+                <CircleButton
+                  variant="secondary"
+                  onPress={() => void Linking.openURL('tel:+201001234567')}
+                  accessibilityLabel="اتصل بالكابتن"
+                >
                   <Icon.phone size={20} color={colors.olive} />
                 </CircleButton>
-                <CircleButton variant="primary">
+                <CircleButton
+                  variant="primary"
+                  onPress={() =>
+                    Alert.alert('الشات', 'هتقدر تكلم الكابتن في تحديث قريب.', [{ text: 'تمام' }])
+                  }
+                  accessibilityLabel="شات مع الكابتن"
+                >
                   <Icon.message size={20} color={colors.canvas} />
                 </CircleButton>
               </View>
@@ -239,24 +249,39 @@ export default function Tracking() {
 function CircleButton({
   children,
   variant,
+  onPress,
+  accessibilityLabel,
 }: {
   children: React.ReactNode;
   variant: 'primary' | 'secondary';
+  onPress: () => void;
+  accessibilityLabel: string;
 }) {
   return (
-    <View
-      style={{
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      hitSlop={6}
+      style={({ pressed }) => ({
         width: 44,
         height: 44,
         borderRadius: 100,
-        backgroundColor: variant === 'primary' ? colors.olive : colors.bgElevated,
+        backgroundColor:
+          variant === 'primary'
+            ? pressed
+              ? colors.olive700
+              : colors.olive
+            : pressed
+              ? colors.canvas200
+              : colors.bgElevated,
         borderWidth: 1.5,
         borderColor: colors.olive,
         alignItems: 'center',
         justifyContent: 'center',
-      }}
+      })}
     >
       {children}
-    </View>
+    </Pressable>
   );
 }
