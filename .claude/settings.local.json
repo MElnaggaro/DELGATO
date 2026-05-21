@@ -21,7 +21,14 @@
       "Bash(npx expo *)",
       "Bash(node *)",
       "Bash(npx eslint *)",
-      "Bash(echo \"---exit: $?---\")"
+      "Bash(echo \"---exit: $?---\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\PROJECTS\\\\DELGATO\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"D:\\\\PROJECTS\\\\DELGATO\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(cd /d D:\\\\PROJECTS\\\\DELGATO)",
+      "Bash(dir /B)"
     ]
   }
 }
