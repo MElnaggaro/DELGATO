@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Platform, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -19,6 +20,14 @@ type Props = ViewProps & {
  * Use for list items (cards, rows). For inline text use <FadeUp/>.
  */
 export function Rise({ delay = 0, style, ...rest }: Props) {
+  if (Platform.OS === 'web') {
+    return <View {...rest} style={style} />;
+  }
+
+  return <RiseNative delay={delay} style={style} {...rest} />;
+}
+
+function RiseNative({ delay = 0, style, ...rest }: Props) {
   const t = useSharedValue(0);
 
   useEffect(() => {

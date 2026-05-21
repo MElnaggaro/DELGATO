@@ -44,21 +44,27 @@ export default function RootLayout() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const resolved = await resolveInitialLocale();
-      if (cancelled) return;
-      initI18n(resolved);
-      await hydrateSession();
-      // Note: applying RTL via I18nManager.forceRTL would trigger a reload.
-      // On a cold boot, the native layer already matches the persisted locale
-      // (Expo respects the OS direction). The Settings > Language screen is
-      // the one place we ever call applyRtlForLocale.
-      if (resolved === 'ar' && !I18nManager.isRTL) {
-        // Best-effort: allow RTL for any newly-installed app; the real lock
-        // happens on the next launch through native config.
-        I18nManager.allowRTL(true);
+      try {
+        const resolved = await resolveInitialLocale();
+        if (cancelled) return;
+        await initI18n(resolved);
+        await hydrateSession();
+        // Note: applying RTL via I18nManager.forceRTL would trigger a reload.
+        // On a cold boot, the native layer already matches the persisted locale
+        // (Expo respects the OS direction). The Settings > Language screen is
+        // the one place we ever call applyRtlForLocale.
+        if (resolved === 'ar' && !I18nManager.isRTL) {
+          // Best-effort: allow RTL for any newly-installed app; the real lock
+          // happens on the next launch through native config.
+          I18nManager.allowRTL(true);
+        }
+        setLocale(resolved);
+      } catch (e) {
+        console.warn('[RootLayout] init error, falling back to defaults:', e);
+        // Ensure i18n is at least initialized with defaults
+        await initI18n('ar');
       }
-      setLocale(resolved);
-      setI18nReady(true);
+      if (!cancelled) setI18nReady(true);
     })();
     return () => {
       cancelled = true;

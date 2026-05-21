@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Platform, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,6 +23,14 @@ type Props = ViewProps & {
  * (titles, captions). For list items use <Rise/>.
  */
 export function FadeUp({ delay = 0, distance = 4, duration = dur.transition, style, ...rest }: Props) {
+  if (Platform.OS === 'web') {
+    return <View {...rest} style={style} />;
+  }
+
+  return <FadeUpNative delay={delay} distance={distance} duration={duration} style={style} {...rest} />;
+}
+
+function FadeUpNative({ delay = 0, distance = 4, duration = dur.transition, style, ...rest }: Props) {
   const t = useSharedValue(0);
 
   useEffect(() => {

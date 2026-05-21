@@ -1,7 +1,5 @@
 import { I18nManager, Platform } from 'react-native';
-import * as Updates from 'expo-updates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Localization from 'expo-localization';
 
 import { DEFAULT_LOCALE, type SupportedLocale, SUPPORTED_LOCALES } from './index';
 
@@ -20,12 +18,23 @@ export function isRTL(locale: SupportedLocale): boolean {
  *   3. Default (ar-EG).
  */
 export async function resolveInitialLocale(): Promise<SupportedLocale> {
-  const stored = await AsyncStorage.getItem(LOCALE_KEY);
-  if (stored && (SUPPORTED_LOCALES as readonly string[]).includes(stored)) {
-    return stored as SupportedLocale;
+  try {
+    const stored = await AsyncStorage.getItem(LOCALE_KEY);
+    if (stored && (SUPPORTED_LOCALES as readonly string[]).includes(stored)) {
+      return stored as SupportedLocale;
+    }
+  } catch {
+    // AsyncStorage may fail on certain platforms; fall through to device locale
   }
-  const device = Localization.getLocales()[0]?.languageCode ?? '';
-  if (device.startsWith('ar')) return 'ar';
+
+  try {
+    const Localization = await import('expo-localization');
+    const device = Localization.getLocales()[0]?.languageCode ?? '';
+    if (device.startsWith('ar')) return 'ar';
+  } catch {
+    // expo-localization may not be available on all platforms
+  }
+
   return DEFAULT_LOCALE;
 }
 
@@ -49,6 +58,7 @@ export async function applyRtlForLocale(locale: SupportedLocale): Promise<boolea
   I18nManager.allowRTL(wantRtl);
   I18nManager.forceRTL(wantRtl);
   try {
+    const Updates = await import('expo-updates');
     await Updates.reloadAsync();
     return true;
   } catch {

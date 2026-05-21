@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Platform, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -16,6 +17,14 @@ type Props = ViewProps & { delay?: number; duration?: number };
  * appearance, decorative letter accents. Sub-spring; still no bounce.
  */
 export function Pop({ delay = 0, duration = 280, style, ...rest }: Props) {
+  if (Platform.OS === 'web') {
+    return <View {...rest} style={style} />;
+  }
+
+  return <PopNative delay={delay} duration={duration} style={style} {...rest} />;
+}
+
+function PopNative({ delay = 0, duration = 280, style, ...rest }: Props) {
   const t = useSharedValue(0);
 
   useEffect(() => {

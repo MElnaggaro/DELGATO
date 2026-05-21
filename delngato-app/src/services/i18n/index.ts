@@ -11,15 +11,15 @@ export const DEFAULT_LOCALE: SupportedLocale = 'ar';
 
 let initialized = false;
 
-export function initI18n(initialLocale: SupportedLocale = DEFAULT_LOCALE) {
+export async function initI18n(initialLocale: SupportedLocale = DEFAULT_LOCALE) {
   if (initialized) {
     if (i18n.language !== initialLocale) {
-      void i18n.changeLanguage(initialLocale);
+      await i18n.changeLanguage(initialLocale);
     }
     return i18n;
   }
 
-  void i18n.use(initReactI18next).init({
+  await i18n.use(initReactI18next).init({
     compatibilityJSON: 'v4',
     resources: {
       ar: { translation: ar },
@@ -30,6 +30,9 @@ export function initI18n(initialLocale: SupportedLocale = DEFAULT_LOCALE) {
     fallbackLng: false,
     interpolation: { escapeValue: false },
     returnNull: false,
+    // Inline resources → init is synchronous; but guard with initImmediate
+    // to prevent i18next from trying to load resources asynchronously.
+    initImmediate: false,
   });
 
   initialized = true;
