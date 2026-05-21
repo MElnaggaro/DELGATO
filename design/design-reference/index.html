@@ -215,7 +215,7 @@
   <script type="text/babel" src="app/screens/Profile.jsx"></script>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState: useRootState, useEffect: useRootEffect, useRef: useRootRef } = React;
 
     // ───── Screen rail data ────────────────────────────────────────
     const RAIL = [
@@ -304,12 +304,12 @@
     // ───── Root ───────────────────────────────────────────────────
     function Root() {
       const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-      const [activeScreen, setActiveScreen] = useState(t.startScreen || 'home');
-      const [stackKey, setStackKey] = useState(0);
-      const navRef = useRef(null);
+      const [activeScreen, setActiveScreen] = useRootState(t.startScreen || 'home');
+      const [stackKey, setStackKey] = useRootState(0);
+      const navRef = useRootRef(null);
 
       // Find the active button to highlight it
-      useEffect(() => {
+      useRootEffect(() => {
         document.querySelectorAll('[data-screen-key]').forEach(el => {
           el.setAttribute('data-active', el.getAttribute('data-screen-key') === activeScreen);
         });
@@ -323,7 +323,7 @@
       window.__delngato_goToScreen = goToScreen;
 
       // Reset-to-home / logout helpers for screens
-      useEffect(() => {
+      useRootEffect(() => {
         window.__delngato_resetToHome = () => { setActiveScreen('home'); setStackKey(x => x + 1); };
         window.__delngato_logout = () => { setActiveScreen('onboarding'); setStackKey(x => x + 1); };
       }, []);
@@ -375,12 +375,12 @@
 
     function AppShell({ stackKey, initialStack, offline, onChange }) {
       const app = useApp();
-      useEffect(() => { app.setOffline(offline); }, [offline]);
+      useRootEffect(() => { app.setOffline(offline); }, [offline]);
       // Seed cart once
-      useEffect(() => { seedCart(app); }, []);
+      useRootEffect(() => { seedCart(app); }, []);
       // Observe stack changes to update the highlight
       // We use a small mutationobserver-free trick: subscribe via a global hook.
-      useEffect(() => {
+      useRootEffect(() => {
         window.__delngato_onScreen = (s) => onChange(s);
       }, [onChange]);
 
@@ -401,7 +401,7 @@
     }
     function Reporter() {
       const nav = useNav();
-      useEffect(() => {
+      useRootEffect(() => {
         const s = nav.current?.screen;
         if (s) window.__delngato_onScreen?.(s);
       }, [nav.current?.screen]);
