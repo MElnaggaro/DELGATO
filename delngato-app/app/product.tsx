@@ -1,0 +1,251 @@
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams } from 'expo-router';
+
+import { AppBar, Badge, Button, Icon, Stepper } from '@/shared/ui';
+import { colors, fonts } from '@/shared/theme';
+import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { safeBack } from '@/shared/utils/nav';
+import { PRODUCTS, SHOPS, findProduct, findShop } from '@/features/catalog/data';
+import { useCartStore } from '@/features/cart/store';
+
+export default function Product() {
+  const params = useLocalSearchParams<{ id?: string; shopId?: string }>();
+  const product = useMemo(() => findProduct(params.id ?? '') ?? PRODUCTS[0]!, [params.id]);
+  const shop = useMemo(() => findShop(params.shopId ?? '') ?? SHOPS[0]!, [params.shopId]);
+
+  const items = useCartStore((s) => s.items);
+  const addItem = useCartStore((s) => s.addItem);
+  const setItemQty = useCartStore((s) => s.setItemQty);
+  const favorites = useCartStore((s) => s.favorites);
+  const toggleFavorite = useCartStore((s) => s.toggleFavorite);
+  const inCart = items.find((i) => i.id === product.id);
+
+  const [qty, setQty] = useState(inCart?.qty ?? 1);
+  const [note, setNote] = useState('');
+  const arDigits = useArabicDigits();
+
+  const isFav = favorites.includes(product.id);
+
+  const onAdd = () => {
+    if (inCart) setItemQty(product.id, qty);
+    else addItem(product, shop, qty);
+    safeBack(`/shop?id=${shop.id}`);
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.canvas }}>
+      <AppBar
+        onBack={() => safeBack(`/shop?id=${shop.id}`)}
+        trailing={
+          <Pressable onPress={() => toggleFavorite(product.id)} hitSlop={6} style={{ padding: 6 }}>
+            <Icon.heart
+              size={22}
+              color={isFav ? colors.statusIssue : colors.ink}
+              fill={isFav ? colors.statusIssue : 'transparent'}
+            />
+          </Pressable>
+        }
+      />
+
+      <ScrollView>
+        {/* Hero */}
+        <View
+          style={{
+            marginHorizontal: 18,
+            height: 260,
+            borderRadius: 16,
+            backgroundColor: product.hue,
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: fonts.arabicBold,
+              fontSize: 220,
+              lineHeight: 220 * 0.9,
+              color: 'rgba(15,26,23,0.10)',
+            }}
+          >
+            {product.name[0]}
+          </Text>
+          {product.tag ? (
+            <View style={{ position: 'absolute', top: 14, insetInlineStart: 14 }}>
+              <Badge variant={product.tag === 'عرض' ? 'pending' : 'solid-olive'}>
+                {product.tag}
+              </Badge>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Title */}
+        <View style={{ paddingHorizontal: 18, paddingTop: 20 }}>
+          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink }}>
+            {product.name}
+          </Text>
+          <Text
+            style={{ fontFamily: fonts.arabic, fontSize: 13, color: colors.inkLight, marginTop: 6 }}
+          >
+            {product.sub}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'baseline',
+              gap: 6,
+              marginTop: 12,
+            }}
+          >
+            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 26, color: colors.olive }}>
+              {arDigits(product.price)}
+            </Text>
+            <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 13, color: colors.inkLight }}>
+              ج.م
+            </Text>
+          </View>
+        </View>
+
+        {/* Shop strip */}
+        <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
+          <View
+            style={{
+              backgroundColor: colors.canvas200,
+              borderRadius: 10,
+              padding: 12,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            <View
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 100,
+                backgroundColor: colors.olive,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.canvas }}>
+                {shop.letter}
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}>
+                تطلبه من
+              </Text>
+              <Text
+                style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink }}
+              >
+                {shop.name}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Icon.clock size={13} color={colors.inkLight} />
+              <Text
+                style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}
+              >
+                {shop.eta}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Description */}
+        <View style={{ paddingHorizontal: 18, paddingTop: 18 }}>
+          <Text
+            style={{
+              fontFamily: fonts.arabicSemiBold,
+              fontSize: 12,
+              color: colors.inkMute,
+              letterSpacing: 0.4,
+              marginBottom: 8,
+            }}
+          >
+            الوصف
+          </Text>
+          <Text style={{ fontFamily: fonts.arabic, fontSize: 14, lineHeight: 24, color: colors.inkLight }}>
+            منتج طازج من اختيار {shop.name}. مناسب للاستهلاك اليومي للعيلة. التواريخ والصلاحية مكتوبة على العبوة.
+          </Text>
+        </View>
+
+        {/* Note */}
+        <View style={{ paddingHorizontal: 18, paddingTop: 18, paddingBottom: 24 }}>
+          <Text
+            style={{
+              fontFamily: fonts.arabicSemiBold,
+              fontSize: 12,
+              color: colors.inkMute,
+              letterSpacing: 0.4,
+              marginBottom: 8,
+            }}
+          >
+            ملاحظة للمحل{' '}
+            <Text style={{ fontFamily: fonts.arabic, color: colors.inkLight }}>(اختياري)</Text>
+          </Text>
+          <TextInput
+            value={note}
+            onChangeText={setNote}
+            placeholder="مثلاً: من غير ثلج"
+            placeholderTextColor={colors.inkMute}
+            style={{
+              minHeight: 48,
+              backgroundColor: colors.bgElevated,
+              borderRadius: 8,
+              borderWidth: 1.5,
+              borderColor: colors.canvas300,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              fontFamily: fonts.arabic,
+              fontSize: 15,
+              color: colors.ink,
+              textAlign: 'right',
+            }}
+          />
+        </View>
+      </ScrollView>
+
+      <SafeAreaView
+        edges={['bottom']}
+        style={{
+          paddingHorizontal: 18,
+          paddingTop: 12,
+          paddingBottom: 12,
+          backgroundColor: colors.canvas,
+          borderTopWidth: 1,
+          borderTopColor: colors.canvas300,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <Stepper value={qty} min={1} onChange={setQty} />
+        <View style={{ flex: 1 }}>
+          <Button
+            variant="primary"
+            size="lg"
+            full
+            onPress={onAdd}
+            trailing={
+              <Text
+                style={{
+                  fontFamily: fonts.arabicMedium,
+                  fontSize: 13,
+                  color: 'rgba(250,248,243,0.85)',
+                }}
+              >
+                · {arDigits(qty * product.price)} ج.م
+              </Text>
+            }
+          >
+            {inCart ? 'تحديث السلة' : 'أضف للسلة'}
+          </Button>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+}

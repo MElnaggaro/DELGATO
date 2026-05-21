@@ -13,6 +13,7 @@ type Actions = {
   setList: (list: Address[]) => void;
   addLocal: (a: Address) => void;
   select: (id: string) => void;
+  remove: (id: string) => void;
 };
 
 export const useAddressStore = create<State & Actions>()(
@@ -23,11 +24,19 @@ export const useAddressStore = create<State & Actions>()(
       setList: (list) =>
         set({
           list,
-          selectedId: (prevId(list) ?? list[0]?.id) ?? null,
+          selectedId: list[0]?.id ?? null,
         }),
       addLocal: (a) =>
         set((s) => ({ list: [a, ...s.list], selectedId: a.id })),
       select: (id) => set({ selectedId: id }),
+      remove: (id) =>
+        set((s) => {
+          const next = s.list.filter((a) => a.id !== id);
+          return {
+            list: next,
+            selectedId: s.selectedId === id ? (next[0]?.id ?? null) : s.selectedId,
+          };
+        }),
     }),
     {
       name: 'delngato.addresses',
@@ -35,11 +44,6 @@ export const useAddressStore = create<State & Actions>()(
     },
   ),
 );
-
-function prevId(_list: Address[]): string | null {
-  // Hook for future "preserve selected on refresh" — for now picks first.
-  return null;
-}
 
 export function useSelectedAddress(): Address | null {
   return useAddressStore((s) => {

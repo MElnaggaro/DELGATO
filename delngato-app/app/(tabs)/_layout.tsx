@@ -3,14 +3,15 @@ import { useTranslation } from 'react-i18next';
 
 import { BottomTabBar, Icon } from '@/shared/ui';
 import { colors } from '@/shared/theme';
+import { useCartCount } from '@/features/cart/store';
 
 /**
- * Bottom tab navigator. Uses a custom tabbar component (brand-spec blur on
- * iOS, opaque canvas on Android). The native tabbar from React Navigation is
- * hidden via `tabBar={() => ...}`.
+ * Bottom tab navigator. Tabs (per design): home, search, orders, profile.
+ * Cart is reached from home/shop CTAs as a stack route, not a tab.
  */
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const cartCount = useCartCount();
   return (
     <Tabs
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.canvas } }}
@@ -18,7 +19,7 @@ export default function TabsLayout() {
         const active = (props.state.routes[props.state.index]?.name ?? 'home') as
           | 'home'
           | 'search'
-          | 'cart'
+          | 'orders'
           | 'profile';
         return (
           <BottomTabBar
@@ -26,7 +27,12 @@ export default function TabsLayout() {
             tabs={[
               { key: 'home', label: t('tabs.home'), Icon: Icon.home },
               { key: 'search', label: t('tabs.search'), Icon: Icon.search },
-              { key: 'cart', label: t('tabs.cart'), Icon: Icon.cart },
+              {
+                key: 'orders',
+                label: t('orders.title'),
+                Icon: Icon.receipt,
+                badge: cartCount > 0 ? cartCount : undefined,
+              },
               { key: 'profile', label: t('tabs.profile'), Icon: Icon.user },
             ]}
             onTabPress={(k) => props.navigation.navigate(k)}
@@ -36,7 +42,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="home" />
       <Tabs.Screen name="search" />
-      <Tabs.Screen name="cart" />
+      <Tabs.Screen name="orders" />
       <Tabs.Screen name="profile" />
     </Tabs>
   );

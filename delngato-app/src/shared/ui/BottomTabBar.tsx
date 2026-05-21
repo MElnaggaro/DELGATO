@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts } from '@/shared/theme';
 import { Icon } from './Icon';
 
-export type TabKey = 'home' | 'search' | 'cart' | 'profile';
+export type TabKey = 'home' | 'search' | 'orders' | 'profile';
 
 type Tab = {
   key: TabKey;
@@ -34,15 +34,10 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
       tint="light"
       intensity={24}
       style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
         backgroundColor:
-          Platform.OS === 'ios' ? 'rgba(250,248,243,0.92)' : colors.canvas,
+          Platform.OS === 'ios' ? 'rgba(250,248,243,0.96)' : colors.canvas,
         borderTopWidth: 1,
         borderTopColor: colors.canvas300,
-        borderRadius: 18,
       }}
     >
       <SafeAreaView edges={['bottom']}>

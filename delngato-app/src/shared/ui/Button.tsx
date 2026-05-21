@@ -49,14 +49,14 @@ export function Button({
       return {
         backgroundColor: pressed ? colors.olive700 : colors.olive,
         borderWidth: 2,
-        borderColor: pressed ? colors.gold : 'transparent',
+        borderColor: pressed ? colors.gold : colors.olive,
       };
     }
     if (variant === 'solid-gold') {
       return {
         backgroundColor: pressed ? colors.gold600 : colors.gold,
         borderWidth: 2,
-        borderColor: pressed ? colors.olive : 'transparent',
+        borderColor: pressed ? colors.olive : colors.gold,
       };
     }
     if (variant === 'secondary') {
@@ -69,7 +69,7 @@ export function Button({
     if (variant === 'tertiary') {
       return {
         backgroundColor: pressed ? colors.canvas200 : 'transparent',
-        borderWidth: 0,
+        borderWidth: 1.5,
         borderColor: 'transparent',
       };
     }
