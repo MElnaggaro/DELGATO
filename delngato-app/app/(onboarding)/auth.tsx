@@ -9,12 +9,16 @@ import { AppBar, Button } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { normalizeEgyptianPhone } from '@/shared/utils/phone';
+import { safeBack } from '@/shared/utils/nav';
+import { useHaptics } from '@/shared/hooks/useHaptics';
 import { useRequestOtp } from '@/features/auth/hooks/useRequestOtp';
 
 export default function AuthPhoneScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const haptics = useHaptics();
   const [raw, setRaw] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const { mutateAsync, isPending } = useRequestOtp();
 
   const normalized = normalizeEgyptianPhone(raw);
@@ -22,8 +26,14 @@ export default function AuthPhoneScreen() {
 
   const onContinue = async () => {
     if (!valid) return;
-    await mutateAsync(normalized);
-    router.push('/(onboarding)/otp');
+    setError(null);
+    try {
+      await mutateAsync(normalized);
+      router.push('/(onboarding)/otp');
+    } catch {
+      haptics.warning();
+      setError(t('auth.requestFailed'));
+    }
   };
 
   return (
@@ -31,7 +41,7 @@ export default function AuthPhoneScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, backgroundColor: colors.canvas }}
     >
-      <AppBar onBack={() => router.back()} />
+      <AppBar onBack={() => safeBack('/(onboarding)/welcome')} />
       <View style={{ flex: 1, paddingHorizontal: 24, paddingBottom: 24 }}>
         <FadeUp>
           <Text
@@ -127,6 +137,20 @@ export default function AuthPhoneScreen() {
         </FadeUp>
 
         <View style={{ flex: 1 }} />
+
+        {error ? (
+          <Text
+            style={{
+              fontFamily: fonts.arabicMedium,
+              fontSize: 13,
+              color: colors.statusIssue,
+              marginBottom: 12,
+              textAlign: 'center',
+            }}
+          >
+            {error}
+          </Text>
+        ) : null}
 
         <SafeAreaView edges={['bottom']}>
           <Button

@@ -13,7 +13,15 @@
       "Bash(break)",
       "Bash(npm view *)",
       "Bash(npx tsc *)",
-      "Bash(grep -c \"\\\\.tsx$\")"
+      "Bash(grep -c \"\\\\.tsx$\")",
+      "Bash(cd /d \"D:\\\\PROJECTS\\\\DELGATO\\\\delngato-app\")",
+      "Bash(dir src *)",
+      "Bash(findstr /E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(npx expo-doctor *)",
+      "Bash(npx expo *)",
+      "Bash(node *)",
+      "Bash(npx eslint *)",
+      "Bash(echo \"---exit: $?---\")"
     ]
   }
 }

@@ -65,9 +65,11 @@ const defaults: Pick<LucideProps, 'strokeWidth' | 'color' | 'size'> = {
   size: 24,
 };
 
-const wrap =
-  (Cmp: React.ComponentType<LucideProps>) =>
-  (props: IconCommon) => <Cmp {...defaults} {...props} />;
+const wrap = (Cmp: React.ComponentType<LucideProps>) => {
+  const Wrapped = (props: IconCommon) => <Cmp {...defaults} {...props} />;
+  Wrapped.displayName = `Icon(${Cmp.displayName ?? Cmp.name ?? 'lucide'})`;
+  return Wrapped;
+};
 
 export const Icon = {
   bell: wrap(Bell),

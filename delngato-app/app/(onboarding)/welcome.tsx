@@ -18,7 +18,7 @@ export default function Welcome() {
 
   const next = () => {
     if (i < SLIDE_COUNT - 1) setI(i + 1);
-    else router.replace('/(onboarding)/auth');
+    else router.push('/(onboarding)/auth');
   };
 
   return (
@@ -37,7 +37,7 @@ export default function Welcome() {
       >
         {/* Skip — top-start in RTL */}
         <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, start: 0, padding: 24 }}>
-          <Pressable onPress={() => router.replace('/(onboarding)/auth')} hitSlop={8}>
+          <Pressable onPress={() => router.push('/(onboarding)/auth')} hitSlop={8}>
             <Text
               style={{
                 fontFamily: fonts.arabicMedium,
@@ -141,7 +141,7 @@ export default function Welcome() {
             </Text>
           </Pressable>
 
-          <Pressable onPress={() => router.replace('/(onboarding)/auth')}>
+          <Pressable onPress={() => router.push('/(onboarding)/auth')}>
             <Text
               style={{
                 textAlign: 'center',

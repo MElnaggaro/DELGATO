@@ -4,14 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar, Button, Card, Chip, Icon, Spinner } from '@/shared/ui';
+import { AppBar, Button, Card, Chip, EmptyState, Icon, Spinner } from '@/shared/ui';
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
+import { safeBack } from '@/shared/utils/nav';
 import { detectAddress } from '@/services/api/endpoints/addressClient';
 import type { AddressLabel } from '@/services/api/schemas/address';
 import { useAddressStore } from '@/features/addresses/store';
 
-type Step = 'detecting' | 'confirm';
+type Step = 'detecting' | 'confirm' | 'detectFailed';
 
 export default function AddressSetup() {
   const router = useRouter();
@@ -30,11 +31,16 @@ export default function AddressSetup() {
     if (step !== 'detecting') return;
     let cancelled = false;
     void (async () => {
-      const found = await detectAddress();
-      if (cancelled) return;
-      setStreet(found.street);
-      setDetail(found.detail);
-      setStep('confirm');
+      try {
+        const found = await detectAddress();
+        if (cancelled) return;
+        setStreet(found.street);
+        setDetail(found.detail);
+        setStep('confirm');
+      } catch {
+        if (cancelled) return;
+        setStep('detectFailed');
+      }
     })();
     return () => {
       cancelled = true;
@@ -68,6 +74,31 @@ export default function AddressSetup() {
     );
   }
 
+  if (step === 'detectFailed') {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.canvas }}>
+        <AppBar onBack={() => safeBack('/(onboarding)/location-permission')} />
+        <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+          <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
+            <EmptyState
+              icon={<Icon.pin size={28} color={colors.olive} />}
+              title={t('address.detectFailedTitle')}
+              body={t('address.detectFailedBody')}
+            />
+            <View style={{ gap: 12, marginTop: 24 }}>
+              <Button variant="primary" full size="lg" onPress={() => setStep('detecting')}>
+                {t('address.detectRetry')}
+              </Button>
+              <Button variant="ghost" full size="lg" onPress={() => setStep('confirm')}>
+                {t('address.detectSwitchManual')}
+              </Button>
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
+    );
+  }
+
   const canSave = street.trim().length > 1;
   const onSave = () => {
     addLocal({
@@ -81,7 +112,7 @@ export default function AddressSetup() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
-      <AppBar title={t('address.confirmTitle')} onBack={() => router.back()} />
+      <AppBar title={t('address.confirmTitle')} onBack={() => safeBack('/(onboarding)/location-permission')} />
       <ScrollView contentContainerStyle={{ padding: 18, paddingBottom: 28 }}>
         {/* Map placeholder */}
         <View

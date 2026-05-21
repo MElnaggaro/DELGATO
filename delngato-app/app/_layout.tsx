@@ -45,6 +45,11 @@ export default function RootLayout() {
     let cancelled = false;
     void (async () => {
       try {
+        // Ordering invariant: initI18n MUST resolve before hydrateSession, and both
+        // MUST resolve before i18nReady flips true. The splash route (`app/index.tsx`)
+        // reads the post-hydration `authed`/addresses flags to pick its redirect —
+        // parallelizing these (e.g. Promise.all) would race the splash redirect
+        // against an unrehydrated store and bounce authed users back to onboarding.
         const resolved = await resolveInitialLocale();
         if (cancelled) return;
         await initI18n(resolved);

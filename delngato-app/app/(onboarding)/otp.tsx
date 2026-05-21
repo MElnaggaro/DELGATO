@@ -8,9 +8,12 @@ import { AppBar } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useHaptics } from '@/shared/hooks/useHaptics';
 import { formatNationalDisplay } from '@/shared/utils/phone';
+import { safeBack } from '@/shared/utils/nav';
 import { useAuthStore } from '@/features/auth/store';
 import { InvalidOtpError, useVerifyOtp } from '@/features/auth/hooks/useVerifyOtp';
+import { useRequestOtp } from '@/features/auth/hooks/useRequestOtp';
 import { OtpCells } from '@/features/auth/components/OtpCells';
 import { OtpKeypad } from '@/features/auth/components/OtpKeypad';
 
@@ -21,10 +24,13 @@ export default function OtpScreen() {
   const { t } = useTranslation();
   const phone = useAuthStore((s) => s.phone);
   const arDigits = useArabicDigits();
+  const haptics = useHaptics();
   const { mutateAsync, isPending } = useVerifyOtp();
+  const resend = useRequestOtp();
 
   const [code, setCode] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [counter, setCounter] = useState(COUNTER_START);
 
   useEffect(() => {
@@ -38,16 +44,30 @@ export default function OtpScreen() {
       await mutateAsync(full);
       router.replace('/(onboarding)/location-permission');
     } catch (e) {
-      if (e instanceof InvalidOtpError) {
-        setError(true);
-        setCode('');
-      }
+      haptics.warning();
+      setError(e instanceof InvalidOtpError ? t('auth.otpWrong') : t('auth.requestFailed'));
+      setCode('');
+    }
+  };
+
+  const onResend = async () => {
+    if (resend.isPending) return;
+    setError(null);
+    setNotice(null);
+    try {
+      await resend.mutateAsync(phone);
+      setCounter(COUNTER_START);
+      setNotice(t('auth.otpResent'));
+    } catch {
+      haptics.warning();
+      setError(t('auth.otpResendFailed'));
     }
   };
 
   const onKey = (k: string | 'del') => {
     if (isPending) return;
-    setError(false);
+    setError(null);
+    setNotice(null);
     if (k === 'del') {
       setCode((c) => c.slice(0, -1));
       return;
@@ -65,7 +85,7 @@ export default function OtpScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
-      <AppBar onBack={() => router.back()} />
+      <AppBar onBack={() => safeBack('/(onboarding)/auth')} />
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
         <FadeUp>
           <Text
@@ -98,7 +118,7 @@ export default function OtpScreen() {
         </FadeUp>
 
         <FadeUp delay={120} style={{ marginTop: 28 }}>
-          <OtpCells code={code} error={error} />
+          <OtpCells code={code} error={!!error} />
           {error ? (
             <Text
               style={{
@@ -109,7 +129,19 @@ export default function OtpScreen() {
                 textAlign: 'center',
               }}
             >
-              {t('auth.otpWrong')}
+              {error}
+            </Text>
+          ) : notice ? (
+            <Text
+              style={{
+                marginTop: 14,
+                fontFamily: fonts.arabicMedium,
+                fontSize: 13,
+                color: colors.olive,
+                textAlign: 'center',
+              }}
+            >
+              {notice}
             </Text>
           ) : null}
           <View style={{ marginTop: 18, alignItems: 'center' }}>
@@ -123,12 +155,13 @@ export default function OtpScreen() {
                 </Text>
               </Text>
             ) : (
-              <Pressable onPress={() => setCounter(COUNTER_START)}>
+              <Pressable onPress={onResend} disabled={resend.isPending}>
                 <Text
                   style={{
                     fontFamily: fonts.arabicSemiBold,
                     fontSize: 13,
                     color: colors.olive,
+                    opacity: resend.isPending ? 0.4 : 1,
                   }}
                 >
                   {t('auth.otpResendNow')}

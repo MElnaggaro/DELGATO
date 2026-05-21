@@ -53,7 +53,10 @@
     "otpSub": "We sent a 6-digit code to",
     "otpResendIn": "Resend code in",
     "otpResendNow": "Resend code",
+    "otpResent": "A new code is on its way.",
+    "otpResendFailed": "Couldn't resend the code. Try again.",
     "otpWrong": "Wrong code. Try again.",
+    "requestFailed": "Connection problem. Try again.",
     "supportPrompt": "Trouble signing in?",
     "supportLink": "Contact us"
   },
@@ -71,7 +74,11 @@
     "labelHome": "Home",
     "labelWork": "Work",
     "labelOther": "Other",
-    "done": "Done — go home"
+    "done": "Done — go home",
+    "detectFailedTitle": "Couldn't find your location",
+    "detectFailedBody": "Make sure GPS is on, or enter your address manually.",
+    "detectRetry": "Try again",
+    "detectSwitchManual": "Enter address manually"
   },
   "home": {
     "deliveryTo": "Delivering to",
@@ -213,7 +220,9 @@
     "paymentMethods": "Payment methods",
     "language": "Language",
     "support": "Support",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "We're working on it — look for it in an upcoming update."
   },
   "settings": {
     "languageTitle": "Language",

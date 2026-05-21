@@ -20,7 +20,7 @@ export async function initI18n(initialLocale: SupportedLocale = DEFAULT_LOCALE) 
   }
 
   await i18n.use(initReactI18next).init({
-    compatibilityJSON: 'v4',
+    compatibilityJSON: 'v3',
     resources: {
       ar: { translation: ar },
       en: { translation: en },
