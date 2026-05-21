@@ -1,0 +1,221 @@
+/* === Delngato UI Kit — app shell stylesheet ===
+   Imports system tokens, sets RTL defaults, adds keyframes. */
+@import url('../../colors_and_type.css');
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #2C2820;
+  color: var(--ink);
+  font-family: var(--font-arabic);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body { direction: rtl; }
+
+/* The phone "viewport" — set on each screen wrapper.
+   Top padding reserves space for the absolute iOS status bar (~58px).
+   Bottom padding reserves space for the home-indicator. */
+.dl-screen {
+  background: var(--canvas);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-arabic);
+  color: var(--ink);
+  overflow: hidden;
+  position: relative;
+  padding-top: 58px;
+  padding-bottom: 0;
+}
+
+/* Buttons */
+.dl-btn {
+  font-family: var(--font-arabic);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  border: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  min-height: 48px;
+  padding: 0 20px;
+  transition: background 150ms var(--ease-out), box-shadow 150ms var(--ease-out), transform 150ms var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.dl-btn--primary { background: var(--olive); color: var(--canvas); }
+.dl-btn--primary:hover { background: var(--olive-700); }
+.dl-btn--primary:active { box-shadow: inset 0 0 0 2px var(--gold); background: var(--olive-700); }
+.dl-btn--primary[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.dl-btn--secondary {
+  background: var(--canvas);
+  color: var(--olive);
+  border: 1.5px solid var(--olive);
+}
+.dl-btn--secondary:hover { background: var(--canvas-200); }
+
+.dl-btn--ghost { background: transparent; color: var(--olive); }
+.dl-btn--ghost:hover { background: var(--canvas-200); }
+
+.dl-btn--gold { background: var(--gold); color: var(--ink); }
+.dl-btn--gold:hover { background: var(--gold-600); }
+
+.dl-btn--full { width: 100%; }
+
+/* Cards */
+.dl-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15,26,23,.04), 0 4px 12px rgba(15,26,23,.04);
+}
+
+/* Badges */
+.dl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-arabic);
+  line-height: 1.4;
+}
+.dl-badge--active { background: rgba(31,74,61,0.08); color: var(--olive); }
+.dl-badge--pending { background: rgba(232,177,79,0.22); color: #8a6418; }
+.dl-badge--issue { background: rgba(197,59,44,0.10); color: #A1271C; }
+.dl-badge--solid-olive { background: var(--olive); color: var(--canvas); }
+.dl-badge--solid-gold { background: var(--gold); color: var(--ink); }
+.dl-badge--solid-ink { background: var(--ink); color: var(--canvas); letter-spacing: 0.04em; font-size: 11px; }
+
+/* Inputs */
+.dl-input {
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid var(--canvas-300);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font: 400 16px/1.2 var(--font-arabic);
+  color: var(--ink);
+  min-height: 48px;
+  text-align: right;
+  outline: none;
+  transition: border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+.dl-input:focus {
+  border-color: var(--olive);
+  box-shadow: 0 0 0 3px rgba(31,74,61,0.10);
+}
+.dl-input::placeholder { color: var(--ink-mute); }
+
+/* Chip */
+.dl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: #fff;
+  border: 1px solid var(--canvas-300);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-arabic);
+  transition: all 150ms var(--ease-out);
+}
+.dl-chip--active { background: var(--olive); color: var(--canvas); border-color: var(--olive); font-weight: 600; }
+
+/* Bottom tab bar */
+.dl-tabbar {
+  background: rgba(250,248,243,0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--canvas-300);
+  padding: 8px 8px 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.dl-tab {
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  color: var(--ink-light);
+  cursor: pointer;
+  font-family: var(--font-arabic);
+  position: relative;
+  min-height: 44px;
+}
+.dl-tab[data-active="true"] { color: var(--olive); }
+.dl-tab span { font-size: 11px; font-weight: 500; }
+.dl-tab[data-active="true"] span { font-weight: 600; }
+
+/* Top App Bar */
+.dl-appbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px 12px;
+  background: var(--canvas);
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms var(--ease-out);
+  flex-shrink: 0;
+}
+.dl-appbar--scrolled { border-bottom-color: var(--canvas-300); }
+.dl-appbar__title { font-size: 18px; font-weight: 700; color: var(--ink); flex: 1; }
+
+/* Skeleton helpers */
+.dl-divider { height: 1px; background: var(--canvas-300); border: 0; margin: 0; }
+
+/* Floating action */
+.dl-fab {
+  position: absolute;
+  bottom: 84px;
+  left: 16px;
+  background: var(--olive);
+  color: var(--canvas);
+  border: 0;
+  border-radius: 100px;
+  height: 52px;
+  padding: 0 20px;
+  font: 600 15px/1 var(--font-arabic);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 16px rgba(15,26,23,0.18);
+  cursor: pointer;
+}
+
+/* Pretty animated pulse for live status dot */
+@keyframes dl-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(31,74,61,0.45); }
+  100% { box-shadow: 0 0 0 10px rgba(31,74,61,0); }
+}
+.dl-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--olive);
+  display: inline-block;
+  animation: dl-pulse 1.6s infinite;
+}
+
+/* Screen-content scroll region */
+.dl-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.dl-scroll::-webkit-scrollbar { display: none; }

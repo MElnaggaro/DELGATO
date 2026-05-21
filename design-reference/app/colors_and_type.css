@@ -1,0 +1,266 @@
+/* ============================================================
+   Delngato — Colors & Type Foundations
+   "Premium without pretension. Arabic-first. Confident restraint."
+   ============================================================ */
+
+/* ---------- Fonts ---------- */
+/* IBM Plex Sans Arabic — primary script for Arabic UI + body */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('../fonts/IBMPlexSansArabic-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tienne — Latin display serif (used in the logo: "DELNGATO")
+   Note: brand doc names Inter for Latin, but the supplied logo + provided
+   font files use Tienne. We treat Tienne as the display/wordmark face and
+   keep a clean sans (IBM Plex Sans Arabic falls back gracefully for Latin
+   in product UI) for body. See README "Type substitution" for details. */
+@font-face {
+  font-family: 'Tienne';
+  src: url('../fonts/Tienne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Tienne';
+  src: url('../fonts/Tienne-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Tienne';
+  src: url('../fonts/Tienne-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Tokens ---------- */
+:root {
+  /* Brand palette — straight from guidelines */
+  --olive: #1F4A3D;          /* primary brand color */
+  --olive-700: #173629;       /* pressed / darker olive */
+  --olive-900: #0F231B;       /* deepest olive, used in dark mode */
+  --canvas: #FAF8F3;          /* primary background — warm canvas */
+  --canvas-200: #F2EEE3;      /* subtle surface lift */
+  --canvas-300: #E8E2D2;      /* divider / hairline */
+  --gold: #E8B14F;            /* accent — use sparingly */
+  --gold-600: #C9933A;        /* gold pressed state */
+  --ink: #0F1A17;             /* primary text — near-black w/ green undertone */
+  --ink-light: #4A5C57;       /* secondary text */
+  --ink-mute: #8A9994;        /* tertiary / placeholder text */
+
+  /* Status — used only on badges, never as background surfaces */
+  --status-active: var(--olive);
+  --status-pending: var(--gold);
+  --status-issue: #C53B2C;    /* warm red — never used decoratively */
+
+  /* Semantic surfaces */
+  --bg: var(--canvas);
+  --bg-elevated: #FFFFFF;     /* a touch above canvas for cards in lists */
+  --surface-strong: var(--olive);
+  --border: var(--canvas-300);
+  --fg: var(--ink);
+  --fg-2: var(--ink-light);
+  --fg-3: var(--ink-mute);
+  --fg-on-olive: var(--canvas);
+  --fg-on-gold: var(--ink);
+
+  /* Type families */
+  --font-arabic: 'IBM Plex Sans Arabic', 'IBM Plex Arabic', system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans Arabic', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Tienne', 'IBM Plex Sans Arabic', serif; /* used for Latin wordmark / display moments */
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale (px) */
+  --size-display: 56px;
+  --size-h1: 32px;
+  --size-h2: 24px;
+  --size-h3: 18px;
+  --size-body: 16px;
+  --size-caption: 13px;
+  --size-micro: 11px;
+
+  /* Weights */
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+
+  /* Spacing — 4px base */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 32px;
+  --space-xl: 64px;
+
+  /* Radii */
+  --radius-input: 8px;
+  --radius-button: 12px;
+  --radius-card: 12px;
+  --radius-pill: 100px;
+  --radius-icon-app: 22%;     /* iOS/Android app icon ratio */
+
+  /* Elevation — subtle, never harsh */
+  --shadow-card: 0 1px 2px rgba(15, 26, 23, 0.04), 0 4px 12px rgba(15, 26, 23, 0.04);
+  --shadow-lift: 0 2px 4px rgba(15, 26, 23, 0.05), 0 12px 28px rgba(15, 26, 23, 0.08);
+  --shadow-press: inset 0 0 0 2px var(--gold);
+
+  /* Motion */
+  --dur-micro: 150ms;
+  --dur-transition: 300ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* Dark mode — invert per brand guidelines (deep ink bg, canvas text) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: var(--olive-900);
+    --bg-elevated: #16291F;
+    --border: #24382F;
+    --fg: var(--canvas);
+    --fg-2: #C8D0CD;
+    --fg-3: #8A9994;
+  }
+}
+
+/* ---------- Semantic typography ---------- */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--size-body);
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The display style is used for hero moments — sized for confidence.
+   Latin display uses Tienne (logo face). Arabic display uses IBM Plex
+   Arabic Bold (no separate Arabic display per brand). */
+.display, h1.display {
+  font-family: var(--font-display);
+  font-size: var(--size-display);
+  font-weight: var(--w-bold);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.display-ar {
+  font-family: var(--font-arabic);
+  font-size: var(--size-display);
+  font-weight: var(--w-bold);
+  line-height: 1.15;
+  color: var(--fg);
+}
+
+h1 {
+  font-family: var(--font-sans);
+  font-size: var(--size-h1);
+  font-weight: var(--w-bold);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+  margin: 0;
+}
+h2 {
+  font-family: var(--font-sans);
+  font-size: var(--size-h2);
+  font-weight: var(--w-semibold);
+  line-height: 1.25;
+  color: var(--fg);
+  margin: 0;
+}
+h3 {
+  font-family: var(--font-sans);
+  font-size: var(--size-h3);
+  font-weight: var(--w-semibold);
+  line-height: 1.35;
+  color: var(--fg);
+  margin: 0;
+}
+p, .body {
+  font-family: var(--font-sans);
+  font-size: var(--size-body);
+  font-weight: var(--w-regular);
+  line-height: 1.5;
+  color: var(--fg);
+  margin: 0;
+}
+.caption {
+  font-family: var(--font-sans);
+  font-size: var(--size-caption);
+  font-weight: var(--w-regular);
+  line-height: 1.45;
+  color: var(--fg-2);
+}
+.micro {
+  font-family: var(--font-sans);
+  font-size: var(--size-micro);
+  font-weight: var(--w-medium);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--fg-2);
+  text-transform: uppercase;
+}
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  color: var(--fg);
+}
+
+/* RTL helpers — Arabic-first product */
+[dir="rtl"] {
+  text-align: right;
+}
+[dir="ltr"] {
+  text-align: left;
+}

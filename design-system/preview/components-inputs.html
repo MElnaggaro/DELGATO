@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"></head>
+<body><div class="card">
+  <div dir="ltr" class="label">Form Inputs · 8px radius · 44px min height</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-family:var(--font-arabic)">
+    <label style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:13px;color:var(--ink-light);font-weight:500">رقم الموبايل</span>
+      <input dir="rtl" placeholder="٠١xxxxxxxxx" style="background:#fff;border:1.5px solid var(--canvas-300);border-radius:8px;padding:12px 14px;font:400 16px/1.2 var(--font-arabic);color:var(--ink);min-height:48px;text-align:right">
+    </label>
+    <label style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:13px;color:var(--olive);font-weight:600">العنوان</span>
+      <input dir="rtl" value="شارع الجلاء · بجوار صيدلية مصر" style="background:#fff;border:1.5px solid var(--olive);border-radius:8px;padding:12px 14px;font:400 16px/1.2 var(--font-arabic);color:var(--ink);min-height:48px;text-align:right;outline:none;box-shadow:0 0 0 3px rgba(31,74,61,0.10)">
+    </label>
+    <label style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:13px;color:#C53B2C;font-weight:600">كود التحقق</span>
+      <input dir="rtl" value="١٢٣" style="background:#fff;border:1.5px solid #C53B2C;border-radius:8px;padding:12px 14px;font:400 16px/1.2 var(--font-arabic);color:var(--ink);min-height:48px;text-align:right">
+      <span style="font-size:12px;color:#C53B2C">الكود غلط. حاول تاني.</span>
+    </label>
+    <label style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:13px;color:var(--ink-mute);font-weight:500">البريد الإلكتروني (اختياري)</span>
+      <input dir="rtl" disabled value="—" style="background:var(--canvas-200);border:1.5px solid var(--canvas-300);border-radius:8px;padding:12px 14px;font:400 16px/1.2 var(--font-arabic);color:var(--ink-mute);min-height:48px;text-align:right">
+    </label>
+  </div>
+</div></body></html>
