@@ -38,7 +38,7 @@ export function EmptyState({ icon, title, body, action }: Props) {
       <Text
         style={{
           fontFamily: fonts.arabicBold,
-          fontSize: 17,
+          fontSize: 18,
           color: colors.ink,
           textAlign: 'center',
         }}

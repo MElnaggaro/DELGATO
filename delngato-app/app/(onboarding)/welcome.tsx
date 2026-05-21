@@ -133,7 +133,7 @@ export default function Welcome() {
             <Text
               style={{
                 color: colors.canvas,
-                fontFamily: fonts.arabicBold,
+                fontFamily: fonts.arabicSemiBold,
                 fontSize: 16,
               }}
             >

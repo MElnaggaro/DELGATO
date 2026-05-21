@@ -6,6 +6,7 @@ export { Card } from './Card';
 export { Chip } from './Chip';
 export { Divider } from './Divider';
 export { EmptyState } from './EmptyState';
+export { FormInput } from './FormInput';
 export { Icon, IconBack, IconForward } from './Icon';
 export { OfflineBanner } from './OfflineBanner';
 export { OrderProgress } from './OrderProgress';

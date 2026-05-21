@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, Text, View, type ViewStyle } from 'react-
 import { colors, fonts } from '@/shared/theme';
 import { useHaptics } from '@/shared/hooks/useHaptics';
 
-type Variant = 'primary' | 'ghost' | 'solid-gold';
+type Variant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'solid-gold';
 type Size = 'md' | 'lg';
 
 type Props = {
@@ -59,7 +59,21 @@ export function Button({
         borderColor: pressed ? colors.olive : 'transparent',
       };
     }
-    // ghost — secondary
+    if (variant === 'secondary') {
+      return {
+        backgroundColor: pressed ? colors.canvas200 : colors.canvas,
+        borderWidth: 1.5,
+        borderColor: colors.olive,
+      };
+    }
+    if (variant === 'tertiary') {
+      return {
+        backgroundColor: pressed ? colors.canvas200 : 'transparent',
+        borderWidth: 0,
+        borderColor: 'transparent',
+      };
+    }
+    // ghost — legacy alias for secondary
     return {
       backgroundColor: pressed ? colors.canvas200 : 'transparent',
       borderWidth: 1.5,
@@ -68,10 +82,11 @@ export function Button({
   };
 
   const textColor =
-    variant === 'primary' ? colors.canvas : variant === 'solid-gold' ? colors.ink : colors.olive;
-
-  const paddingVertical = size === 'lg' ? 16 : 12;
-  const fontSize = size === 'lg' ? 16 : 14;
+    variant === 'primary'
+      ? colors.canvas
+      : variant === 'solid-gold'
+        ? colors.ink
+        : colors.olive;
 
   return (
     <Pressable
@@ -87,10 +102,10 @@ export function Button({
       style={({ pressed }) => [
         {
           width: full ? '100%' : undefined,
-          minHeight: 44,
+          minHeight: 48,
           borderRadius: 12,
-          paddingVertical,
-          paddingHorizontal: 18,
+          paddingVertical: 14,
+          paddingHorizontal: 24,
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'row',
@@ -109,8 +124,8 @@ export function Button({
           <Text
             style={{
               color: textColor,
-              fontFamily: fonts.arabicBold,
-              fontSize,
+              fontFamily: fonts.arabicSemiBold,
+              fontSize: 16,
               includeFontPadding: false,
             }}
           >

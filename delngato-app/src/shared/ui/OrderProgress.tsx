@@ -69,10 +69,10 @@ export function OrderProgress({ step }: Props) {
             style={{
               flex: 1,
               textAlign: 'center',
-              fontFamily: i === step ? fonts.arabicBold : fonts.arabicMedium,
-              fontSize: 11.5,
+              fontFamily: i === step ? fonts.arabicBold : i < step ? fonts.arabicSemiBold : fonts.arabicMedium,
+              fontSize: 12,
               color:
-                i === step ? colors.olive : i < step ? colors.ink : colors.inkMute,
+                i === step ? colors.olive : i < step ? colors.ink : colors.inkLight,
             }}
           >
             {s.label}

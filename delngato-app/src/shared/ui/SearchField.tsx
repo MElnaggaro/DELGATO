@@ -25,7 +25,7 @@ export function SearchField({
     <View
       style={{
         backgroundColor: colors.canvas200,
-        borderRadius: 12,
+        borderRadius: 8,
         borderWidth: 1.5,
         borderColor: 'transparent',
         flexDirection: 'row',

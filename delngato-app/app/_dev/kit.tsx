@@ -9,6 +9,7 @@ import {
   Chip,
   Divider,
   EmptyState,
+  FormInput,
   Icon,
   OfflineBanner,
   OrderProgress,
@@ -44,6 +45,12 @@ export default function Kit() {
             <Button variant="primary" size="lg" full onPress={() => null}>
               تأكيد الطلب
             </Button>
+            <Button variant="secondary" size="lg" full onPress={() => null}>
+              أضف للسلة
+            </Button>
+            <Button variant="tertiary" size="lg" full onPress={() => null}>
+              تخطي دلوقتي
+            </Button>
             <Button variant="ghost" size="lg" full onPress={() => null}>
               قيّم تجربتك
             </Button>
@@ -63,9 +70,11 @@ export default function Kit() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             <Badge variant="active">مفتوح</Badge>
             <Badge variant="pending">قيد التحضير</Badge>
-            <Badge variant="issue">مغلق</Badge>
-            <Badge variant="solid-olive">٤٫٨ ★</Badge>
+            <Badge variant="issue">في مشكلة</Badge>
+            <Badge variant="solid-olive">في الطريق</Badge>
             <Badge variant="solid-gold">عرض اليوم</Badge>
+            <Badge variant="solid-ink">جديد</Badge>
+            <Badge variant="outline">مغلق</Badge>
           </View>
         </Section>
 
@@ -116,6 +125,15 @@ export default function Kit() {
               ))}
             </View>
           </Card>
+        </Section>
+
+        <Section label="Form Inputs">
+          <View style={{ gap: 14 }}>
+            <FormInput label="رقم الموبايل" placeholder="٠١xxxxxxxxx" />
+            <FormInput label="العنوان" value="شارع الجلاء · بجوار صيدلية مصر" />
+            <FormInput label="كود التحقق" value="١٢٣" error="الكود غلط. حاول تاني." />
+            <FormInput label="البريد الإلكتروني (اختياري)" disabled value="—" />
+          </View>
         </Section>
 
         <Section label="Spinner">

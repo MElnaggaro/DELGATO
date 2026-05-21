@@ -26,6 +26,8 @@ export const colors = {
   statusActive: '#1F4A3D',
   statusPending: '#E8B14F',
   statusIssue: '#C53B2C',
+  statusIssueText: '#A1271C',
+  statusPendingText: '#8a6418',
 
   bgElevated: '#FFFFFF',
 

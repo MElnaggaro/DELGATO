@@ -39,9 +39,10 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
         right: 0,
         bottom: 0,
         backgroundColor:
-          Platform.OS === 'ios' ? 'rgba(250,248,243,0.85)' : colors.canvas,
+          Platform.OS === 'ios' ? 'rgba(250,248,243,0.92)' : colors.canvas,
         borderTopWidth: 1,
         borderTopColor: colors.canvas300,
+        borderRadius: 18,
       }}
     >
       <SafeAreaView edges={['bottom']}>
@@ -63,7 +64,7 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
                 style={{ flex: 1, alignItems: 'center', paddingVertical: 6, gap: 2 }}
               >
                 <View>
-                  <t.Icon size={22} color={isActive ? colors.olive : colors.inkMute} />
+                  <t.Icon size={22} color={isActive ? colors.olive : colors.inkLight} />
                   {!!t.badge && t.badge > 0 && (
                     <View
                       style={{
@@ -92,9 +93,9 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
                 </View>
                 <Text
                   style={{
-                    fontFamily: isActive ? fonts.arabicBold : fonts.arabicMedium,
+                    fontFamily: isActive ? fonts.arabicSemiBold : fonts.arabicMedium,
                     fontSize: 11,
-                    color: isActive ? colors.olive : colors.inkMute,
+                    color: isActive ? colors.olive : colors.inkLight,
                   }}
                 >
                   {t.label}

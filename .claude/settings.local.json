@@ -11,7 +11,9 @@
       "Bash(cp D:/PROJECTS/DELGATO/design/design-system/assets/*.png D:/PROJECTS/DELGATO/delngato-app/assets/images/)",
       "Bash(npm install *)",
       "Bash(break)",
-      "Bash(npm view *)"
+      "Bash(npm view *)",
+      "Bash(npx tsc *)",
+      "Bash(grep -c \"\\\\.tsx$\")"
     ]
   }
 }

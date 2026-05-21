@@ -19,19 +19,19 @@ export function Chip({ active, icon, children, onPress }: Props) {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
         borderRadius: 100,
-        backgroundColor: active ? colors.olive : pressed ? colors.canvas200 : colors.canvas200,
-        borderWidth: 1,
-        borderColor: active ? colors.olive : colors.canvas300,
+        backgroundColor: active ? colors.olive : pressed ? colors.canvas200 : colors.bgElevated,
+        borderWidth: active ? 0 : 1,
+        borderColor: active ? 'transparent' : colors.canvas300,
       })}
     >
       {icon ? <View>{icon}</View> : null}
       <Text
         style={{
-          fontFamily: fonts.arabicSemiBold,
-          fontSize: 13,
+          fontFamily: active ? fonts.arabicSemiBold : fonts.arabicMedium,
+          fontSize: 14,
           color: active ? colors.canvas : colors.ink,
           includeFontPadding: false,
         }}

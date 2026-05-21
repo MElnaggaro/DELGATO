@@ -46,7 +46,7 @@ export function AppBar({ title, onBack, trailing }: Props) {
             <Text
               numberOfLines={1}
               style={{
-                fontFamily: fonts.arabicBold,
+                fontFamily: fonts.arabicSemiBold,
                 fontSize: 16,
                 color: colors.ink,
               }}

@@ -66,7 +66,7 @@ export default function AuthPhoneScreen() {
                 gap: 6,
                 paddingHorizontal: 14,
                 backgroundColor: colors.canvas200,
-                borderRadius: 12,
+                borderRadius: 8,
                 height: 56,
               }}
             >
@@ -95,7 +95,7 @@ export default function AuthPhoneScreen() {
                 height: 56,
                 paddingHorizontal: 16,
                 backgroundColor: colors.canvas200,
-                borderRadius: 12,
+                borderRadius: 8,
                 fontFamily: fonts.arabic,
                 fontSize: 17,
                 color: colors.ink,

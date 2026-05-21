@@ -101,7 +101,7 @@ export default function Home() {
           delay={180}
           style={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 14 }}
         >
-          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 18, color: colors.ink }}>
+          <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 18, color: colors.ink }}>
             {t('home.nearbyShops')}
           </Text>
           <Text
