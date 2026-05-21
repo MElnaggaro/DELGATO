@@ -1,0 +1,230 @@
+{
+  "common": {
+    "appName": "Delngato",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "back": "Back",
+    "continue": "Continue",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "retry": "Try again",
+    "search": "Search",
+    "viewAll": "View all",
+    "currency": "EGP"
+  },
+  "tabs": {
+    "home": "Home",
+    "search": "Search",
+    "cart": "Cart",
+    "profile": "Profile"
+  },
+  "onboarding": {
+    "tagline": "Order from El-Delngat shops — delivered in minutes.",
+    "footer": "From El-Delngat · for El-Delngat",
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Let's start",
+    "haveAccount": "Already have an account · Sign in",
+    "slides": {
+      "0": {
+        "title": "El-Delngat shops\nin your pocket",
+        "sub": "Groceries, pharmacy, food, sweets — from the shops near you."
+      },
+      "1": {
+        "title": "Order without calling",
+        "sub": "Track your order until it arrives — to the minute."
+      },
+      "2": {
+        "title": "Cash or in-app",
+        "sub": "Pick what suits you. No hidden fees, no surprises."
+      }
+    }
+  },
+  "auth": {
+    "phoneTitle": "Enter your phone number",
+    "phoneSub": "We'll send a verification code over WhatsApp — no password, no hassle.",
+    "phonePlaceholder": "10 123 456 78",
+    "phoneTerms": "By using Delngato, you agree to the",
+    "phoneTermsLink": "Terms of Use",
+    "phoneAnd": "and",
+    "phonePrivacyLink": "Privacy Policy",
+    "otpTitle": "Enter the code",
+    "otpSub": "We sent a 6-digit code to",
+    "otpResendIn": "Resend code in",
+    "otpResendNow": "Resend code",
+    "otpWrong": "Wrong code. Try again.",
+    "supportPrompt": "Trouble signing in?",
+    "supportLink": "Contact us"
+  },
+  "address": {
+    "permTitle": "Where should we deliver?",
+    "permSub": "Tell us where you are so we can show the nearest El-Delngat shops.",
+    "useCurrent": "Use my location",
+    "useManual": "Enter address manually",
+    "detecting": "Finding your location…",
+    "detectingSub": "Takes a couple of seconds.",
+    "confirmTitle": "Confirm address",
+    "fieldLabel": "Label",
+    "fieldDetail": "More details",
+    "fieldDetailPlaceholder": "Building, floor, apartment…",
+    "labelHome": "Home",
+    "labelWork": "Work",
+    "labelOther": "Other",
+    "done": "Done — go home"
+  },
+  "home": {
+    "deliveryTo": "Delivering to",
+    "searchPlaceholder": "Search shops or products",
+    "nearbyShops": "Shops near you",
+    "offerToday": "Today's offer",
+    "offerTitle": "Free delivery\non your first order",
+    "offerCode": "Use code",
+    "noShopsTitle": "No shops in this category right now",
+    "noShopsBody": "Try a different category, or come back when new shops open near you.",
+    "showAll": "Show all shops",
+    "refreshed": "Shops refreshed"
+  },
+  "search": {
+    "placeholder": "Search shops or products",
+    "recent": "Recent searches",
+    "clearAll": "Clear all",
+    "trending": "Trending today",
+    "browseCategory": "Browse by category",
+    "noResultsTitle": "Nothing found",
+    "noResultsBody": "No shop or product called \"{{q}}\" — try another word.",
+    "shopsCount": "Shops · {{count}}",
+    "productsCount": "Products · {{count}}"
+  },
+  "shop": {
+    "all": "All",
+    "addedToCart": "Added to cart",
+    "description": "Description",
+    "noteToShop": "Note to shop",
+    "noteOptional": "(optional)",
+    "notePlaceholder": "e.g. no ice",
+    "fromShop": "From",
+    "updateCart": "Update cart",
+    "addToCart": "Add to cart"
+  },
+  "cart": {
+    "title": "Cart",
+    "fromShop": "From",
+    "emptyTitle": "Cart is empty",
+    "emptyBody": "Start ordering from El-Delngat shops — groceries, pharmacy, food, and more.",
+    "emptyAction": "Browse shops",
+    "addMore": "Add another item from {{shop}}",
+    "promoTitle": "Promo code",
+    "promoSub": "Got a code? Use it now.",
+    "promoAdd": "Add",
+    "totalItems": "Subtotal",
+    "deliveryFee": "Delivery",
+    "grandTotal": "Total",
+    "checkout": "Continue to payment",
+    "removeTitle": "Remove from cart?",
+    "removeBody": "This removes \"{{name}}\" from your cart.",
+    "removeConfirm": "Remove",
+    "removeCancel": "Back",
+    "switchShopTitle": "Switch cart?",
+    "switchShopBody": "You have items from {{current}}. Adding from {{next}} clears the current cart."
+  },
+  "checkout": {
+    "title": "Review order",
+    "addressSection": "Delivery address",
+    "timingSection": "Delivery time",
+    "timingAsap": "As soon as possible",
+    "timingSchedule": "Schedule",
+    "timingChoose": "Pick",
+    "paymentSection": "Payment",
+    "paymentCash": "Cash on delivery",
+    "paymentCashSub": "Pay the captain on arrival",
+    "paymentCard": "Card",
+    "paymentCardSub": "Visa · Mastercard · Meeza",
+    "paymentWallet": "Wallet",
+    "paymentWalletSub": "Vodafone Cash · InstaPay",
+    "summarySection": "Order summary",
+    "secured": "Your order is covered. If anything goes wrong, we fix it with you.",
+    "confirmOrder": "Confirm order",
+    "continuePayment": "Continue to payment"
+  },
+  "payment": {
+    "title": "Add card",
+    "number": "Card number",
+    "holder": "Cardholder name",
+    "holderPlaceholder": "e.g. Ahmed Mohamed",
+    "expiry": "Expiry (MM/YY)",
+    "cvv": "CVV",
+    "expiryPlaceholder": "MM/YY",
+    "cvvPlaceholder": "•••",
+    "secured": "Payment is 256-bit encrypted. We don't store your card details.",
+    "payNow": "Pay now"
+  },
+  "success": {
+    "title": "Order received",
+    "sub": "We're getting it ready. We'll let you know as soon as the captain heads out.",
+    "orderId": "Order ID",
+    "etaPrefix": "Expected delivery",
+    "etaSuffix": "in about 20 minutes",
+    "trackOrder": "Track order",
+    "backHome": "Back to home"
+  },
+  "tracking": {
+    "title": "Your order",
+    "live": "Live",
+    "captain": "Captain",
+    "orderDetails": "Order details",
+    "doneThanks": "Done — thanks for using Delngato",
+    "rate": "Rate your experience",
+    "status": {
+      "received": "Order received",
+      "preparing": "Preparing your order",
+      "onTheWay": "Captain on the way",
+      "delivered": "Arrived! Enjoy"
+    },
+    "steps": {
+      "received": "Received",
+      "preparing": "Preparing",
+      "onTheWay": "On the way",
+      "delivered": "Delivered"
+    },
+    "eta": {
+      "0": "in 20 min",
+      "1": "in 15 min",
+      "2": "in 7 min",
+      "3": "Delivered"
+    }
+  },
+  "orders": {
+    "title": "My orders",
+    "liveBadge": "Live order",
+    "statusDone": "Delivered",
+    "statusLive": "On the way",
+    "statusCancelled": "Cancelled"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications."
+  },
+  "profile": {
+    "title": "Profile",
+    "addresses": "Addresses",
+    "ordersHistory": "Order history",
+    "paymentMethods": "Payment methods",
+    "language": "Language",
+    "support": "Support",
+    "logout": "Sign out"
+  },
+  "settings": {
+    "languageTitle": "Language",
+    "ar": "العربية",
+    "en": "English",
+    "languageHint": "Changing the language restarts the app."
+  },
+  "errors": {
+    "generic": "Small issue on our end. We're on it. Try again.",
+    "offline": "No connection. We'll retry when you're back online.",
+    "phoneInvalid": "That phone number doesn't look right.",
+    "otpInvalid": "Wrong code. Try again."
+  }
+}

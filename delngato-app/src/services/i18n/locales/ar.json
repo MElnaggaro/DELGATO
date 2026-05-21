@@ -1,0 +1,230 @@
+{
+  "common": {
+    "appName": "دلنجاتُو",
+    "ok": "تمام",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "save": "حفظ",
+    "delete": "مسح",
+    "edit": "تعديل",
+    "retry": "جرب تاني",
+    "search": "ابحث",
+    "viewAll": "عرض الكل",
+    "currency": "ج.م"
+  },
+  "tabs": {
+    "home": "الرئيسية",
+    "search": "بحث",
+    "cart": "السلة",
+    "profile": "حسابي"
+  },
+  "onboarding": {
+    "tagline": "اطلب من محلات الدلنجات — تلاقي طلبك عندك في دقايق.",
+    "footer": "من الدلنجات · لأهل الدلنجات",
+    "skip": "تخطي",
+    "next": "التالي",
+    "start": "يلا نبدأ",
+    "haveAccount": "عندي حساب · تسجيل الدخول",
+    "slides": {
+      "0": {
+        "title": "محلات الدلنجات\nفي جيبك",
+        "sub": "بقالة، صيدلية، أكل، حلويات — كلها من المحلات اللي حواليك."
+      },
+      "1": {
+        "title": "اطلب بدون مكالمة",
+        "sub": "تتبع طلبك لحد ما يوصلك — بدقيقة بالظبط."
+      },
+      "2": {
+        "title": "كاش أو من الأبلكيشن",
+        "sub": "اختار اللي يريحك. بدون رسوم خفية، بدون مفاجآت."
+      }
+    }
+  },
+  "auth": {
+    "phoneTitle": "دخّل رقم تليفونك",
+    "phoneSub": "هنبعتلك كود تحقق على واتساب — بدون كلمة سر، بدون تعقيد.",
+    "phonePlaceholder": "١٠ ١٢٣ ٤٥٦ ٧٨",
+    "phoneTerms": "باستخدامك دلنجاتُو، أنت موافق على",
+    "phoneTermsLink": "شروط الاستخدام",
+    "phoneAnd": "و",
+    "phonePrivacyLink": "سياسة الخصوصية",
+    "otpTitle": "دخّل الكود",
+    "otpSub": "بعتنالك كود من ٦ أرقام على",
+    "otpResendIn": "اعادة إرسال الكود بعد",
+    "otpResendNow": "اعادة إرسال الكود",
+    "otpWrong": "الكود غلط. جرب تاني.",
+    "supportPrompt": "مشكلة في الدخول؟",
+    "supportLink": "تواصل معنا"
+  },
+  "address": {
+    "permTitle": "فين بنوصلك؟",
+    "permSub": "خلينا نعرف مكانك علشان نوصلك أقرب محلات الدلنجات بأسرع وقت.",
+    "useCurrent": "استخدم مكاني دلوقتي",
+    "useManual": "أكتب العنوان يدوياً",
+    "detecting": "بنحدد مكانك دلوقتي…",
+    "detectingSub": "بياخد ثانيتين بس.",
+    "confirmTitle": "تأكيد العنوان",
+    "fieldLabel": "اسم المكان",
+    "fieldDetail": "تفاصيل إضافية",
+    "fieldDetailPlaceholder": "رقم العمارة، الدور، الشقة…",
+    "labelHome": "البيت",
+    "labelWork": "الشغل",
+    "labelOther": "تاني",
+    "done": "خلصت — يلا للرئيسية"
+  },
+  "home": {
+    "deliveryTo": "توصيل إلى",
+    "searchPlaceholder": "ابحث عن محل أو منتج",
+    "nearbyShops": "محلات قريبة منك",
+    "offerToday": "عرض اليوم",
+    "offerTitle": "توصيل ببلاش\nعلى أول طلب",
+    "offerCode": "استخدم كود",
+    "noShopsTitle": "مفيش محلات في القسم ده دلوقتي",
+    "noShopsBody": "جرب قسم تاني أو تابعنا لما يفتح محلات جديدة قريبة منك.",
+    "showAll": "اعرض كل المحلات",
+    "refreshed": "تم تحديث المحلات"
+  },
+  "search": {
+    "placeholder": "ابحث عن محل أو منتج",
+    "recent": "بحثت عنها قبل كده",
+    "clearAll": "مسح الكل",
+    "trending": "الأكثر بحثاً اليوم",
+    "browseCategory": "تصفّح حسب القسم",
+    "noResultsTitle": "ملقيناش حاجة بهذا الاسم",
+    "noResultsBody": "ولا منتج ولا محل اسمه \"{{q}}\" — جرب كلمة تانية.",
+    "shopsCount": "محلات · {{count}} نتيجة",
+    "productsCount": "منتجات · {{count}} نتيجة"
+  },
+  "shop": {
+    "all": "الكل",
+    "addedToCart": "اتضاف للسلة",
+    "description": "الوصف",
+    "noteToShop": "ملاحظة للمحل",
+    "noteOptional": "(اختياري)",
+    "notePlaceholder": "مثلاً: من غير ثلج",
+    "fromShop": "تطلبه من",
+    "updateCart": "تحديث السلة",
+    "addToCart": "أضف للسلة"
+  },
+  "cart": {
+    "title": "السلة",
+    "fromShop": "تطلب من",
+    "emptyTitle": "السلة فاضية",
+    "emptyBody": "ابدأ تطلب من محلات الدلنجات — بقالة، صيدلية، أكل وأكتر.",
+    "emptyAction": "تصفّح المحلات",
+    "addMore": "أضف منتج تاني من {{shop}}",
+    "promoTitle": "كود خصم",
+    "promoSub": "عندك كود؟ استخدمه دلوقتي.",
+    "promoAdd": "إضافة",
+    "totalItems": "إجمالي المنتجات",
+    "deliveryFee": "رسوم التوصيل",
+    "grandTotal": "الإجمالي",
+    "checkout": "متابعة للدفع",
+    "removeTitle": "نمسحه من السلة؟",
+    "removeBody": "هتمسح \"{{name}}\" من السلة.",
+    "removeConfirm": "مسح",
+    "removeCancel": "رجوع",
+    "switchShopTitle": "استبدل السلة؟",
+    "switchShopBody": "عندك طلب من {{current}}. لو ضفت من {{next}}، السلة الحالية هتتمسح."
+  },
+  "checkout": {
+    "title": "مراجعة الطلب",
+    "addressSection": "عنوان التوصيل",
+    "timingSection": "وقت التوصيل",
+    "timingAsap": "في أقرب وقت",
+    "timingSchedule": "جدول وقت",
+    "timingChoose": "اختر",
+    "paymentSection": "طريقة الدفع",
+    "paymentCash": "كاش عند الاستلام",
+    "paymentCashSub": "ادفع للكابتن لما يوصل",
+    "paymentCard": "بطاقة بنكية",
+    "paymentCardSub": "فيزا · ماستركارد · ميزة",
+    "paymentWallet": "محفظة إلكترونية",
+    "paymentWalletSub": "فودافون كاش · إنستاباي",
+    "summarySection": "ملخص الطلب",
+    "secured": "طلبك مؤمَّن. لو حصل أي مشكلة، بنحلها معاك.",
+    "confirmOrder": "تأكيد الطلب",
+    "continuePayment": "متابعة للدفع"
+  },
+  "payment": {
+    "title": "إضافة بطاقة",
+    "number": "رقم البطاقة",
+    "holder": "اسم حامل البطاقة",
+    "holderPlaceholder": "مثلاً: أحمد محمد",
+    "expiry": "الصلاحية (شهر/سنة)",
+    "cvv": "CVV",
+    "expiryPlaceholder": "MM/YY",
+    "cvvPlaceholder": "•••",
+    "secured": "الدفع مؤمَّن بتشفير ٢٥٦-بت. بياناتك مش بنحفظها.",
+    "payNow": "ادفع دلوقتي"
+  },
+  "success": {
+    "title": "تم استلام طلبك",
+    "sub": "بيتجهزلك دلوقتي. هنخبرك على طول لما الكابتن يطلع.",
+    "orderId": "رقم الطلب",
+    "etaPrefix": "توصيل متوقع",
+    "etaSuffix": "بعد ٢٠ دقيقة تقريباً",
+    "trackOrder": "تتبع طلبك",
+    "backHome": "رجوع للرئيسية"
+  },
+  "tracking": {
+    "title": "طلبك",
+    "live": "مباشر",
+    "captain": "الكابتن",
+    "orderDetails": "تفاصيل الطلب",
+    "doneThanks": "تم — شكراً لاستخدامك دلنجاتُو",
+    "rate": "قيّم تجربتك",
+    "status": {
+      "received": "تم استلام طلبك",
+      "preparing": "بنحضّر طلبك دلوقتي",
+      "onTheWay": "الكابتن في الطريق",
+      "delivered": "وصل! استمتع"
+    },
+    "steps": {
+      "received": "تم الاستلام",
+      "preparing": "يتم التحضير",
+      "onTheWay": "في الطريق",
+      "delivered": "تم التوصيل"
+    },
+    "eta": {
+      "0": "بعد ٢٠ دقيقة",
+      "1": "بعد ١٥ دقيقة",
+      "2": "بعد ٧ دقايق",
+      "3": "تم التوصيل"
+    }
+  },
+  "orders": {
+    "title": "طلباتي",
+    "liveBadge": "طلب شغّال",
+    "statusDone": "تم التوصيل",
+    "statusLive": "في الطريق",
+    "statusCancelled": "متلغي"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "اعتبر الكل مقروء",
+    "empty": "مفيش إشعارات."
+  },
+  "profile": {
+    "title": "حسابي",
+    "addresses": "عناويني",
+    "ordersHistory": "طلباتي السابقة",
+    "paymentMethods": "طرق الدفع",
+    "language": "اللغة",
+    "support": "الدعم",
+    "logout": "تسجيل الخروج"
+  },
+  "settings": {
+    "languageTitle": "اللغة",
+    "ar": "العربية",
+    "en": "English",
+    "languageHint": "تغيير اللغة هيعيد تشغيل التطبيق."
+  },
+  "errors": {
+    "generic": "في مشكلة صغيرة. بنحلها. جرب تاني.",
+    "offline": "في مشكلة في الاتصال. هنحاول لما الإنترنت يرجع.",
+    "phoneInvalid": "رقم التليفون مش مظبوط.",
+    "otpInvalid": "الكود غلط. جرب تاني."
+  }
+}

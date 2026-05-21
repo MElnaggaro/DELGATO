@@ -1,0 +1,72 @@
+{
+  "expo": {
+    "name": "دلنجاتُو",
+    "slug": "delngato",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "delngato",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1F4A3D"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.delngato.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleDevelopmentRegion": "ar"
+      }
+    },
+    "android": {
+      "package": "com.delngato.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1F4A3D"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-secure-store",
+      "expo-notifications",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/IBMPlexSansArabic-Thin.ttf",
+            "./assets/fonts/IBMPlexSansArabic-ExtraLight.ttf",
+            "./assets/fonts/IBMPlexSansArabic-Light.ttf",
+            "./assets/fonts/IBMPlexSansArabic-Regular.ttf",
+            "./assets/fonts/IBMPlexSansArabic-Medium.ttf",
+            "./assets/fonts/IBMPlexSansArabic-SemiBold.ttf",
+            "./assets/fonts/IBMPlexSansArabic-Bold.ttf",
+            "./assets/fonts/Tienne-Regular.ttf",
+            "./assets/fonts/Tienne-Bold.ttf",
+            "./assets/fonts/Tienne-Black.ttf"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "locales": {
+      "ar": "./src/services/i18n/locales/ar.json",
+      "en": "./src/services/i18n/locales/en.json"
+    },
+    "extra": {
+      "router": {},
+      "defaultLocale": "ar-EG"
+    }
+  }
+}
