@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 type Props = {
   active?: boolean;
@@ -11,12 +12,13 @@ type Props = {
 };
 
 export function Chip({ active, icon, children, onPress }: Props) {
+  const { flexDirection } = useRtl();
   return (
     <Pressable
       onPress={onPress}
       hitSlop={4}
       style={({ pressed }) => ({
-        flexDirection: 'row',
+        flexDirection,
         alignItems: 'center',
         gap: 6,
         paddingHorizontal: 16,

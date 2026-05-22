@@ -19,7 +19,7 @@ export function OtpCells({ code, length = 6, error }: Props) {
   const cells = Array.from({ length }, (_, i) => code[i] ?? '');
   const activeIdx = code.length;
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
+    <View style={{ flexDirection: 'row', direction: 'ltr', justifyContent: 'center', gap: 10 }}>
       {cells.map((c, i) => {
         const filled = c !== '';
         const isActive = i === activeIdx && !error;

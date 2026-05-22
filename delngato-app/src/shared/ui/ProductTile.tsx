@@ -47,8 +47,7 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
           style={{
             position: 'absolute',
             top: 4,
-            right: pick(undefined, 10),
-            left: pick(10, undefined),
+            right: 10,
             fontFamily: fonts.arabicBold,
             fontSize: 60,
             lineHeight: 60,

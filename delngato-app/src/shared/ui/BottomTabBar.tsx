@@ -67,8 +67,7 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
                       style={{
                         position: 'absolute',
                         top: -4,
-                        right: pick(-8, undefined),
-                        left: pick(undefined, -8),
+                        right: -8,
                         backgroundColor: colors.gold,
                         borderRadius: 100,
                         paddingHorizontal: 6,

@@ -98,16 +98,18 @@ export default function RootLayout() {
 function RootStack() {
   const { isRtl } = useRtl();
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: {
-          backgroundColor: colors.canvas,
-        },
-        animation: isRtl ? 'slide_from_left' : 'slide_from_right',
-        animationDuration: 300,
-      }}
-    />
+    <View style={{ flex: 1, direction: isRtl ? 'rtl' : 'ltr' }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: colors.canvas,
+          },
+          animation: isRtl ? 'slide_from_left' : 'slide_from_right',
+          animationDuration: 300,
+        }}
+      />
+    </View>
   );
 }
 

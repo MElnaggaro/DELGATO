@@ -2,14 +2,16 @@ import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { Icon } from './Icon';
 
 export function OfflineBanner() {
   const { t } = useTranslation();
+  const { flexDirection } = useRtl();
   return (
     <View
       style={{
-        flexDirection: 'row',
+        flexDirection,
         alignItems: 'center',
         gap: 10,
         paddingHorizontal: 16,

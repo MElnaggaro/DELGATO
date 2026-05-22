@@ -15,7 +15,7 @@ export function useRtl() {
   
   return {
     isRtl,
-    flexDirection: (I18nManager.isRTL ? 'row' : (isRtl ? 'row-reverse' : 'row')) as 'row' | 'row-reverse',
+    flexDirection: 'row' as const,
     /** Pick `rtl` value in RTL contexts, `ltr` otherwise. */
     pick<T>(rtl: T, ltr: T): T {
       return isRtl ? rtl : ltr;

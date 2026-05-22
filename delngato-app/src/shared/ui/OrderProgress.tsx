@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { Icon } from './Icon';
 import { LiveDot } from './LiveDot';
 
@@ -20,6 +21,7 @@ type Props = {
  */
 export function OrderProgress({ step }: Props) {
   const { t } = useTranslation();
+  const { flexDirection } = useRtl();
   const steps: { key: string; label: string }[] = [
     { key: 'received', label: t('tracking.steps.received') },
     { key: 'preparing', label: t('tracking.steps.preparing') },
@@ -29,7 +31,7 @@ export function OrderProgress({ step }: Props) {
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      <View style={{ flexDirection, alignItems: 'center', gap: 6 }}>
         {steps.map((s, i) => {
           const done = i < step;
           const cur = i === step;
@@ -70,7 +72,7 @@ export function OrderProgress({ step }: Props) {
           );
         })}
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+      <View style={{ flexDirection, justifyContent: 'space-between', marginTop: 10 }}>
         {steps.map((s, i) => (
           <Text
             key={s.key}

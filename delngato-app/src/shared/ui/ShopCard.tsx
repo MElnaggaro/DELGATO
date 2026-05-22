@@ -38,7 +38,6 @@ export function ShopCard({ shop, onPress, compact }: Props) {
           backgroundColor: shop.bgFrom,
           alignItems: 'center',
           justifyContent: 'center',
-          overflow: 'hidden',
           position: 'relative',
         }}
       >
@@ -49,8 +48,7 @@ export function ShopCard({ shop, onPress, compact }: Props) {
             fontFamily: fonts.arabicBold,
             color: 'rgba(250,248,243,0.10)',
             top: -6,
-            right: pick(undefined, 4),
-            left: pick(4, undefined),
+            right: 4,
             lineHeight: phantomSize,
           }}
         >

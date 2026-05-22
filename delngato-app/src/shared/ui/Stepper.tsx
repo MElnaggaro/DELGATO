@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { Icon } from './Icon';
 
 type Props = {
@@ -18,12 +19,13 @@ type Props = {
  */
 export function Stepper({ value, onChange, min = 0, compact = false }: Props) {
   const arDigits = useArabicDigits();
+  const { flexDirection } = useRtl();
   const size = compact ? 28 : 36;
   const iconSize = compact ? 14 : 16;
   const atMin = value <= min;
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+    <View style={{ flexDirection, alignItems: 'center', gap: 8 }}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="نقص"

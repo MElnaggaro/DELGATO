@@ -94,7 +94,8 @@ export default function Home() {
                 style={{
                   position: 'absolute',
                   top: 8,
-                  insetInlineEnd: 8,
+                  left: pick(8, undefined),
+                  right: pick(undefined, 8),
                   width: 8,
                   height: 8,
                   borderRadius: 8,

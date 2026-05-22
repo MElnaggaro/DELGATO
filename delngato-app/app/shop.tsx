@@ -4,12 +4,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AppBar, Badge, Chip, EmptyState, Icon, MiniCartBar, ProductTile } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { PRODUCTS, SHOPS, findShop } from '@/features/catalog/data';
 import { useCartStore } from '@/features/cart/store';
 
 export default function Shop() {
   const router = useRouter();
+  const { isRtl, flexDirection, pick } = useRtl();
   const params = useLocalSearchParams<{ id?: string }>();
   const shop = useMemo(() => findShop(params.id ?? '') ?? SHOPS[0]!, [params.id]);
   const [section, setSection] = useState<string>('الكل');
@@ -50,7 +52,7 @@ export default function Shop() {
         title={shop.name}
         onBack={() => safeBack('/(tabs)/home')}
         trailing={
-          <View style={{ flexDirection: 'row', gap: 4 }}>
+          <View style={{ flexDirection, gap: 4 }}>
             <Pressable onPress={() => toggleFavorite(shop.id)} hitSlop={6} style={{ padding: 6 }}>
               <Icon.heart
                 size={22}
@@ -94,7 +96,8 @@ export default function Shop() {
               style={{
                 position: 'absolute',
                 top: -30,
-                insetInlineEnd: -20,
+                left: pick(-20, undefined),
+                right: pick(undefined, -20),
                 fontFamily: fonts.arabicBold,
                 fontSize: 180,
                 lineHeight: 180 * 0.85,
@@ -103,7 +106,7 @@ export default function Shop() {
             >
               {shop.letter}
             </Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection, gap: 8 }}>
               <Badge variant="solid-gold">{shop.rating} ★</Badge>
               <Badge variant="ghost">{shop.cat}</Badge>
               {shop.tags[0] ? <Badge variant="ghost">{shop.tags[0]}</Badge> : null}
@@ -116,7 +119,7 @@ export default function Shop() {
               </Text>
               <View
                 style={{
-                  flexDirection: 'row',
+                  flexDirection,
                   flexWrap: 'wrap',
                   gap: 14,
                   marginTop: 6,
@@ -168,7 +171,7 @@ export default function Shop() {
             />
           ) : (
             <View
-              style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' }}
+              style={{ flexDirection, flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' }}
             >
               {products.map((p) => (
                 <View key={p.id} style={{ width: '48.5%' }}>
@@ -199,8 +202,9 @@ export default function Shop() {
 }
 
 function Pill({ icon, text }: { icon: React.ReactNode; text: string }) {
+  const { flexDirection: fd } = useRtl();
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+    <View style={{ flexDirection: fd, alignItems: 'center', gap: 4 }}>
       {icon}
       <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: 'rgba(250,248,243,0.75)' }}>
         {text}

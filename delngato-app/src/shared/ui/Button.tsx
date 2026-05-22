@@ -8,6 +8,7 @@ import Animated, {
 
 import { colors, fonts, radius } from '@/shared/theme';
 import { useHaptics } from '@/shared/hooks/useHaptics';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { ease } from '@/shared/motion';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -55,6 +56,7 @@ export function Button({
   accessibilityLabel,
 }: Props) {
   const haptics = useHaptics();
+  const { flexDirection } = useRtl();
   const isDisabled = disabled || loading;
   const isLarge = size === 'lg';
 
@@ -177,7 +179,7 @@ export function Button({
           paddingHorizontal: 20,
           alignItems: 'center',
           justifyContent: 'center',
-          flexDirection: 'row',
+          flexDirection,
           gap: 8,
           opacity: isDisabled ? 0.4 : 1,
         },

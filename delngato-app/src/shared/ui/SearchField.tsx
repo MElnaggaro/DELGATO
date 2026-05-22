@@ -22,7 +22,7 @@ export function SearchField({
   inputRef,
   ...rest
 }: Props) {
-  const { pick } = useRtl();
+  const { flexDirection, pick } = useRtl();
   const innerInput = (
     <View
       style={{
@@ -30,7 +30,7 @@ export function SearchField({
         borderRadius: 8,
         borderWidth: 1.5,
         borderColor: 'transparent',
-        flexDirection: 'row',
+        flexDirection,
         alignItems: 'center',
         paddingHorizontal: 12,
         height: 48,

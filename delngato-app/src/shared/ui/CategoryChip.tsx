@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { PressableScale } from './PressableScale';
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function CategoryChip({ active, icon, children, onPress }: Props) {
+  const { flexDirection } = useRtl();
   return (
     <PressableScale
       onPress={onPress}
@@ -25,7 +27,7 @@ export function CategoryChip({ active, icon, children, onPress }: Props) {
         backgroundColor: active ? colors.olive : '#FFFFFF',
         borderWidth: 1,
         borderColor: active ? colors.olive : colors.canvas300,
-        flexDirection: 'row',
+        flexDirection,
         gap: 6,
       }}
     >

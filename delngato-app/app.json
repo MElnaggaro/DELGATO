@@ -64,6 +64,7 @@
       "en": "./src/services/i18n/locales/en.json"
     },
     "extra": {
+      "supportsRTL": true,
       "router": {},
       "defaultLocale": "ar-EG"
     }
