@@ -119,6 +119,15 @@ function AppProvider({ children }) {
   const [offline, setOffline] = React.useState(false);
   const [toast, setToast] = React.useState(null);
   const [favorites, setFavorites] = React.useState(['noor']);
+  const [walletBalance, setWalletBalance] = React.useState(WALLET_BALANCE);
+  const [points, setPoints] = React.useState(POINTS_BALANCE);
+  const [walletTx, setWalletTx] = React.useState(WALLET_TX);
+  const [recentlyViewed, setRecentlyViewed] = React.useState(RECENTLY_VIEWED);
+  const [appliedPromo, setAppliedPromo] = React.useState(null);
+  const [tip, setTip] = React.useState(0);
+  const [scheduled, setScheduled] = React.useState(null); // {day, slot}
+  const [deliveryNote, setDeliveryNote] = React.useState('');
+  const [chat, setChat] = React.useState(CHAT_HISTORY);
 
   const setCart = (next) => setCartRaw(prev => typeof next === 'function' ? next(prev) : next);
 
@@ -163,7 +172,17 @@ function AppProvider({ children }) {
     offline, setOffline,
     toast, showToast, dismissToast: () => setToast(null),
     favorites, toggleFav,
+    walletBalance, setWalletBalance,
+    points, setPoints,
+    walletTx, setWalletTx,
+    recentlyViewed, setRecentlyViewed,
+    appliedPromo, setAppliedPromo,
+    tip, setTip,
+    scheduled, setScheduled,
+    deliveryNote, setDeliveryNote,
+    chat, setChat,
     addItem, setItemQty, clearCart,
+    pushRecent: (id) => setRecentlyViewed(prev => [id, ...prev.filter(x => x !== id)].slice(0, 8)),
   };
 
   return (

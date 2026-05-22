@@ -36,19 +36,47 @@ function ProfileScreen() {
           </div>
         </div>
 
-        {/* Quick stats */}
+        {/* Loyalty quick row */}
         <div style={{ padding: '0 18px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-          {[
-            { l: 'طلب متم', v: app.orders.filter(o => o.status === 'done').length },
-            { l: 'محل مفضل', v: app.favorites.length },
-            { l: 'عنوان', v: app.addresses.length },
-          ].map(s => (
-            <div key={s.l} style={{ background: '#fff', borderRadius: 12, padding: '12px 10px', textAlign:'center',
-              boxShadow: 'var(--shadow-card)' }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--olive)' }}>{s.v.toLocaleString('ar-EG')}</div>
-              <div style={{ fontSize: 11, color: 'var(--ink-light)', marginTop: 2 }}>{s.l}</div>
+          <button onClick={() => nav.push('wallet')} className="dl-tappable"
+            style={{ all:'unset', cursor:'pointer', background:'#fff', borderRadius: 12, padding: '12px 10px',
+              textAlign:'center', boxShadow:'var(--shadow-card)' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(31,74,61,0.08)',
+              color: 'var(--olive)', display:'flex', alignItems:'center', justifyContent:'center',
+              margin: '0 auto 6px' }}>
+              <Icon.wallet size={16}/>
             </div>
-          ))}
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--olive)' }}>
+              {app.walletBalance.toLocaleString('ar-EG')}
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--ink-light)', marginTop: 2 }}>محفظة · ج.م</div>
+          </button>
+          <button onClick={() => nav.push('points')} className="dl-tappable"
+            style={{ all:'unset', cursor:'pointer', background:'#fff', borderRadius: 12, padding: '12px 10px',
+              textAlign:'center', boxShadow:'var(--shadow-card)' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(232,177,79,0.18)',
+              color: '#8a6418', display:'flex', alignItems:'center', justifyContent:'center',
+              margin: '0 auto 6px' }}>
+              <Icon.sparkle size={16}/>
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--gold-600)' }}>
+              {app.points.toLocaleString('ar-EG')}
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--ink-light)', marginTop: 2 }}>نقطة</div>
+          </button>
+          <button onClick={() => nav.push('referral')} className="dl-tappable"
+            style={{ all:'unset', cursor:'pointer', background:'#fff', borderRadius: 12, padding: '12px 10px',
+              textAlign:'center', boxShadow:'var(--shadow-card)' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(31,74,61,0.08)',
+              color: 'var(--olive)', display:'flex', alignItems:'center', justifyContent:'center',
+              margin: '0 auto 6px' }}>
+              <Icon.heart size={16}/>
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--olive)' }}>
+              ٣٠
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--ink-light)', marginTop: 2 }}>ادعِ صديق · ج.م</div>
+          </button>
         </div>
 
         {/* Sections */}
@@ -68,10 +96,13 @@ function ProfileScreen() {
             onClick={() => nav.push('notificationSettings')}/>
           <hr className="dl-divider"/>
           <ListRow icon={<Icon.globe size={18}/>} label="اللغة" value="العربية"
-            onClick={() => {}}/>
+            onClick={() => nav.push('language')}/>
           <hr className="dl-divider"/>
-          <ListRow icon={<Icon.shieldCheck size={18}/>} label="الخصوصية والأمان"
-            onClick={() => {}}/>
+          <ListRow icon={<Icon.shieldCheck size={18}/>} label="الخصوصية"
+            onClick={() => nav.push('privacy')}/>
+          <hr className="dl-divider"/>
+          <ListRow icon={<Icon.shieldCheck size={18}/>} label="الأمان وتسجيل الدخول"
+            onClick={() => nav.push('security')}/>
         </Group>
 
         <Group title="المساعدة">
@@ -82,10 +113,22 @@ function ProfileScreen() {
             sub="جاهزين لرد على أي سؤال"
             onClick={() => nav.push('support')}/>
           <hr className="dl-divider"/>
+          <ListRow icon={<Icon.info size={18}/>} label="بلّغ عن مشكلة"
+            onClick={() => nav.push('reportIssue')}/>
+          <hr className="dl-divider"/>
           <ListRow icon={<Icon.info size={18}/>} label="عن دلنجاتُو"
             sub="إصدار ١٫٠٫٠"
             onClick={() => {}}/>
         </Group>
+
+        <div style={{ padding: '8px 18px 8px' }}>
+          <button onClick={() => nav.push('deleteAccount')}
+            style={{ all:'unset', cursor:'pointer', display:'flex', alignItems:'center', gap: 8,
+              color: 'var(--ink-light)', fontFamily:'var(--font-arabic)', fontSize: 13, fontWeight: 500,
+              padding: '6px 4px' }}>
+            <Icon.trash size={16}/> حذف الحساب نهائياً
+          </button>
+        </div>
 
         <div style={{ padding: '8px 18px 28px' }}>
           <button onClick={() => setConfirm(true)}

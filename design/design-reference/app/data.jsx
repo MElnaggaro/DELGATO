@@ -117,6 +117,104 @@ const NOTIFICATIONS = [
 const RECENT_SEARCHES = ['لبن', 'صيدلية', 'خبز', 'طعمية'];
 const TRENDING_SEARCHES = ['كنافة', 'بيض بلدي', 'مياه', 'شاي', 'مكرونة'];
 
+// ── Deals & promotions ─────────────────────────────────────────────
+const DEALS = [
+  { id: 'd1', kind: 'hero', title: 'توصيل ببلاش', sub: 'على أول طلب بكود DLN10',
+    bg: 'linear-gradient(135deg,#1F4A3D 0%,#173629 100%)', icon: 'bike', code: 'DLN10', value: 'توصيل مجاني' },
+  { id: 'd2', kind: 'percent', title: 'خصم ٢٥٪', sub: 'على كل صيدلية النور',
+    bg: 'linear-gradient(135deg,#2C5C4B 0%,#1F4A3D 100%)', icon: 'pill', code: 'NOOR25', value: '-٢٥٪', shopId: 'noor' },
+  { id: 'd3', kind: 'cashback', title: 'كاش باك ١٠٪', sub: 'على المحفظة لمدة أسبوع',
+    bg: 'linear-gradient(135deg,#E8B14F 0%,#C9933A 100%)', icon: 'wallet', code: 'WALLET10', value: '+١٠٪' },
+  { id: 'd4', kind: 'bogo', title: '١+١ مجاناً', sub: 'فول وطعمية المصري — كل يوم جمعة',
+    bg: 'linear-gradient(135deg,#A66B2C 0%,#7A4D1F 100%)', icon: 'utensils', code: 'FRIDAY', value: '١+١', shopId: 'masry' },
+  { id: 'd5', kind: 'flat', title: '٢٠ ج.م خصم', sub: 'على أي طلب فوق ١٥٠ ج.م',
+    bg: 'linear-gradient(135deg,#3C6B4F 0%,#234731 100%)', icon: 'tag', code: 'SAVE20', value: '-٢٠ ج' },
+];
+
+// ── Reviews ────────────────────────────────────────────────────────
+const REVIEWS = [
+  { id: 'r1', name: 'سارة عبد الله', avatar: 'س', stars: 5, date: 'إمبارح',
+    body: 'المنتج وصل طازج والكابتن لطيف. هطلب تاني أكيد.',
+    tags: ['التوصيل سريع', 'المنتجات نضيفة'] },
+  { id: 'r2', name: 'محمد إبراهيم', avatar: 'م', stars: 4, date: 'من ٣ أيام',
+    body: 'كله كويس بس التوصيل اتأخر شوية. عموماً تجربة ممتازة.',
+    tags: ['الكابتن مؤدب'] },
+  { id: 'r3', name: 'هدى مصطفى', avatar: 'هـ', stars: 5, date: 'الأسبوع اللي فات',
+    body: 'أحسن من ٢٤ ساعة. الجبنة طازة والأسعار مناسبة.',
+    tags: ['الأسعار مناسبة', 'المنتجات نضيفة'] },
+  { id: 'r4', name: 'يوسف حلمي', avatar: 'ي', stars: 5, date: 'من أسبوعين',
+    body: 'ربنا يبارك في دلنجاتُو. وفّروا علينا وقت وفلوس مواصلات.',
+    tags: ['التوصيل سريع'] },
+];
+
+// ── Product add-ons / modifiers ────────────────────────────────────
+const PRODUCT_ADDONS = {
+  // generic options used when product has customizable kind
+  size: { label: 'الحجم', required: true, kind: 'one',
+    options: [
+      { id: 's', name: 'صغير', price: 0 },
+      { id: 'm', name: 'وسط', price: 8 },
+      { id: 'l', name: 'كبير', price: 16 },
+    ]},
+  extras: { label: 'إضافات', required: false, kind: 'multi',
+    options: [
+      { id: 'e1', name: 'كيس إضافي', price: 2 },
+      { id: 'e2', name: 'تغليف هدية', price: 10 },
+      { id: 'e3', name: 'فاتورة مطبوعة', price: 0 },
+    ]},
+  notes: { label: 'ملاحظات للمحل', required: false, kind: 'text' },
+};
+
+// ── Recently viewed ────────────────────────────────────────────────
+const RECENTLY_VIEWED = ['p2', 'p1', 'p12', 'p5', 'p9'];
+
+// ── Wallet & loyalty ───────────────────────────────────────────────
+const WALLET_BALANCE = 248;
+const POINTS_BALANCE = 1820;
+const CASHBACK_THIS_MONTH = 34;
+const WALLET_TX = [
+  { id: 'tx1', kind: 'in', title: 'كاش باك من طلب DLN-٢٠٣٢', date: 'إمبارح', amount: 8 },
+  { id: 'tx2', kind: 'out', title: 'دفع طلب DLN-٢٠١٨', date: 'الأحد', amount: -65 },
+  { id: 'tx3', kind: 'in', title: 'شحن من فودافون كاش', date: 'الخميس', amount: 200 },
+  { id: 'tx4', kind: 'in', title: 'مكافأة دعوة صديق · يوسف', date: 'الأسبوع اللي فات', amount: 30 },
+  { id: 'tx5', kind: 'out', title: 'دفع طلب DLN-١٩٩٣', date: 'الخميس', amount: -132 },
+  { id: 'tx6', kind: 'in', title: 'كاش باك من طلب DLN-١٩٧٢', date: 'من أسبوعين', amount: 12 },
+];
+
+const REWARDS = [
+  { id: 'rw1', title: 'توصيل ببلاش', cost: 500, icon: 'bike', desc: 'خصم رسوم التوصيل على طلب واحد' },
+  { id: 'rw2', title: '٢٥ ج.م خصم', cost: 1000, icon: 'tag', desc: 'خصم مباشر من إجمالي الطلب' },
+  { id: 'rw3', title: '٥٠ ج.م خصم', cost: 1800, icon: 'tag', desc: 'لطلباتك من ١٥٠ ج.م فوق' },
+  { id: 'rw4', title: 'منتج هدية', cost: 2500, icon: 'sparkle', desc: 'بكنافة بالقشطة على بيتك' },
+];
+
+// ── Chat (with driver) ─────────────────────────────────────────────
+const CHAT_QUICK = [
+  'بس بدقيقة', 'أنا في الطريق', 'وصلت', 'العنوان مظبوط؟', 'استنّى دقيقة',
+];
+const CHAT_HISTORY = [
+  { id: 'c1', from: 'driver', text: 'السلام عليكم، أنا في الطريق ليك دلوقتي.', time: '٧:٣٢' },
+  { id: 'c2', from: 'me', text: 'وعليكم السلام، تمام يا كابتن.', time: '٧:٣٣' },
+  { id: 'c3', from: 'driver', text: 'حضرتك في شارع الجلاء بجوار صيدلية مصر صح؟', time: '٧:٣٣' },
+  { id: 'c4', from: 'me', text: 'آه. العمارة البيضا اللي على الناصية.', time: '٧:٣٤' },
+];
+
+// ── Featured merchants ─────────────────────────────────────────────
+const FEATURED_IDS = ['abuhassan', 'masry', 'noor'];
+
+window.DEALS = DEALS;
+window.REVIEWS = REVIEWS;
+window.PRODUCT_ADDONS = PRODUCT_ADDONS;
+window.RECENTLY_VIEWED = RECENTLY_VIEWED;
+window.WALLET_BALANCE = WALLET_BALANCE;
+window.POINTS_BALANCE = POINTS_BALANCE;
+window.CASHBACK_THIS_MONTH = CASHBACK_THIS_MONTH;
+window.WALLET_TX = WALLET_TX;
+window.REWARDS = REWARDS;
+window.CHAT_QUICK = CHAT_QUICK;
+window.CHAT_HISTORY = CHAT_HISTORY;
+window.FEATURED_IDS = FEATURED_IDS;
+
 window.SHOPS = SHOPS;
 window.CATEGORIES = CATEGORIES;
 window.PRODUCTS = PRODUCTS;

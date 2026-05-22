@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1400, initial-scale=1">
+  <title>دلنجاتُو · تطبيق التجار — Merchant App</title>
+  <link rel="stylesheet" href="app/app.css">
+  <style>
+    body {
+      background:
+        radial-gradient(ellipse at 30% 0%, #2c2a23 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, #1a2820 0%, transparent 60%),
+        #131210;
+      min-height: 100vh;
+      padding: 28px 24px;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .kit-shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px 1fr 280px;
+      gap: 32px;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .kit-header {
+      grid-column: 1 / -1;
+      display: flex; gap: 24px; align-items: flex-end; justify-content: space-between;
+      color: var(--canvas);
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(250,248,243,0.08);
+      margin-bottom: 4px;
+    }
+    .kit-header h1 {
+      font-family: var(--font-arabic);
+      font-size: 30px; font-weight: 700; color: var(--canvas);
+      margin: 0 0 6px;
+    }
+    .kit-header .sub {
+      font-family: var(--font-arabic);
+      color: rgba(250,248,243,0.55); font-size: 13px;
+      max-width: 540px; line-height: 1.55;
+    }
+    .kit-header .latin {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: 14px; letter-spacing: 0.24em; color: var(--gold);
+    }
+    .kit-header .role-links {
+      display: flex; gap: 8px; margin-top: 10px;
+    }
+    .kit-header .role-link {
+      padding: 6px 12px; border-radius: 100px;
+      background: rgba(250,248,243,0.06); color: rgba(250,248,243,0.7);
+      font-family: var(--font-arabic); font-size: 12px; text-decoration: none;
+      border: 1px solid rgba(250,248,243,0.10);
+      transition: all 150ms ease-out;
+    }
+    .kit-header .role-link:hover {
+      background: rgba(250,248,243,0.10); color: var(--canvas);
+    }
+    .kit-header .role-link[data-active="true"] {
+      background: var(--gold); color: var(--ink); border-color: var(--gold);
+    }
+
+    .kit-stage {
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      position: sticky; top: 28px;
+    }
+
+    .kit-side {
+      display: flex; flex-direction: column; gap: 14px; color: var(--canvas);
+      position: sticky; top: 28px;
+    }
+    .kit-side h2 {
+      font-family: var(--font-arabic); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(250,248,243,0.45); margin: 4px 0 4px;
+    }
+
+    .screen-list { display: flex; flex-direction: column; gap: 4px; }
+    .screen-list h3 {
+      font-family: var(--font-arabic); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; color: rgba(250,248,243,0.45);
+      text-transform: uppercase; margin: 14px 4px 4px;
+    }
+    .screen-list h3:first-of-type { margin-top: 0; }
+    .screen-list button {
+      all: unset; cursor: pointer; padding: 9px 12px; border-radius: 8px;
+      font-family: var(--font-arabic); font-size: 13px;
+      color: rgba(250,248,243,0.7);
+      transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .screen-list button:hover { background: rgba(250,248,243,0.05); color: var(--canvas); }
+    .screen-list button[data-active="true"] {
+      background: rgba(232,177,79,0.10); color: var(--gold);
+    }
+    .screen-list .num {
+      width: 22px; height: 18px; border-radius: 4px; font-size: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(250,248,243,0.06); color: rgba(250,248,243,0.5);
+      font-family: 'IBM Plex Mono', ui-monospace;
+    }
+    .screen-list button[data-active="true"] .num { background: rgba(232,177,79,0.20); color: var(--gold); }
+
+    .keynote {
+      background: rgba(250,248,243,0.04); border-radius: 12px;
+      padding: 14px 16px; color: rgba(250,248,243,0.78);
+      font-size: 12.5px; line-height: 1.7;
+      border: 1px solid rgba(250,248,243,0.06);
+    }
+    .keynote strong { color: var(--gold); font-weight: 600; }
+    .keynote .kbd {
+      display: inline-block; padding: 1px 5px; border-radius: 4px;
+      background: rgba(250,248,243,0.10); font-family: 'IBM Plex Mono', ui-monospace;
+      font-size: 11px; margin: 0 2px;
+    }
+
+    .meta {
+      font-size: 11px; color: rgba(250,248,243,0.35);
+      font-family: var(--font-arabic);
+    }
+
+    @media (max-width: 1180px) {
+      .kit-shell { grid-template-columns: 240px 1fr; }
+      .kit-side.right { display: none; }
+    }
+    @media (max-width: 900px) {
+      .kit-shell { grid-template-columns: 1fr; }
+      .kit-side { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="kit-shell">
+    <header class="kit-header">
+      <div>
+        <h1>دلنجاتُو · تطبيق التجار</h1>
+        <div class="sub">
+          تطبيق إدارة عمليات لتجار دلنجاتو. كل اللي يخص محلك من واجهة واحدة: الطلبات، المنتجات، العروض، التحليلات، الفريق.
+          عربي أولاً، RTL، iOS + أندرويد. ٤٢ شاشة، تدفقات متصلة من الطلب لحد التحويل البنكي.
+        </div>
+        <div class="role-links">
+          <a class="role-link" href="index.html">العميل</a>
+          <a class="role-link" data-active="true">التاجر</a>
+        </div>
+      </div>
+      <div style="text-align:left">
+        <div class="latin">DELNGATO · MERCHANT · v1.0</div>
+        <div class="meta" style="margin-top:6px">٤٢ شاشة · ١٠ تدفقات</div>
+      </div>
+    </header>
+
+    <!-- Left: screen navigator -->
+    <aside class="kit-side">
+      <h2>الشاشات · Screens</h2>
+      <div class="screen-list" id="screen-list"></div>
+    </aside>
+
+    <!-- Center: device -->
+    <main class="kit-stage">
+      <div id="device-root"></div>
+      <div style="color:rgba(250,248,243,0.4);font-size:12px;font-family:var(--font-arabic);text-align:center;line-height:1.6">
+        اضغط على أي شاشة من اليمين للتنقل · أو استخدم التطبيق طبيعي<br/>
+        <span class="meta">المحاكي iPhone 14 Pro · 390×844 · iOS 17</span>
+      </div>
+    </main>
+
+    <!-- Right: notes -->
+    <aside class="kit-side right">
+      <h2>دورة حياة الطلب</h2>
+      <div class="keynote">
+        <strong>جديد</strong> → قبول/رفض<br/>
+        <strong>مقبول</strong> → ابدأ التحضير<br/>
+        <strong>بنحضّر</strong> → جاهز للاستلام<br/>
+        <strong>جاهز</strong> → سلّم للكابتن<br/>
+        <strong>مع الكابتن</strong> → تم التوصيل
+      </div>
+
+      <h2 style="margin-top:18px">حالات الإدارة</h2>
+      <div class="keynote">
+        <span class="kbd">سلة جديدة</span>
+        <span class="kbd">قبول/رفض</span>
+        <span class="kbd">عداد التحضير</span>
+        <span class="kbd">منتج نفد</span>
+        <span class="kbd">صلاحيات</span>
+        <span class="kbd">إغلاق مؤقت</span>
+        <span class="kbd">رد على تقييم</span>
+        <span class="kbd">إنشاء عرض</span>
+      </div>
+
+      <h2 style="margin-top:18px">تنبيهات عملية</h2>
+      <div class="keynote" style="font-size:12px;line-height:1.7;">
+        <strong>طلب جديد</strong> · لازم رد في ٥ دقايق<br/>
+        <strong>مخزن منخفض</strong> · بنبهك أول ما تقل الكمية<br/>
+        <strong>تقييم سلبي</strong> · ميّزة الرد عليه<br/>
+        <strong>دفع وصل</strong> · لما الأرباح تتحول
+      </div>
+    </aside>
+  </div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="app/ios-frame.jsx"></script>
+  <script type="text/babel" src="app/Icons.jsx"></script>
+  <script type="text/babel" src="app/Atoms.jsx"></script>
+
+  <script type="text/babel" src="app/merchant/data.jsx"></script>
+  <script type="text/babel" src="app/merchant/Navigator.jsx"></script>
+  <script type="text/babel" src="app/merchant/Atoms.jsx"></script>
+  <script type="text/babel" src="app/tweaks-panel.jsx"></script>
+
+  <script type="text/babel" src="app/merchant/screens/Auth.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Dashboard.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Orders.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Products.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Catalog.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Promotions.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Analytics.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Reviews.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/Settings.jsx"></script>
+  <script type="text/babel" src="app/merchant/screens/StaffSupport.jsx"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const RAIL = [
+      { group: 'افتتاح', items: [
+        { k: 'splash', l: 'Splash', n: '01' },
+        { k: 'login', l: 'تسجيل الدخول', n: '02' },
+        { k: 'otp', l: 'كود التحقق', n: '03' },
+        { k: 'forgotPassword', l: 'نسيت كلمة السر', n: '04' },
+      ]},
+      { group: 'لوحة القيادة', items: [
+        { k: 'dashboard', l: 'الرئيسية', n: '05' },
+        { k: 'more', l: 'المزيد', n: '06' },
+        { k: 'notifications', l: 'الإشعارات', n: '07' },
+      ]},
+      { group: 'الطلبات', items: [
+        { k: 'orders', l: 'قائمة الطلبات', n: '08' },
+        { k: 'orderDetail', l: 'تفاصيل طلب جديد', n: '09', params: () => ({ order: QUEUE[0] }) },
+        { k: 'orderDetail', l: 'طلب بنحضّره', n: '10', params: () => ({ order: QUEUE[2] }), uniq: 'orderDetailPrep' },
+        { k: 'orderDetail', l: 'طلب جاهز', n: '11', params: () => ({ order: QUEUE[3] }), uniq: 'orderDetailReady' },
+        { k: 'rejectOrder', l: 'رفض طلب', n: '12', params: () => ({ order: QUEUE[0] }) },
+        { k: 'issueReport', l: 'بلاغ مشكلة طلب', n: '13', params: () => ({ order: QUEUE[1] }) },
+        { k: 'orderHistory', l: 'سجل الطلبات', n: '14' },
+      ]},
+      { group: 'المنتجات والمخزن', items: [
+        { k: 'products', l: 'قائمة المنتجات', n: '15' },
+        { k: 'addProduct', l: 'منتج جديد', n: '16' },
+        { k: 'editProduct', l: 'تعديل منتج', n: '17', params: () => ({ product: M_PRODUCTS[1] }) },
+        { k: 'stockAlerts', l: 'تنبيهات المخزن', n: '18' },
+      ]},
+      { group: 'القائمة والكتالوج', items: [
+        { k: 'catalog', l: 'الأقسام والإضافات', n: '19' },
+        { k: 'categories', l: 'الأقسام', n: '20' },
+        { k: 'modifiers', l: 'مجموعات الإضافات', n: '21' },
+        { k: 'modifierForm', l: 'مجموعة جديدة', n: '22', params: () => ({ modifier: MODIFIERS[0] }) },
+        { k: 'pricing', l: 'تعديل الأسعار', n: '23' },
+      ]},
+      { group: 'العروض', items: [
+        { k: 'promotions', l: 'قائمة العروض', n: '24' },
+        { k: 'promoForm', l: 'عرض جديد', n: '25' },
+        { k: 'promoForm', l: 'تعديل عرض', n: '26', params: () => ({ promo: PROMOS[0] }), uniq: 'promoEdit' },
+      ]},
+      { group: 'التحليلات', items: [
+        { k: 'analytics', l: 'لوحة التحليلات', n: '27' },
+        { k: 'revenueDetail', l: 'تفاصيل الإيرادات', n: '28' },
+        { k: 'bestSellers', l: 'الأكثر مبيعاً', n: '29' },
+        { k: 'cancellations', l: 'الإلغاءات', n: '30' },
+        { k: 'busyHours', l: 'ساعات الذروة', n: '31' },
+        { k: 'conversionDetail', l: 'نسبة التحويل', n: '32' },
+      ]},
+      { group: 'التقييمات', items: [
+        { k: 'reviews', l: 'التقييمات والردود', n: '33' },
+      ]},
+      { group: 'إعدادات المحل', items: [
+        { k: 'storeProfile', l: 'معلومات المحل', n: '34' },
+        { k: 'branding', l: 'هوية المحل', n: '35' },
+        { k: 'openingHours', l: 'مواعيد العمل', n: '36' },
+        { k: 'tempClose', l: 'إغلاق مؤقت', n: '37' },
+        { k: 'deliverySettings', l: 'نطاق التوصيل', n: '38' },
+        { k: 'prepTimeSettings', l: 'وقت التحضير', n: '39' },
+        { k: 'paymentSettings', l: 'إعدادات الدفع', n: '40' },
+        { k: 'taxSettings', l: 'الضرائب', n: '41' },
+        { k: 'payout', l: 'الأرباح والتحويلات', n: '42' },
+      ]},
+      { group: 'الفريق والدعم', items: [
+        { k: 'staff', l: 'الفريق', n: '43' },
+        { k: 'staffForm', l: 'موظف جديد', n: '44' },
+        { k: 'support', l: 'مركز المساعدة', n: '45' },
+        { k: 'supportChat', l: 'شات الدعم', n: '46' },
+        { k: 'reportIssue', l: 'بلّغ عن مشكلة', n: '47' },
+      ]},
+    ];
+
+    function buildStackFor(screen, params) {
+      switch (screen) {
+        // Auth flow
+        case 'splash': return [{ screen: 'splash' }];
+        case 'login': return [{ screen: 'login' }];
+        case 'otp': return [{ screen: 'login' }, { screen: 'otp' }];
+        case 'forgotPassword': return [{ screen: 'login' }, { screen: 'forgotPassword' }];
+
+        // Dashboard hub
+        case 'dashboard': return [{ screen: 'dashboard' }];
+        case 'more': return [{ screen: 'dashboard' }, { screen: 'more' }];
+        case 'notifications': return [{ screen: 'dashboard' }, { screen: 'notifications' }];
+
+        // Orders
+        case 'orders': return [{ screen: 'dashboard' }, { screen: 'orders' }];
+        case 'orderDetail': return [{ screen: 'dashboard' }, { screen: 'orders' }, { screen: 'orderDetail', params }];
+        case 'rejectOrder': return [{ screen: 'dashboard' }, { screen: 'orders' }, { screen: 'orderDetail', params }, { screen: 'rejectOrder', params }];
+        case 'issueReport': return [{ screen: 'dashboard' }, { screen: 'orders' }, { screen: 'orderDetail', params }, { screen: 'issueReport', params }];
+        case 'orderHistory': return [{ screen: 'dashboard' }, { screen: 'orders' }, { screen: 'orderHistory' }];
+
+        // Products
+        case 'products': return [{ screen: 'dashboard' }, { screen: 'products' }];
+        case 'addProduct': return [{ screen: 'dashboard' }, { screen: 'products' }, { screen: 'addProduct' }];
+        case 'editProduct': return [{ screen: 'dashboard' }, { screen: 'products' }, { screen: 'editProduct', params }];
+        case 'stockAlerts': return [{ screen: 'dashboard' }, { screen: 'products' }, { screen: 'stockAlerts' }];
+
+        // Catalog
+        case 'catalog': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'catalog' }];
+        case 'categories': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'catalog' }, { screen: 'categories' }];
+        case 'modifiers': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'catalog' }, { screen: 'modifiers' }];
+        case 'modifierForm': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'catalog' }, { screen: 'modifiers' }, { screen: 'modifierForm', params }];
+        case 'pricing': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'catalog' }, { screen: 'pricing' }];
+
+        // Promotions
+        case 'promotions': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'promotions' }];
+        case 'promoForm': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'promotions' }, { screen: 'promoForm', params }];
+
+        // Analytics
+        case 'analytics': return [{ screen: 'dashboard' }, { screen: 'analytics' }];
+        case 'revenueDetail': return [{ screen: 'dashboard' }, { screen: 'analytics' }, { screen: 'revenueDetail' }];
+        case 'bestSellers': return [{ screen: 'dashboard' }, { screen: 'analytics' }, { screen: 'bestSellers' }];
+        case 'cancellations': return [{ screen: 'dashboard' }, { screen: 'analytics' }, { screen: 'cancellations' }];
+        case 'busyHours': return [{ screen: 'dashboard' }, { screen: 'analytics' }, { screen: 'busyHours' }];
+        case 'conversionDetail': return [{ screen: 'dashboard' }, { screen: 'analytics' }, { screen: 'conversionDetail' }];
+
+        // Reviews
+        case 'reviews': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'reviews' }];
+
+        // Settings
+        case 'storeProfile': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'storeProfile' }];
+        case 'branding': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'branding' }];
+        case 'openingHours': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'openingHours' }];
+        case 'tempClose': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'tempClose' }];
+        case 'deliverySettings': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'deliverySettings' }];
+        case 'prepTimeSettings': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'prepTimeSettings' }];
+        case 'paymentSettings': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'paymentSettings' }];
+        case 'taxSettings': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'taxSettings' }];
+        case 'payout': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'payout' }];
+
+        // Staff + Support
+        case 'staff': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'staff' }];
+        case 'staffForm': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'staff' }, { screen: 'staffForm', params }];
+        case 'support': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'support' }];
+        case 'supportChat': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'support' }, { screen: 'supportChat' }];
+        case 'reportIssue': return [{ screen: 'dashboard' }, { screen: 'more' }, { screen: 'reportIssue' }];
+
+        default: return [{ screen, params }];
+      }
+    }
+
+    // Tweak defaults
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "startScreen": "dashboard"
+    }/*EDITMODE-END*/;
+
+    function Root() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      const [activeScreen, setActiveScreen] = useState(t.startScreen || 'dashboard');
+      const [stackKey, setStackKey] = useState(0);
+
+      useEffect(() => {
+        document.querySelectorAll('[data-screen-key]').forEach(el => {
+          el.setAttribute('data-active', el.getAttribute('data-screen-key') === activeScreen);
+        });
+      }, [activeScreen]);
+
+      const goToScreen = (k, params) => {
+        setActiveScreen(k);
+        setStackKey(x => x + 1);
+        // Stash params for buildStackFor
+        window.__delngato_params = params;
+      };
+      window.__delngato_goToScreen = goToScreen;
+
+      useEffect(() => {
+        window.__delngato_resetToHome = () => { setActiveScreen('dashboard'); setStackKey(x => x + 1); };
+      }, []);
+
+      const initialStackForActive = (() => {
+        const found = (() => {
+          for (const g of RAIL) for (const it of g.items) {
+            const matches = it.uniq ? (window.__delngato_lastUniq === it.uniq) : (it.k === activeScreen);
+            if (matches) return it;
+          }
+          return null;
+        })();
+        const params = found && (typeof found.params === 'function' ? found.params() : found.params);
+        return buildStackFor(activeScreen, params).map((f, i) => ({ id: i + 1, screen: f.screen, params: f.params }));
+      })();
+
+      return (
+        <MerchantProvider>
+          <IOSDevice width={390} height={844}>
+            <Navigator key={stackKey} initialStack={initialStackForActive}>
+              <Reporter onChange={setActiveScreen}/>
+            </Navigator>
+          </IOSDevice>
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="التنقل السريع">
+              <div style={{ display:'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                {[
+                  { k: 'splash', l: 'البداية' },
+                  { k: 'login', l: 'تسجيل الدخول' },
+                  { k: 'dashboard', l: 'لوحة القيادة' },
+                  { k: 'orders', l: 'الطلبات' },
+                  { k: 'products', l: 'المنتجات' },
+                  { k: 'analytics', l: 'التحليلات' },
+                  { k: 'promotions', l: 'العروض' },
+                  { k: 'reviews', l: 'التقييمات' },
+                  { k: 'payout', l: 'الأرباح' },
+                  { k: 'staff', l: 'الفريق' },
+                ].map(o => (
+                  <TweakButton key={o.k} label={o.l} onClick={() => goToScreen(o.k)} secondary/>
+                ))}
+              </div>
+            </TweakSection>
+          </TweaksPanel>
+        </MerchantProvider>
+      );
+    }
+
+    function Reporter({ onChange }) {
+      const nav = useNav();
+      useEffect(() => {
+        const s = nav.current?.screen;
+        if (s) onChange(s);
+      }, [nav.current?.screen]);
+      return null;
+    }
+
+    // Render screen rail
+    const list = document.getElementById('screen-list');
+    list.innerHTML = RAIL.map(g => `
+      <h3>${g.group}</h3>
+      ${g.items.map(it => `
+        <button data-screen-key="${it.k}"
+          onclick="window.__delngato_lastUniq='${it.uniq || ''}'; window.__delngato_goToScreen('${it.k}')">
+          <span class="num">${it.n}</span>${it.l}
+        </button>
+      `).join('')}
+    `).join('');
+
+    ReactDOM.createRoot(document.getElementById('device-root')).render(<Root/>);
+  </script>
+</body>
+</html>

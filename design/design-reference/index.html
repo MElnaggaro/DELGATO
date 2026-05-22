@@ -125,15 +125,24 @@
   <div class="kit-shell">
     <header class="kit-header">
       <div>
-        <h1>دلنجاتُو — Delngato</h1>
+        <h1>دلنجاتُو — Customer App</h1>
         <div class="sub">
-          تطبيق طلب وتوصيل محلي لمدينة الدلنجات. عربي أولاً، RTL،  iOS + أندرويد.
-          ٢٢ شاشة، تنقل سَلِس، أنيميشن ميكروية، حالات تحميل وفراغ وأوفلاين.
+          تطبيق العميل الكامل لدلنجاتُو. عربي أولاً، RTL، iOS + أندرويد.
+          ٦٦ شاشة، تدفقات متصلة لكل وظيفة، حالات تحميل وفراغ وأوفلاين، انتقالات سلِسة.
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <a data-active="true" style="padding: 6px 12px; border-radius: 100px;
+             background: var(--gold); color: var(--ink); font-family: var(--font-arabic);
+             font-size: 12px; text-decoration: none; border: 1px solid var(--gold);">العميل</a>
+          <a href="merchant.html" style="padding: 6px 12px; border-radius: 100px;
+             background: rgba(250,248,243,0.06); color: rgba(250,248,243,0.7);
+             font-family: var(--font-arabic); font-size: 12px; text-decoration: none;
+             border: 1px solid rgba(250,248,243,0.10);">التاجر</a>
         </div>
       </div>
       <div style="text-align:left">
-        <div class="latin">DELNGATO · v1.0</div>
-        <div class="meta" style="margin-top:6px">٢٢ شاشة · ٥ تدفقات</div>
+        <div class="latin">DELNGATO · CUSTOMER · v1.0</div>
+        <div class="meta" style="margin-top:6px">٦٦ شاشة · ٨ تدفقات</div>
       </div>
     </header>
 
@@ -208,78 +217,169 @@
   <script type="text/babel" src="app/tweaks-panel.jsx"></script>
 
   <script type="text/babel" src="app/screens/Onboarding.jsx"></script>
+  <script type="text/babel" src="app/screens/AuthExtras.jsx"></script>
   <script type="text/babel" src="app/screens/Home.jsx"></script>
+  <script type="text/babel" src="app/screens/Discovery.jsx"></script>
   <script type="text/babel" src="app/screens/Shop.jsx"></script>
+  <script type="text/babel" src="app/screens/ProductExtras.jsx"></script>
   <script type="text/babel" src="app/screens/Cart.jsx"></script>
+  <script type="text/babel" src="app/screens/CheckoutExtras.jsx"></script>
   <script type="text/babel" src="app/screens/Orders.jsx"></script>
+  <script type="text/babel" src="app/screens/OrdersExtras.jsx"></script>
+  <script type="text/babel" src="app/screens/Loyalty.jsx"></script>
   <script type="text/babel" src="app/screens/Profile.jsx"></script>
+  <script type="text/babel" src="app/screens/SettingsExtras.jsx"></script>
 
   <script type="text/babel">
-    const { useState: useRootState, useEffect: useRootEffect, useRef: useRootRef } = React;
+    const { useState, useEffect, useRef } = React;
 
     // ───── Screen rail data ────────────────────────────────────────
     const RAIL = [
       { group: 'افتتاح', items: [
         { k: 'splash', l: 'Splash', n: '01' },
         { k: 'onboarding', l: 'Onboarding', n: '02' },
-        { k: 'auth', l: 'تسجيل بالتليفون', n: '03' },
-        { k: 'otp', l: 'كود التحقق', n: '04' },
-        { k: 'locationPerm', l: 'إذن الموقع', n: '05' },
-        { k: 'addressSetup', l: 'تأكيد العنوان', n: '06' },
+        { k: 'welcome', l: 'ترحيب', n: '03' },
+        { k: 'auth', l: 'تسجيل الدخول', n: '04' },
+        { k: 'register', l: 'حساب جديد', n: '05' },
+        { k: 'otp', l: 'كود التحقق', n: '06' },
+        { k: 'forgotPassword', l: 'نسيت كلمة السر', n: '07' },
+        { k: 'resetPassword', l: 'كلمة سر جديدة', n: '08' },
+        { k: 'biometric', l: 'دخول بالبصمة', n: '09' },
+        { k: 'locationPerm', l: 'إذن الموقع', n: '10' },
+        { k: 'addressSetup', l: 'تأكيد العنوان', n: '11' },
+        { k: 'mapPin', l: 'تحديد على الخريطة', n: '12' },
       ]},
-      { group: 'التصفّح', items: [
-        { k: 'home', l: 'الرئيسية', n: '07' },
-        { k: 'search', l: 'البحث', n: '08' },
-        { k: 'category', l: 'تصفّح قسم', n: '09', params: { catKey: 'pharmacy' } },
-        { k: 'shop', l: 'صفحة المحل', n: '10', params: () => ({ shop: SHOPS[0] }) },
-        { k: 'product', l: 'تفاصيل المنتج', n: '11', params: () => ({ product: PRODUCTS[1], shop: SHOPS[0] }) },
+      { group: 'التصفّح والاكتشاف', items: [
+        { k: 'home', l: 'الرئيسية', n: '13' },
+        { k: 'search', l: 'البحث', n: '14' },
+        { k: 'category', l: 'تصفّح قسم', n: '15', params: { catKey: 'pharmacy' } },
+        { k: 'deals', l: 'العروض والخصومات', n: '16' },
+        { k: 'featured', l: 'محلات مميزة', n: '17' },
+        { k: 'nearby', l: 'محلات قريبة', n: '18' },
+        { k: 'recommendations', l: 'مقترح ليك', n: '19' },
+        { k: 'recentlyViewed', l: 'شفتها قبل كده', n: '20' },
       ]},
-      { group: 'الطلب', items: [
-        { k: 'cart', l: 'السلة', n: '12' },
-        { k: 'checkout', l: 'مراجعة الطلب', n: '13' },
-        { k: 'payment', l: 'الدفع بالبطاقة', n: '14' },
-        { k: 'orderSuccess', l: 'تم استلام الطلب', n: '15' },
-        { k: 'tracking', l: 'التتبع المباشر', n: '16', params: { orderId: 'DLN-٢٠٤٧' } },
+      { group: 'المحل والمنتج', items: [
+        { k: 'shop', l: 'صفحة المحل', n: '21', params: () => ({ shop: SHOPS[0] }) },
+        { k: 'product', l: 'تفاصيل المنتج', n: '22', params: () => ({ product: PRODUCTS[1], shop: SHOPS[0] }) },
+        { k: 'productGallery', l: 'معرض الصور', n: '23', params: () => ({ product: PRODUCTS[1] }) },
+        { k: 'customize', l: 'تخصيص المنتج', n: '24', params: () => ({ product: PRODUCTS[1], shop: SHOPS[0] }) },
+        { k: 'reviews', l: 'التقييمات', n: '25', params: () => ({ shop: SHOPS[0] }) },
+        { k: 'similar', l: 'منتجات شبيهة', n: '26', params: () => ({ product: PRODUCTS[1] }) },
+        { k: 'unavailable', l: 'منتج غير متاح', n: '27', params: () => ({ product: PRODUCTS[11], shop: SHOPS[0] }) },
+        { k: 'contactMerchant', l: 'تواصل مع المحل', n: '28', params: () => ({ shop: SHOPS[0] }) },
       ]},
-      { group: 'بعد الطلب', items: [
-        { k: 'orders', l: 'طلباتي', n: '17' },
-        { k: 'orderDetail', l: 'تفاصيل طلب', n: '18', params: () => ({ order: ORDERS[0] }) },
-        { k: 'rate', l: 'تقييم', n: '19' },
-        { k: 'notifications', l: 'الإشعارات', n: '20' },
+      { group: 'الطلب والدفع', items: [
+        { k: 'cart', l: 'السلة', n: '29' },
+        { k: 'merchantConflict', l: 'تعارض محل', n: '30', params: () => ({ existing: 'سوبر ماركت أبو حسن', newShop: SHOPS[2], newProduct: PRODUCTS[5] }) },
+        { k: 'checkout', l: 'مراجعة الطلب', n: '31' },
+        { k: 'deliveryNotes', l: 'ملاحظة للكابتن', n: '32' },
+        { k: 'scheduledDelivery', l: 'جدولة التوصيل', n: '33' },
+        { k: 'promoCode', l: 'كود الخصم', n: '34' },
+        { k: 'tipDriver', l: 'إكرامية الكابتن', n: '35' },
+        { k: 'payment', l: 'الدفع بالبطاقة', n: '36' },
+        { k: 'walletPay', l: 'الدفع من المحفظة', n: '37' },
+        { k: 'orderSuccess', l: 'تم استلام الطلب', n: '38' },
       ]},
-      { group: 'الحساب', items: [
-        { k: 'profile', l: 'حسابي', n: '21' },
-        { k: 'editProfile', l: 'تعديل البيانات', n: '22' },
-        { k: 'addresses', l: 'عناويني', n: '23' },
-        { k: 'favorites', l: 'المفضلة', n: '24' },
-        { k: 'paymentMethods', l: 'طرق الدفع', n: '25' },
-        { k: 'notificationSettings', l: 'إعدادات الإشعارات', n: '26' },
-        { k: 'support', l: 'المساعدة', n: '27' },
+      { group: 'الطلب الشغّال', items: [
+        { k: 'tracking', l: 'التتبع المباشر', n: '39', params: { orderId: 'DLN-٢٠٤٧' } },
+        { k: 'chat', l: 'شات مع الكابتن', n: '40', params: { kind: 'driver', name: 'محمود السيد', avatar: 'م' } },
+        { k: 'cancelOrder', l: 'إلغاء الطلب', n: '41', params: () => ({ order: ORDERS[0] }) },
+      ]},
+      { group: 'بعد التسليم', items: [
+        { k: 'orders', l: 'طلباتي', n: '42' },
+        { k: 'orderDetail', l: 'تفاصيل طلب', n: '43', params: () => ({ order: ORDERS[0] }) },
+        { k: 'invoice', l: 'الفاتورة', n: '44', params: () => ({ order: ORDERS[0] }) },
+        { k: 'refund', l: 'طلب استرجاع', n: '45', params: () => ({ order: ORDERS[0] }) },
+        { k: 'rate', l: 'تقييم', n: '46' },
+        { k: 'notifications', l: 'الإشعارات', n: '47' },
+      ]},
+      { group: 'الولاء والمحفظة', items: [
+        { k: 'wallet', l: 'المحفظة', n: '48' },
+        { k: 'walletHistory', l: 'سجل المعاملات', n: '49' },
+        { k: 'points', l: 'النقاط', n: '50' },
+        { k: 'rewards', l: 'استبدال النقاط', n: '51' },
+        { k: 'cashback', l: 'الكاش باك', n: '52' },
+        { k: 'referral', l: 'دعوة الأصحاب', n: '53' },
+      ]},
+      { group: 'الحساب والإعدادات', items: [
+        { k: 'profile', l: 'حسابي', n: '54' },
+        { k: 'editProfile', l: 'تعديل البيانات', n: '55' },
+        { k: 'addresses', l: 'عناويني', n: '56' },
+        { k: 'favorites', l: 'المفضلة', n: '57' },
+        { k: 'paymentMethods', l: 'طرق الدفع', n: '58' },
+        { k: 'notificationSettings', l: 'إعدادات الإشعارات', n: '59' },
+        { k: 'language', l: 'اللغة', n: '60' },
+        { k: 'privacy', l: 'الخصوصية', n: '61' },
+        { k: 'security', l: 'الأمان', n: '62' },
+        { k: 'changePassword', l: 'تغيير كلمة السر', n: '63' },
+        { k: 'support', l: 'المساعدة', n: '64' },
+        { k: 'reportIssue', l: 'بلّغ عن مشكلة', n: '65' },
+        { k: 'deleteAccount', l: 'حذف الحساب', n: '66' },
       ]},
     ];
 
     // Decide initial stack so that "back" makes sense.
     function buildStackFor(screen, params) {
-      // Pre-load some context (cart for cart-related screens etc.)
       const inferShop = () => ({ shop: SHOPS[0] });
+      const inferProd = () => ({ product: PRODUCTS[1], shop: SHOPS[0] });
       switch (screen) {
         case 'shop': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }];
-        case 'product': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'product', params: { product: PRODUCTS[1], shop: SHOPS[0] } }];
+        case 'product': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'product', params: inferProd() }];
+        case 'productGallery': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'product', params: inferProd() }, { screen: 'productGallery', params: params || { product: PRODUCTS[1] } }];
+        case 'customize': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'product', params: inferProd() }, { screen: 'customize', params: params || inferProd() }];
+        case 'reviews': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'reviews', params: params || inferShop() }];
+        case 'similar': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'product', params: inferProd() }, { screen: 'similar', params: params || { product: PRODUCTS[1] } }];
+        case 'unavailable': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'unavailable', params: params || { product: PRODUCTS[11], shop: SHOPS[0] } }];
+        case 'contactMerchant': return [{ screen: 'home' }, { screen: 'shop', params: inferShop() }, { screen: 'contactMerchant', params: params || inferShop() }];
         case 'cart': return [{ screen: 'home' }, { screen: 'cart' }];
+        case 'merchantConflict': return [{ screen: 'home' }, { screen: 'merchantConflict', params: params || { existing: 'سوبر ماركت أبو حسن', newShop: SHOPS[2], newProduct: PRODUCTS[5] } }];
         case 'checkout': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }];
+        case 'deliveryNotes': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }, { screen: 'deliveryNotes' }];
+        case 'scheduledDelivery': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }, { screen: 'scheduledDelivery' }];
+        case 'promoCode': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }, { screen: 'promoCode' }];
+        case 'tipDriver': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }, { screen: 'tipDriver' }];
         case 'payment': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }, { screen: 'payment' }];
+        case 'walletPay': return [{ screen: 'home' }, { screen: 'cart' }, { screen: 'checkout' }, { screen: 'walletPay' }];
         case 'orderSuccess': return [{ screen: 'orderSuccess' }];
         case 'tracking': return [{ screen: 'home' }, { screen: 'tracking', params: params || { orderId: 'DLN-٢٠٤٧' } }];
+        case 'chat': return [{ screen: 'home' }, { screen: 'tracking', params: { orderId: 'DLN-٢٠٤٧' } }, { screen: 'chat', params: params || { kind: 'driver', name: 'محمود السيد', avatar: 'م' } }];
+        case 'cancelOrder': return [{ screen: 'orders' }, { screen: 'orderDetail', params: { order: ORDERS[0] } }, { screen: 'cancelOrder', params: params || { order: ORDERS[0] } }];
         case 'orderDetail': return [{ screen: 'orders' }, { screen: 'orderDetail', params: params || { order: ORDERS[0] } }];
+        case 'invoice': return [{ screen: 'orders' }, { screen: 'orderDetail', params: { order: ORDERS[0] } }, { screen: 'invoice', params: params || { order: ORDERS[0] } }];
+        case 'refund': return [{ screen: 'orders' }, { screen: 'orderDetail', params: { order: ORDERS[0] } }, { screen: 'refund', params: params || { order: ORDERS[0] } }];
         case 'rate': return [{ screen: 'orders' }, { screen: 'rate' }];
         case 'notifications': return [{ screen: 'home' }, { screen: 'notifications' }];
+        case 'wallet': return [{ screen: 'profile' }, { screen: 'wallet' }];
+        case 'walletHistory': return [{ screen: 'profile' }, { screen: 'wallet' }, { screen: 'walletHistory' }];
+        case 'points': return [{ screen: 'profile' }, { screen: 'points' }];
+        case 'rewards': return [{ screen: 'profile' }, { screen: 'points' }, { screen: 'rewards' }];
+        case 'cashback': return [{ screen: 'profile' }, { screen: 'wallet' }, { screen: 'cashback' }];
+        case 'referral': return [{ screen: 'profile' }, { screen: 'referral' }];
         case 'editProfile': return [{ screen: 'profile' }, { screen: 'editProfile' }];
         case 'addresses': return [{ screen: 'profile' }, { screen: 'addresses' }];
         case 'favorites': return [{ screen: 'profile' }, { screen: 'favorites' }];
         case 'paymentMethods': return [{ screen: 'profile' }, { screen: 'paymentMethods' }];
         case 'notificationSettings': return [{ screen: 'profile' }, { screen: 'notificationSettings' }];
+        case 'language': return [{ screen: 'profile' }, { screen: 'language' }];
+        case 'privacy': return [{ screen: 'profile' }, { screen: 'privacy' }];
+        case 'security': return [{ screen: 'profile' }, { screen: 'security' }];
+        case 'changePassword': return [{ screen: 'profile' }, { screen: 'security' }, { screen: 'changePassword' }];
         case 'support': return [{ screen: 'profile' }, { screen: 'support' }];
+        case 'reportIssue': return [{ screen: 'profile' }, { screen: 'reportIssue' }];
+        case 'deleteAccount': return [{ screen: 'profile' }, { screen: 'deleteAccount' }];
+        case 'deals': return [{ screen: 'home' }, { screen: 'deals' }];
+        case 'featured': return [{ screen: 'home' }, { screen: 'featured' }];
+        case 'nearby': return [{ screen: 'home' }, { screen: 'nearby' }];
+        case 'recommendations': return [{ screen: 'home' }, { screen: 'recommendations' }];
+        case 'recentlyViewed': return [{ screen: 'home' }, { screen: 'recentlyViewed' }];
+        case 'mapPin': return [{ screen: 'locationPerm' }, { screen: 'addressSetup', params: { manual: true } }, { screen: 'mapPin' }];
         case 'addressSetup': return [{ screen: 'locationPerm' }, { screen: 'addressSetup', params: params || {} }];
+        case 'welcome': return [{ screen: 'welcome' }];
+        case 'register': return [{ screen: 'welcome' }, { screen: 'register' }];
+        case 'forgotPassword': return [{ screen: 'auth' }, { screen: 'forgotPassword' }];
+        case 'resetPassword': return [{ screen: 'auth' }, { screen: 'forgotPassword' }, { screen: 'resetPassword' }];
+        case 'biometric': return [{ screen: 'biometric' }];
         default: return [{ screen, params }];
       }
     }
@@ -304,12 +404,12 @@
     // ───── Root ───────────────────────────────────────────────────
     function Root() {
       const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-      const [activeScreen, setActiveScreen] = useRootState(t.startScreen || 'home');
-      const [stackKey, setStackKey] = useRootState(0);
-      const navRef = useRootRef(null);
+      const [activeScreen, setActiveScreen] = useState(t.startScreen || 'home');
+      const [stackKey, setStackKey] = useState(0);
+      const navRef = useRef(null);
 
       // Find the active button to highlight it
-      useRootEffect(() => {
+      useEffect(() => {
         document.querySelectorAll('[data-screen-key]').forEach(el => {
           el.setAttribute('data-active', el.getAttribute('data-screen-key') === activeScreen);
         });
@@ -323,7 +423,7 @@
       window.__delngato_goToScreen = goToScreen;
 
       // Reset-to-home / logout helpers for screens
-      useRootEffect(() => {
+      useEffect(() => {
         window.__delngato_resetToHome = () => { setActiveScreen('home'); setStackKey(x => x + 1); };
         window.__delngato_logout = () => { setActiveScreen('onboarding'); setStackKey(x => x + 1); };
       }, []);
@@ -351,11 +451,19 @@
             <TweakSection label="التنقل السريع">
               <div style={{ display:'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                 {[
+                  { k: 'splash', l: 'البداية' },
+                  { k: 'welcome', l: 'الترحيب' },
                   { k: 'home', l: 'الرئيسية' },
                   { k: 'search', l: 'البحث' },
+                  { k: 'deals', l: 'العروض' },
                   { k: 'cart', l: 'السلة' },
+                  { k: 'checkout', l: 'الدفع' },
                   { k: 'tracking', l: 'التتبع' },
+                  { k: 'chat', l: 'الشات' },
                   { k: 'orders', l: 'طلباتي' },
+                  { k: 'wallet', l: 'المحفظة' },
+                  { k: 'points', l: 'النقاط' },
+                  { k: 'referral', l: 'دعوة صديق' },
                   { k: 'profile', l: 'حسابي' },
                 ].map(o => (
                   <TweakButton key={o.k} label={o.l} onClick={() => goToScreen(o.k)} secondary/>
@@ -375,12 +483,12 @@
 
     function AppShell({ stackKey, initialStack, offline, onChange }) {
       const app = useApp();
-      useRootEffect(() => { app.setOffline(offline); }, [offline]);
+      useEffect(() => { app.setOffline(offline); }, [offline]);
       // Seed cart once
-      useRootEffect(() => { seedCart(app); }, []);
+      useEffect(() => { seedCart(app); }, []);
       // Observe stack changes to update the highlight
       // We use a small mutationobserver-free trick: subscribe via a global hook.
-      useRootEffect(() => {
+      useEffect(() => {
         window.__delngato_onScreen = (s) => onChange(s);
       }, [onChange]);
 
@@ -401,7 +509,7 @@
     }
     function Reporter() {
       const nav = useNav();
-      useRootEffect(() => {
+      useEffect(() => {
         const s = nav.current?.screen;
         if (s) window.__delngato_onScreen?.(s);
       }, [nav.current?.screen]);

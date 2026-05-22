@@ -133,10 +133,11 @@ function HomeScreen() {
 
         {/* Hero offer */}
         <div style={{ padding: '8px 18px 16px' }}>
-          <div style={{
+          <div onClick={() => nav.push('deals')} className="dl-tappable" style={{
             background: 'linear-gradient(135deg, #1F4A3D 0%, #173629 100%)',
             color: 'var(--canvas)', borderRadius: 14, padding: '18px 20px',
             display: 'flex', alignItems: 'center', gap: 14, position: 'relative', overflow: 'hidden',
+            cursor: 'pointer',
           }}>
             <div style={{ flex: 1 }}>
               <Badge variant="solid-gold">عرض اليوم</Badge>
@@ -157,10 +158,31 @@ function HomeScreen() {
           </div>
         </div>
 
+        {/* Quick access tiles */}
+        <div style={{ padding: '0 18px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          {[
+            { k: 'deals', l: 'العروض', icon: <Icon.tag size={20}/>, accent: 'gold' },
+            { k: 'featured', l: 'محلات مميزة', icon: <Icon.sparkle size={20}/>, accent: 'olive' },
+            { k: 'recommendations', l: 'مقترح ليك', icon: <Icon.heart size={20}/>, accent: 'olive' },
+          ].map(t => (
+            <button key={t.k} onClick={() => nav.push(t.k)} className="dl-tappable"
+              style={{ all:'unset', cursor:'pointer', background:'#fff', borderRadius: 12, padding: '12px 8px',
+                textAlign:'center', boxShadow:'var(--shadow-card)' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10,
+                background: t.accent === 'gold' ? 'rgba(232,177,79,0.18)' : 'rgba(31,74,61,0.08)',
+                color: t.accent === 'gold' ? '#8a6418' : 'var(--olive)',
+                display:'flex', alignItems:'center', justifyContent:'center', margin: '0 auto 8px' }}>
+                {t.icon}
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)' }}>{t.l}</div>
+            </button>
+          ))}
+        </div>
+
         {/* Section header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '4px 18px 12px' }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)' }}>محلات قريبة منك</div>
-          <button onClick={() => setCat('all')} style={{
+          <button onClick={() => nav.push('nearby')} style={{
             all: 'unset', cursor: 'pointer', color: 'var(--olive)', fontSize: 13, fontWeight: 600
           }}>عرض الكل</button>
         </div>

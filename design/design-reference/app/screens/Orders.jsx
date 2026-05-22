@@ -156,13 +156,34 @@ function OrderDetailScreen({ order }) {
         </div>
 
         <div style={{ padding: '0 18px 28px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {isLive && (
+            <>
+              <Button variant="secondary" full leading={<Icon.message size={16}/>}
+                onClick={() => nav.push('chat', { kind: 'driver', name: 'محمود السيد', avatar: 'م' })}>
+                شات مع الكابتن
+              </Button>
+              <Button variant="ghost" full style={{ color: '#A1271C' }}
+                leading={<Icon.x size={16}/>}
+                onClick={() => nav.push('cancelOrder', { order })}>
+                إلغاء الطلب
+              </Button>
+            </>
+          )}
           {!isLive && order.status !== 'cancelled' && (
             <>
               <Button variant="primary" full onClick={() => {
                 app.showToast('اتضاف الطلب للسلة', <Icon.refresh size={16}/>);
                 nav.reset('cart');
               }}>إعادة الطلب</Button>
+              <Button variant="secondary" full leading={<Icon.receipt size={16}/>}
+                onClick={() => nav.push('invoice', { order })}>
+                عرض الفاتورة
+              </Button>
               <Button variant="ghost" full onClick={() => nav.push('rate')}>قيّم تجربتك</Button>
+              <Button variant="ghost" full leading={<Icon.refresh size={16}/>}
+                onClick={() => nav.push('refund', { order })}>
+                طلب استرجاع
+              </Button>
             </>
           )}
           <Button variant="ghost" full onClick={() => nav.push('support')}

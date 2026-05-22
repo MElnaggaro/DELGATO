@@ -82,6 +82,11 @@ function ShopScreen({ shop }) {
 
   const setQty = (p, qty) => {
     if (qty <= 0) { app.setItemQty(p.id, 0); return; }
+    // Merchant conflict: cart has items from another shop
+    if (app.cart.length > 0 && app.cart[0].shopId && app.cart[0].shopId !== shop.id) {
+      nav.push('merchantConflict', { existing: app.cart[0].shop, newShop: shop, newProduct: p });
+      return;
+    }
     const idx = app.cart.findIndex(i => i.id === p.id);
     if (idx === -1) app.addItem(p, shop, qty);
     else app.setItemQty(p.id, qty);
@@ -133,6 +138,30 @@ function ShopScreen({ shop }) {
             fontSize: 13, color: 'var(--ink-light)', lineHeight: 1.55 }}>
             {shop.desc}
           </div>
+
+          {/* Quick-action strip */}
+          <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+            <button onClick={() => nav.push('reviews', { shop })} className="dl-tappable"
+              style={{ all:'unset', cursor:'pointer', flex: 1, background:'#fff',
+                border: '1px solid var(--canvas-300)', borderRadius: 10, padding: '10px 12px',
+                display:'flex', alignItems:'center', gap: 8 }}>
+              <span style={{ color: 'var(--gold)', display:'inline-flex' }}><Icon.star size={16}/></span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--ink)' }}>التقييمات</div>
+                <div style={{ fontSize: 10, color: 'var(--ink-light)' }}>{shop.rating} · شوف الكل</div>
+              </div>
+            </button>
+            <button onClick={() => nav.push('contactMerchant', { shop })} className="dl-tappable"
+              style={{ all:'unset', cursor:'pointer', flex: 1, background:'#fff',
+                border: '1px solid var(--canvas-300)', borderRadius: 10, padding: '10px 12px',
+                display:'flex', alignItems:'center', gap: 8 }}>
+              <span style={{ color: 'var(--olive)', display:'inline-flex' }}><Icon.message size={16}/></span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--ink)' }}>تواصل مع المحل</div>
+                <div style={{ fontSize: 10, color: 'var(--ink-light)' }}>رد في دقايق</div>
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Category strip — sticky-ish */}
@@ -181,12 +210,29 @@ function ProductScreen({ product, shop }) {
   const [qty, setQty] = useStS(inCart?.qty || 1);
   const [note, setNote] = useStS('');
 
+  // Track recently viewed
+  useEfS(() => {
+    if (product?.id) app.pushRecent?.(product.id);
+  }, []);
+
+  // Soft-randomized 'out of stock' flag (some products unavailable). Tag-based:
+  const unavailable = product.tag === 'موسم' && product.id === 'p12'; // demo
+
   const onAdd = () => {
+    if (app.cart.length > 0 && app.cart[0].shopId && app.cart[0].shopId !== shop.id) {
+      nav.push('merchantConflict', { existing: app.cart[0].shop, newShop: shop, newProduct: product });
+      return;
+    }
     if (inCart) app.setItemQty(product.id, qty);
     else app.addItem(product, shop, qty);
     app.showToast(`اتضاف ${qty.toLocaleString('ar-EG')}× ${product.name}`, <Icon.check size={16}/>);
     nav.pop();
   };
+
+  if (unavailable) {
+    // Inline render the unavailable screen
+    return <UnavailableInline product={product} shop={shop} nav={nav} app={app}/>;
+  }
 
   return (
     <div className="dl-screen">
@@ -196,10 +242,11 @@ function ProductScreen({ product, shop }) {
           <Icon.heart size={22}/>
         </button>}/>
       <div className="dl-scroll">
-        {/* Hero image (placeholder) */}
-        <div style={{ margin: '0 18px', height: 260, borderRadius: 16,
+        {/* Hero image (placeholder) — tap to open gallery */}
+        <div onClick={() => nav.push('productGallery', { product })}
+          className="dl-tappable" style={{ margin: '0 18px', height: 260, borderRadius: 16,
           background: product.hue, position: 'relative', overflow: 'hidden',
-          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
           <div style={{ fontFamily:'var(--font-arabic)', fontWeight: 700, fontSize: 220,
             color: 'rgba(15,26,23,0.10)', lineHeight: 0.9 }}>{product.name[0]}</div>
           {product.tag && (
@@ -207,6 +254,12 @@ function ProductScreen({ product, shop }) {
               <Badge variant={product.tag === 'عرض' ? 'pending' : 'solid-olive'}>{product.tag}</Badge>
             </div>
           )}
+          <div style={{ position:'absolute', insetInlineEnd: 14, bottom: 14,
+            background: 'rgba(15,26,23,0.5)', backdropFilter: 'blur(10px)',
+            color: 'var(--canvas)', borderRadius: 100, padding: '6px 10px',
+            fontSize: 11, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Icon.layers size={12}/> <span>٤ صور</span>
+          </div>
         </div>
 
         {/* Title */}
@@ -248,13 +301,33 @@ function ProductScreen({ product, shop }) {
         </div>
 
         {/* Note to shop */}
-        <div style={{ padding: '18px 18px 24px' }}>
+        <div style={{ padding: '18px 18px 8px' }}>
           <div style={{ fontSize: 12, color: 'var(--ink-mute)', fontWeight: 600, letterSpacing: '0.04em', marginBottom: 8 }}>
             ملاحظة للمحل
             <span style={{ color: 'var(--ink-light)', fontWeight: 500, marginInlineStart: 6 }}>(اختياري)</span>
           </div>
           <input className="dl-input" value={note} onChange={e => setNote(e.target.value)}
             placeholder="مثلاً: من غير ثلج"/>
+        </div>
+
+        {/* Customize / Similar quick links */}
+        <div style={{ padding: '8px 18px 24px', display:'flex', gap: 8 }}>
+          <button onClick={() => nav.push('customize', { product, shop })}
+            className="dl-tappable"
+            style={{ all:'unset', cursor:'pointer', flex: 1, background:'#fff',
+              border: '1px solid var(--canvas-300)', borderRadius: 10, padding: '12px 14px',
+              display:'flex', alignItems:'center', gap: 8 }}>
+            <span style={{ color: 'var(--olive)', display:'inline-flex' }}><Icon.settings size={16}/></span>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)' }}>خصّص الطلب</div>
+          </button>
+          <button onClick={() => nav.push('similar', { product })}
+            className="dl-tappable"
+            style={{ all:'unset', cursor:'pointer', flex: 1, background:'#fff',
+              border: '1px solid var(--canvas-300)', borderRadius: 10, padding: '12px 14px',
+              display:'flex', alignItems:'center', gap: 8 }}>
+            <span style={{ color: 'var(--olive)', display:'inline-flex' }}><Icon.sparkle size={16}/></span>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)' }}>منتجات شبيهة</div>
+          </button>
         </div>
       </div>
 
@@ -274,3 +347,64 @@ function ProductScreen({ product, shop }) {
 
 registerScreen('shop', ShopScreen);
 registerScreen('product', ProductScreen);
+
+// Inline unavailable view used when a product is out of stock
+function UnavailableInline({ product, shop, nav, app }) {
+  const alt = PRODUCTS.filter(p => p.id !== product?.id && p.section === product?.section).slice(0, 4);
+  const [notify, setNotify] = React.useState(false);
+  return (
+    <div className="dl-screen">
+      <AppBar onBack={() => nav.pop()} title=""/>
+      <div className="dl-scroll">
+        <div style={{ margin: '0 18px', height: 220, borderRadius: 16,
+          background: product?.hue || 'var(--canvas-200)', position: 'relative', overflow: 'hidden',
+          display:'flex', alignItems:'center', justifyContent:'center', opacity: 0.55, filter: 'grayscale(0.4)' }}>
+          <div style={{ fontFamily:'var(--font-arabic)', fontWeight: 700, fontSize: 200,
+            color: 'rgba(15,26,23,0.10)', lineHeight: 0.9 }}>{product?.name[0]}</div>
+          <div style={{ position: 'absolute', insetInlineStart: 14, top: 14 }}>
+            <Badge variant="issue">خلصت من المحل</Badge>
+          </div>
+        </div>
+        <div style={{ padding: '20px 18px 0' }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{product?.name}</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-light)', marginTop: 6 }}>{product?.sub}</div>
+          <div style={{ marginTop: 16, padding: '14px 16px', background: 'rgba(197,59,44,0.08)',
+            borderRadius: 12, display:'flex', gap: 10, alignItems: 'flex-start' }}>
+            <Icon.info size={16}/>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#A1271C' }}>المنتج ده مش متاح دلوقتي</div>
+              <div style={{ fontSize: 12.5, color: 'var(--ink-light)', marginTop: 4, lineHeight: 1.5 }}>
+                خلص من {shop?.name || 'المحل'}. هنخبرك أول ما يرجع، أو جرّب الاختيارات تحت.
+              </div>
+            </div>
+          </div>
+          <button onClick={() => { setNotify(!notify); app.showToast(notify ? 'تم الإلغاء' : 'هنخبرك أول ما يرجع', <Icon.bell size={16}/>); }}
+            style={{ all:'unset', cursor:'pointer', width: '100%', marginTop: 14,
+              padding: '14px 16px', borderRadius: 12,
+              background: notify ? 'var(--olive)' : '#fff',
+              border: notify ? 0 : '1.5px solid var(--olive)',
+              color: notify ? 'var(--canvas)' : 'var(--olive)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              fontFamily: 'var(--font-arabic)', fontWeight: 600, fontSize: 14 }}>
+            {notify ? <><Icon.check size={18}/> هتخبرنا أول ما يرجع</> : <><Icon.bell size={18}/> خبّرني أول ما يرجع</>}
+          </button>
+        </div>
+        <div style={{ padding: '24px 18px 24px' }}>
+          <div style={{ fontSize: 12, color: 'var(--ink-mute)', fontWeight: 600, letterSpacing: '0.04em', marginBottom: 10 }}>
+            اختيارات شبيهة متاحة دلوقتي
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap: 10 }}>
+            {alt.map((p, i) => (
+              <div key={p.id} className="dl-rise" style={{ animationDelay: `${i * 40}ms` }}>
+                <ProductTile product={p} qty={0}
+                  onTap={() => nav.replace('product', { product: p, shop })}
+                  onAdd={() => { app.addItem(p, shop, 1); app.showToast('اتضاف للسلة', <Icon.check size={16}/>); }}
+                  onChange={() => {}}/>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

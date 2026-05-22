@@ -63,7 +63,7 @@ function OnboardingCarousel() {
         padding: '76px 28px 28px',
       }}>
         {/* Skip */}
-        <button onClick={() => nav.replace('auth')}
+        <button onClick={() => nav.replace('welcome')}
           style={{ position:'absolute', top: 74, insetInlineStart: 24, background: 'transparent', border: 0,
                    color: 'rgba(250,248,243,0.8)', fontFamily: 'var(--font-arabic)', fontSize: 14, fontWeight: 500, cursor:'pointer' }}>
           تخطي
@@ -116,7 +116,7 @@ function OnboardingCarousel() {
           {/* CTA */}
           <Button variant="primary" size="lg" full onClick={() => {
             if (i < ONB_SLIDES.length - 1) setI(i + 1);
-            else nav.replace('auth');
+            else nav.replace('welcome');
           }}>{i < ONB_SLIDES.length - 1 ? 'التالي' : 'يلا نبدأ'}</Button>
           <button onClick={() => nav.replace('auth')}
             style={{ all:'unset', cursor:'pointer', textAlign:'center', fontFamily:'var(--font-arabic)',
@@ -187,8 +187,9 @@ function AuthScreen() {
           {loading ? <span className="dl-spin" style={{ display:'inline-flex' }}><Icon.refresh size={18}/></span> : 'متابعة'}
         </Button>
         <div style={{ textAlign: 'center', marginTop: 14 }}>
-          <button style={{ all:'unset', cursor:'pointer', fontSize: 13, color: 'var(--ink-light)' }}>
-            مشكلة في الدخول؟ <span style={{ color: 'var(--olive)', fontWeight: 600 }}>تواصل معنا</span>
+          <button onClick={() => nav.push('forgotPassword')}
+            style={{ all:'unset', cursor:'pointer', fontSize: 13, color: 'var(--ink-light)' }}>
+            مشكلة في الدخول؟ <span style={{ color: 'var(--olive)', fontWeight: 600 }}>نسيت كلمة السر</span>
           </button>
         </div>
       </div>
@@ -384,9 +385,10 @@ function AddressSetupScreen({ manual }) {
       <AppBar title="تأكيد العنوان" onBack={() => nav.pop()} />
       <div className="dl-scroll" style={{ padding: '0 18px 24px' }}>
         {/* Map placeholder */}
-        <div style={{ height: 220, borderRadius: 14, overflow: 'hidden', position: 'relative',
+        <div onClick={() => nav.push('mapPin')} className="dl-tappable"
+          style={{ height: 220, borderRadius: 14, overflow: 'hidden', position: 'relative',
           background: 'linear-gradient(120deg, #E8E2D2 0%, #DDD4BE 100%)',
-          border: '1px solid var(--canvas-300)' }}>
+          border: '1px solid var(--canvas-300)', cursor: 'pointer' }}>
           <svg viewBox="0 0 360 220" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
             <g stroke="#FAF8F3" strokeWidth="14" fill="none" opacity="0.9">
               <path d="M -10 50 L 380 80"/>
@@ -402,6 +404,12 @@ function AddressSetupScreen({ manual }) {
               boxShadow: '0 0 0 6px rgba(31,74,61,0.16), 0 8px 14px rgba(15,26,23,0.18)' }}>
               <Icon.pin size={22}/>
             </div>
+          </div>
+          <div style={{ position: 'absolute', insetInlineEnd: 12, bottom: 12,
+            background: 'rgba(15,26,23,0.7)', backdropFilter: 'blur(10px)', color: 'var(--canvas)',
+            borderRadius: 100, padding: '6px 12px', fontSize: 11, fontWeight: 600,
+            display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Icon.navigation size={12}/> اضغط للتعديل
           </div>
         </div>
 

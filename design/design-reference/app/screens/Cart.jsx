@@ -163,6 +163,7 @@ function CheckoutScreen() {
 
   const placeOrder = () => {
     if (pay === 'card') { nav.push('payment'); return; }
+    if (pay === 'wallet') { nav.push('walletPay'); return; }
     setPlacing(true);
     setTimeout(() => { nav.replace('orderSuccess'); }, 1000);
   };
@@ -194,9 +195,12 @@ function CheckoutScreen() {
           <div style={{ display: 'flex', gap: 8 }}>
             {[
               { k: 'asap', t: 'في أقرب وقت', s: '١٥–٢٠ د' },
-              { k: 'sched', t: 'جدول وقت', s: 'اختر' },
+              { k: 'sched', t: 'جدول وقت', s: app.scheduled ? `${app.scheduled.slot}` : 'اختر' },
             ].map(o => (
-              <button key={o.k} onClick={() => setTiming(o.k)}
+              <button key={o.k} onClick={() => {
+                setTiming(o.k);
+                if (o.k === 'sched') nav.push('scheduledDelivery');
+              }}
                 style={{
                   flex: 1, border: 0, cursor: 'pointer',
                   background: timing === o.k ? 'var(--olive)' : '#fff',
@@ -214,13 +218,91 @@ function CheckoutScreen() {
           </div>
         </Section>
 
+        {/* Delivery note */}
+        <Section label="ملاحظة للكابتن">
+          <div className="dl-card dl-tappable" style={{ padding: '12px 14px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 10 }} onClick={() => nav.push('deliveryNotes')}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(31,74,61,0.08)',
+              color: 'var(--olive)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Icon.message size={18}/>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>
+                {app.deliveryNote || 'ضيف ملاحظة للكابتن'}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--ink-light)', marginTop: 2 }}>
+                {app.deliveryNote ? 'اضغط للتعديل' : 'مثلاً: اتصل قبل ما توصل'}
+              </div>
+            </div>
+            <Icon.chevronLeft size={18}/>
+          </div>
+        </Section>
+
+        {/* Promo code */}
+        <Section label="كود الخصم">
+          <div className="dl-card dl-tappable" style={{ padding: '12px 14px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 10 }} onClick={() => nav.push('promoCode')}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(232,177,79,0.18)',
+              color: '#8a6418', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Icon.tag size={18}/>
+            </div>
+            <div style={{ flex: 1 }}>
+              {app.appliedPromo ? (
+                <>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--olive)' }}>
+                    {app.appliedPromo.title} · {app.appliedPromo.value}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-light)', marginTop: 2 }} className="mono">
+                    كود {app.appliedPromo.code}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>
+                    عندك كود خصم؟
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-light)', marginTop: 2 }}>اضغط للإضافة</div>
+                </>
+              )}
+            </div>
+            {app.appliedPromo && (
+              <button onClick={(e) => { e.stopPropagation(); app.setAppliedPromo(null); }}
+                style={{ background:'transparent', border: 0, color: 'var(--ink-mute)', cursor:'pointer',
+                  display:'flex', padding: 4 }}>
+                <Icon.x size={16}/>
+              </button>
+            )}
+            {!app.appliedPromo && <Icon.chevronLeft size={18}/>}
+          </div>
+        </Section>
+
+        {/* Tip driver */}
+        <Section label="إكرامية الكابتن">
+          <div className="dl-card dl-tappable" style={{ padding: '12px 14px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 10 }} onClick={() => nav.push('tipDriver')}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(31,74,61,0.08)',
+              color: 'var(--olive)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Icon.heart size={18}/>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>
+                {app.tip > 0 ? `${app.tip.toLocaleString('ar-EG')} ج.م إكرامية` : 'بلاش إكرامية'}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--ink-light)', marginTop: 2 }}>
+                {app.tip > 0 ? 'هتروح للكابتن ١٠٠٪' : 'الإكرامية اختيارية وبتروح للكابتن'}
+              </div>
+            </div>
+            <Icon.chevronLeft size={18}/>
+          </div>
+        </Section>
+
         {/* Payment */}
         <Section label="طريقة الدفع">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
               { k: 'cash', l: 'كاش عند الاستلام', s: 'ادفع للكابتن لما يوصل', icon: <Icon.cash size={20}/> },
               { k: 'card', l: 'بطاقة بنكية', s: 'فيزا · ماستركارد · ميزة', icon: <Icon.card size={20}/> },
-              { k: 'wallet', l: 'محفظة إلكترونية', s: 'فودافون كاش · إنستاباي', icon: <Icon.wallet size={20}/>, disabled: true },
+              { k: 'wallet', l: `محفظة دلنجاتُو · ${app.walletBalance.toLocaleString('ar-EG')} ج.م`, s: 'كاش باك ١٠٪', icon: <Icon.wallet size={20}/> },
             ].map(o => (
               <button key={o.k} onClick={() => !o.disabled && setPay(o.k)} disabled={o.disabled}
                 style={{ all:'unset', cursor: o.disabled ? 'not-allowed' : 'pointer',
@@ -567,7 +649,8 @@ function TrackingScreen({ orderId = 'DLN-٢٠٤٧' }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon.phone size={20} />
               </button>
-              <button style={{ width: 44, height: 44, borderRadius: 100, border: '1.5px solid var(--olive)',
+              <button onClick={() => nav.push('chat', { kind: 'driver', name: 'محمود السيد', avatar: 'م' })}
+                style={{ width: 44, height: 44, borderRadius: 100, border: '1.5px solid var(--olive)',
                 background: 'var(--olive)', color: 'var(--canvas)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon.message size={20} />
@@ -603,6 +686,16 @@ function TrackingScreen({ orderId = 'DLN-٢٠٤٧' }) {
           <div style={{ padding: '0 18px 28px', display: 'flex', flexDirection: 'column', gap: 10 }}>
             <Button variant="primary" full onClick={() => nav.reset('home')}>تم — شكراً لاستخدامك دلنجاتُو</Button>
             <Button variant="ghost" full onClick={() => nav.push('rate')}>قيّم تجربتك</Button>
+          </div>
+        )}
+
+        {step < 2 && (
+          <div style={{ padding: '0 18px 28px' }}>
+            <Button variant="ghost" full style={{ color: '#A1271C' }}
+              leading={<Icon.x size={16}/>}
+              onClick={() => nav.push('cancelOrder', { order: { id: orderId } })}>
+              إلغاء الطلب
+            </Button>
           </div>
         )}
       </div>
