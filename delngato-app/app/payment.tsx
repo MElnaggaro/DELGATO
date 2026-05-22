@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { Platform, ScrollView, Text, TextInput, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { AppBar, Button, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
+
+const MONO_FAMILY = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
 
 export default function Payment() {
   const router = useRouter();
@@ -37,13 +40,15 @@ export default function Payment() {
       <AppBar title={t('payment.title')} onBack={() => safeBack('/checkout')} />
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
-        {/* Card visual */}
-        <View
+        {/* Card visual — olive → olive-700 diagonal gradient with gold accent ring. */}
+        <LinearGradient
+          colors={[colors.olive, colors.olive700]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={{
             height: 200,
             borderRadius: 16,
             padding: 20,
-            backgroundColor: colors.olive,
             overflow: 'hidden',
             justifyContent: 'space-between',
           }}
@@ -74,8 +79,8 @@ export default function Payment() {
           </View>
           <Text
             style={{
-              fontFamily: fonts.arabicSemiBold,
-              fontSize: 18,
+              fontFamily: MONO_FAMILY,
+              fontSize: 19,
               letterSpacing: 3,
               color: colors.canvas,
             }}
@@ -110,7 +115,7 @@ export default function Payment() {
               </Text>
               <Text
                 style={{
-                  fontFamily: fonts.arabicSemiBold,
+                  fontFamily: MONO_FAMILY,
                   fontSize: 13,
                   color: colors.canvas,
                   marginTop: 2,
@@ -120,7 +125,7 @@ export default function Payment() {
               </Text>
             </View>
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Form */}
         <View style={{ gap: 14, paddingTop: 20 }}>

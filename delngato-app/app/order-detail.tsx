@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar, Button, Card, Icon, OrderProgress, Row } from '@/shared/ui';
+import { AppBar, Button, Card, Icon, LiveDot, OrderProgress, Row } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
@@ -42,16 +42,7 @@ export default function OrderDetail() {
                 marginBottom: 12,
               }}
             >
-              {isLive ? (
-                <View
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: colors.olive,
-                  }}
-                />
-              ) : null}
+              {isLive ? <LiveDot size={8} color={colors.olive} /> : null}
               <Text style={{ fontFamily: fonts.arabicBold, fontSize: 17, color: colors.ink }}>
                 {order.statusText}
               </Text>

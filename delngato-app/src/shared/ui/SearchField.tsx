@@ -2,6 +2,7 @@ import { type Ref } from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { Icon } from './Icon';
 
 type Props = Omit<TextInputProps, 'style'> & {
@@ -21,6 +22,7 @@ export function SearchField({
   inputRef,
   ...rest
 }: Props) {
+  const { pick } = useRtl();
   const innerInput = (
     <View
       style={{
@@ -48,7 +50,7 @@ export function SearchField({
           fontFamily: fonts.arabic,
           fontSize: 15,
           color: colors.ink,
-          textAlign: 'right',
+          textAlign: pick('right', 'left'),
           padding: 0,
         }}
         {...rest}

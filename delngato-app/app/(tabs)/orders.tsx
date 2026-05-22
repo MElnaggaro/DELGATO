@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Badge, Button, Chip, EmptyState, Icon } from '@/shared/ui';
+import { Badge, Button, Chip, EmptyState, Icon, LiveDot } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useOrdersStore } from '@/features/orders/store';
@@ -160,29 +160,32 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
 
 function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
   if (status === 'live') {
+    // Custom inline pill — Badge wraps children in <Text>, which can't host a sibling <View>.
     return (
-      <Badge variant="pending">
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <View
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: 3,
-              backgroundColor: colors.olive,
-            }}
-          />
-          <Text
-            style={{
-              fontFamily: fonts.arabicSemiBold,
-              fontSize: 12,
-              color: colors.statusPendingText,
-              includeFontPadding: false,
-            }}
-          >
-            {text}
-          </Text>
-        </View>
-      </Badge>
+      <View
+        style={{
+          alignSelf: 'flex-start',
+          paddingHorizontal: 10,
+          paddingVertical: 3,
+          borderRadius: 100,
+          backgroundColor: 'rgba(232,177,79,0.18)',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+        }}
+      >
+        <LiveDot size={6} color={colors.statusPendingText} />
+        <Text
+          style={{
+            fontFamily: fonts.arabicSemiBold,
+            fontSize: 12,
+            color: colors.statusPendingText,
+            includeFontPadding: false,
+          }}
+        >
+          {text}
+        </Text>
+      </View>
     );
   }
   if (status === 'cancelled') return <Badge variant="issue">{text}</Badge>;

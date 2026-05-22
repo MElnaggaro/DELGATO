@@ -10,6 +10,7 @@ export { EmptyState } from './EmptyState';
 export { FormInput } from './FormInput';
 export { Icon, IconBack, IconForward } from './Icon';
 export { ListRow } from './ListRow';
+export { LiveDot } from './LiveDot';
 export { MiniCartBar } from './MiniCartBar';
 export { OfflineBanner } from './OfflineBanner';
 export { OrderProgress } from './OrderProgress';

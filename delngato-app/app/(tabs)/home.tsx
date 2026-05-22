@@ -1,10 +1,21 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Badge, Chip, EmptyState, Icon, SearchField, Section, ShopCard } from '@/shared/ui';
+import {
+  Badge,
+  Chip,
+  EmptyState,
+  Icon,
+  IconForward,
+  LiveDot,
+  SearchField,
+  Section,
+  ShopCard,
+} from '@/shared/ui';
 import { FadeUp, Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
@@ -107,62 +118,62 @@ export default function Home() {
         contentContainerStyle={{ paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Browse by category — titled icon scroller */}
-        <Section title={t('search.browseCategory')} paddingTop={8}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginHorizontal: -18 }}
-            contentContainerStyle={{ paddingHorizontal: 18, gap: 12 }}
-          >
-            {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
-              <Pressable
-                key={c.key}
-                onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
-                style={{ alignItems: 'center', gap: 8, minWidth: 64 }}
+        {/* Categories scroller (icon row, no section title — matches design-reference Home.jsx). */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ paddingTop: 6 }}
+          contentContainerStyle={{ paddingHorizontal: 18, gap: 12, paddingBottom: 14 }}
+        >
+          {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
+            <Pressable
+              key={c.key}
+              onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
+              style={{ alignItems: 'center', gap: 8, minWidth: 64 }}
+            >
+              <View
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 16,
+                  backgroundColor: colors.canvas200,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                <View
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 16,
-                    backgroundColor: colors.canvas200,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {c.icon === 'store' ? (
-                    <Icon.store size={26} color={colors.olive} />
-                  ) : c.icon === 'pill' ? (
-                    <Icon.pill size={26} color={colors.olive} />
-                  ) : c.icon === 'utensils' ? (
-                    <Icon.utensils size={26} color={colors.olive} />
-                  ) : c.icon === 'cookie' ? (
-                    <Icon.cookie size={26} color={colors.olive} />
-                  ) : (
-                    <Icon.leaf size={26} color={colors.olive} />
-                  )}
-                </View>
-                <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.ink }}>
-                  {c.label}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-        </Section>
+                {c.icon === 'store' ? (
+                  <Icon.store size={26} color={colors.olive} />
+                ) : c.icon === 'pill' ? (
+                  <Icon.pill size={26} color={colors.olive} />
+                ) : c.icon === 'utensils' ? (
+                  <Icon.utensils size={26} color={colors.olive} />
+                ) : c.icon === 'cookie' ? (
+                  <Icon.cookie size={26} color={colors.olive} />
+                ) : (
+                  <Icon.leaf size={26} color={colors.olive} />
+                )}
+              </View>
+              <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.ink }}>
+                {c.label}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
 
-        {/* Active order banner */}
+        {/* Active order banner — solid ink with gold-tinted bike icon, live pulse, RTL-forward chevron. */}
         {liveOrder ? (
-          <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
+          <View style={{ paddingHorizontal: 18, paddingBottom: 14 }}>
             <Pressable
               onPress={() => router.push({ pathname: '/tracking', params: { orderId: liveOrder.id } })}
               style={({ pressed }) => ({
-                backgroundColor: pressed ? '#1a201d' : colors.ink,
+                backgroundColor: colors.ink,
                 borderRadius: 14,
-                padding: 14,
+                paddingVertical: 12,
+                paddingHorizontal: 14,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 12,
+                opacity: pressed ? 0.92 : 1,
               })}
             >
               <View
@@ -179,14 +190,7 @@ export default function Home() {
               </View>
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: colors.gold,
-                    }}
-                  />
+                  <LiveDot size={8} color={colors.gold} />
                   <Text
                     style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.canvas }}
                   >
@@ -213,16 +217,31 @@ export default function Home() {
                   {liveOrder.statusText} · {liveOrder.shop}
                 </Text>
               </View>
-              <Icon.chevronDown size={20} color={colors.canvas} />
+              <IconForward size={20} color={colors.canvas} />
             </Pressable>
           </View>
         ) : null}
 
-        {/* Hero offer */}
-        <Rise delay={120} style={{ paddingHorizontal: 18, paddingTop: 14, paddingBottom: 6 }}>
-          <View
+        {/* Filter chips — sit between active banner and hero per design ordering. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 18, gap: 8, paddingBottom: 8 }}
+        >
+          {CATEGORIES.map((c) => (
+            <Chip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
+              {c.label}
+            </Chip>
+          ))}
+        </ScrollView>
+
+        {/* Hero offer — olive→olive-700 gradient with gold accent ring around the bike icon. */}
+        <Rise delay={120} style={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 16 }}>
+          <LinearGradient
+            colors={[colors.olive, colors.olive700]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={{
-              backgroundColor: colors.olive,
               borderRadius: 14,
               padding: 18,
               flexDirection: 'row',
@@ -266,27 +285,14 @@ export default function Home() {
             >
               <Icon.bike size={36} color={colors.gold} />
             </View>
-          </View>
+          </LinearGradient>
         </Rise>
 
-        {/* Filter chips (below hero per design ref) */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 18, gap: 8, paddingTop: 12, paddingBottom: 4 }}
-        >
-          {CATEGORIES.map((c) => (
-            <Chip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
-              {c.label}
-            </Chip>
-          ))}
-        </ScrollView>
-
-        {/* Nearby shops section */}
+        {/* Nearby shops section — 18px h3 title + "عرض الكل" trailing action. */}
         <Section
           title={t('home.nearbyShops')}
           action={{ label: t('common.viewAll'), onPress: () => setCat('all') }}
-          paddingTop={14}
+          paddingTop={4}
         >
           <View style={{ gap: 10 }}>
             {filtered.length === 0 ? (

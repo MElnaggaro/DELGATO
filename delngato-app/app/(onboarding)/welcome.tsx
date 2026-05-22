@@ -1,16 +1,23 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/shared/ui';
+import { Button, Icon } from '@/shared/ui';
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 
 const SLIDE_COUNT = 3;
 const SLIDE_LETTERS = ['د', 'ل', 'ن'] as const;
-const SLIDE_GRADIENT = colors.olive;
+const SLIDE_ICONS = ['store', 'bike', 'wallet'] as const;
+// Per-slide diagonal gradients (matches design-reference Onboarding.jsx slides[].bg).
+const SLIDE_GRADIENTS: [string, string][] = [
+  ['#1F4A3D', '#173629'],
+  ['#2C5C4B', '#1F4A3D'],
+  ['#3C6B4F', '#234731'],
+];
 
 export default function Welcome() {
   const router = useRouter();
@@ -24,12 +31,14 @@ export default function Welcome() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
-      {/* Hero panel */}
-      <View
+      {/* Hero panel — diagonal gradient that shifts per slide */}
+      <LinearGradient
         key={`hero-${i}`}
+        colors={SLIDE_GRADIENTS[i] ?? SLIDE_GRADIENTS[0]!}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={{
           flex: 0.56,
-          backgroundColor: SLIDE_GRADIENT,
           overflow: 'hidden',
           position: 'relative',
           justifyContent: 'flex-end',
@@ -68,7 +77,30 @@ export default function Welcome() {
             {SLIDE_LETTERS[i]}
           </Text>
         </Pop>
-      </View>
+
+        {/* Translucent icon chip — store/bike/wallet for slide 0/1/2 */}
+        <View
+          style={{
+            position: 'absolute',
+            insetInlineEnd: 36,
+            top: 110,
+            width: 56,
+            height: 56,
+            borderRadius: 16,
+            backgroundColor: 'rgba(250,248,243,0.12)',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {SLIDE_ICONS[i] === 'store' ? (
+            <Icon.store size={28} color={colors.canvas} />
+          ) : SLIDE_ICONS[i] === 'bike' ? (
+            <Icon.bike size={28} color={colors.canvas} />
+          ) : (
+            <Icon.wallet size={28} color={colors.canvas} />
+          )}
+        </View>
+      </LinearGradient>
 
       {/* Lower content */}
       <View

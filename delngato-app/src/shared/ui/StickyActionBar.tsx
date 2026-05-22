@@ -16,39 +16,64 @@ type Props = {
   inline?: boolean;
 };
 
-/** Approximate height including safe-area inset — use as scroll content paddingBottom. */
-export const STICKY_CTA_HEIGHT = 96;
+/**
+ * Conservative scroll-content paddingBottom that reserves room for the floating
+ * bar across both flat-bottom Android devices and notched iPhones. The bar's
+ * own height is ~92dp (12 top + 56 lg button + 24 bottom); add ~28 for the
+ * iPhone home-indicator inset on the worst case. Screens using this in their
+ * `contentContainerStyle.paddingBottom` will avoid clipping their last item
+ * under the sticky CTA.
+ */
+export const STICKY_CTA_HEIGHT = 120;
 
 /**
- * Floating bottom CTA bar matching the design reference's sticky action region.
- * - Canvas surface so it visually lifts off the scroll content below.
- * - 1px top border (canvas-300) for separation.
- * - Honors bottom safe area via SafeAreaView.
- * - Uses `insetInlineStart/End` so it pins to the visual edges in RTL.
+ * Floating bottom CTA bar matching the design reference's sticky action region
+ * (Cart, Checkout, Payment, Product, etc.).
+ *
+ * Pixel-parity rules (from design-reference JSX `<div style={{ padding: '12px 18px 24px',
+ *   background: 'var(--canvas)', borderTop: '1px solid var(--canvas-300)' }}>`):
+ *   - canvas surface, 1px top hairline in canvas-300
+ *   - hard 24px bottom padding (NOT just safe-area)
+ *   - safe-area inset is added ON TOP of the 24px so notched iPhones get
+ *     clear space above the home indicator
+ *   - 12px top padding; 18px horizontal; 10px gap between stacked actions
+ *
+ * Positioning: absolute on the screen by default (so the underlying scroll
+ * fills the full screen) — pin via `insetInlineStart/End: 0` so RTL flips
+ * naturally. Pair with `contentContainerStyle={{ paddingBottom: STICKY_CTA_HEIGHT }}`
+ * on the parent scroll view.
+ *
+ * `inline` variant drops the absolute positioning and renders the bar as a
+ * flex sibling — used by onboarding screens that lay out their own footer.
  */
 export function StickyActionBar({ children, style, inline }: Props) {
+  const inner = (
+    <View
+      style={[
+        {
+          paddingHorizontal: 18,
+          paddingTop: 12,
+          paddingBottom: 24,
+          gap: 10,
+        },
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
+
   if (inline) {
     return (
       <SafeAreaView edges={['bottom']} style={{ backgroundColor: colors.canvas }}>
-        <View
-          style={[
-            {
-              paddingHorizontal: 18,
-              paddingTop: 12,
-              paddingBottom: 8,
-              gap: 10,
-            },
-            style,
-          ]}
-        >
-          {children}
-        </View>
+        {inner}
       </SafeAreaView>
     );
   }
 
   return (
-    <View
+    <SafeAreaView
+      edges={['bottom']}
       pointerEvents="box-none"
       style={{
         position: 'absolute',
@@ -60,21 +85,7 @@ export function StickyActionBar({ children, style, inline }: Props) {
         borderTopColor: colors.canvas300,
       }}
     >
-      <SafeAreaView edges={['bottom']}>
-        <View
-          style={[
-            {
-              paddingHorizontal: 18,
-              paddingTop: 12,
-              paddingBottom: 8,
-              gap: 10,
-            },
-            style,
-          ]}
-        >
-          {children}
-        </View>
-      </SafeAreaView>
-    </View>
+      {inner}
+    </SafeAreaView>
   );
 }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, fonts } from '@/shared/theme';
 import { Icon } from './Icon';
+import { LiveDot } from './LiveDot';
 
 type Props = {
   step: 0 | 1 | 2 | 3;
@@ -53,14 +54,7 @@ export function OrderProgress({ step }: Props) {
                 {done ? (
                   <Icon.check size={14} color={colors.canvas} strokeWidth={3} />
                 ) : cur ? (
-                  <View
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: colors.olive,
-                    }}
-                  />
+                  <LiveDot size={8} color={colors.olive} />
                 ) : null}
               </View>
               {i < steps.length - 1 ? (

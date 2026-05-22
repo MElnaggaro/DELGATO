@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 type State = 'default' | 'focus' | 'error' | 'disabled';
 
@@ -45,6 +46,7 @@ export function FormInput({
   ...rest
 }: Props) {
   const [focused, setFocused] = useState(false);
+  const { pick } = useRtl();
 
   const derivedState: State = stateProp
     ?? (disabled ? 'disabled' : error ? 'error' : focused ? 'focus' : 'default');
@@ -123,7 +125,7 @@ export function FormInput({
             fontSize: 16,
             lineHeight: 16 * 1.2,
             color: disabled ? colors.inkMute : colors.ink,
-            textAlign: 'right',
+            textAlign: pick('right', 'left'),
             padding: 0,
             paddingVertical: 12,
             includeFontPadding: false,

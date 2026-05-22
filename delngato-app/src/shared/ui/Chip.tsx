@@ -23,7 +23,7 @@ export function Chip({ active, icon, children, onPress }: Props) {
         paddingVertical: 9,
         borderRadius: 100,
         backgroundColor: active ? colors.olive : pressed ? colors.canvas200 : colors.bgElevated,
-        borderWidth: active ? 1 : 1,
+        borderWidth: 1,
         borderColor: active ? colors.olive : colors.canvas300,
       })}
     >

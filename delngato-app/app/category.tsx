@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AppBar, Button, Chip, EmptyState, Icon, ShopCard } from '@/shared/ui';
@@ -50,7 +50,15 @@ export default function Category() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
-      <AppBar title={cat.label} onBack={() => safeBack('/(tabs)/home')} />
+      <AppBar
+        title={cat.label}
+        onBack={() => safeBack('/(tabs)/home')}
+        trailing={
+          <Pressable accessibilityLabel="فلترة" hitSlop={8} style={{ padding: 6 }}>
+            <Icon.filter size={20} color={colors.ink} />
+          </Pressable>
+        }
+      />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
         <ScrollView

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Alert, Linking, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 
-import { AppBar, Button, Card, Icon, OrderProgress } from '@/shared/ui';
+import { AppBar, Button, Card, Icon, LiveDot, OrderProgress } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
+
+const MONO_FAMILY = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
 
 type Step = 0 | 1 | 2 | 3;
 
@@ -53,21 +56,66 @@ export default function Tracking() {
       />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        {/* Map placeholder */}
+        {/* Map placeholder — SVG canvas mirroring design-reference Cart.jsx Tracking map.
+            Roads (cream lines), dashed delivery path, origin (gold) + destination (olive) pins,
+            courier marker positioned along the path by step. */}
         <View style={{ marginHorizontal: 18, paddingTop: 0 }}>
           <View
             style={{
               height: 240,
               borderRadius: 14,
-              backgroundColor: colors.canvas300,
+              backgroundColor: '#E2DAC2',
               borderWidth: 1,
               borderColor: colors.canvas300,
               overflow: 'hidden',
-              alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
-            <Icon.navigation size={36} color={colors.olive} />
+            <Svg viewBox="0 0 360 240" width="100%" height="100%">
+              {/* Major roads */}
+              <G stroke="#FAF8F3" strokeWidth={14} fill="none" opacity={0.9}>
+                <Path d="M -10 50 L 380 80" />
+                <Path d="M -10 180 L 380 170" />
+                <Path d="M 120 -10 L 90 250" />
+                <Path d="M 260 -10 L 290 250" />
+              </G>
+              {/* Dashed delivery route (origin → destination) */}
+              <G stroke="#F2EEE3" strokeWidth={4} fill="none" strokeDasharray="6 6">
+                <Path d="M 60 220 C 90 160, 200 110, 300 40" />
+              </G>
+              {/* Destination pin (olive) */}
+              <G x={60} y={220}>
+                <Circle r={11} fill="#FAF8F3" />
+                <Circle r={9} fill="#1F4A3D" />
+                <Circle r={3} fill="#FAF8F3" />
+              </G>
+              {/* Shop origin pin (gold, with shop letter) */}
+              <G x={300} y={40}>
+                <Circle r={11} fill="#FAF8F3" />
+                <Circle r={9} fill="#E8B14F" />
+                <SvgText
+                  textAnchor="middle"
+                  y={3}
+                  fontSize={10}
+                  fontWeight="700"
+                  fill="#0F1A17"
+                  fontFamily="IBMPlexSansArabic-Bold"
+                >
+                  أ
+                </SvgText>
+              </G>
+              {/* Courier marker — position along cubic Bezier by step. */}
+              {(() => {
+                const t = [0.15, 0.4, 0.7, 0.95][step] ?? 0.4;
+                const x = (1 - t) ** 3 * 300 + 3 * (1 - t) ** 2 * t * 200 + 3 * (1 - t) * t * t * 90 + t ** 3 * 60;
+                const y = (1 - t) ** 3 * 40 + 3 * (1 - t) ** 2 * t * 110 + 3 * (1 - t) * t * t * 160 + t ** 3 * 220;
+                return (
+                  <G x={x} y={y}>
+                    <Circle r={22} fill="rgba(31,74,61,0.16)" />
+                    <Circle r={14} fill="#1F4A3D" stroke="#FAF8F3" strokeWidth={3} />
+                  </G>
+                );
+              })()}
+            </Svg>
             <View
               style={{
                 position: 'absolute',
@@ -82,14 +130,7 @@ export default function Tracking() {
                 gap: 6,
               }}
             >
-              <View
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: colors.olive,
-                }}
-              />
+              <LiveDot size={8} color={colors.olive} />
               <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 12, color: colors.ink }}>
                 {t('tracking.live')}
               </Text>
@@ -120,7 +161,7 @@ export default function Tracking() {
                   {t(`tracking.eta.${ETA[step]}`)}
                 </Text>
               </View>
-              <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkMute }}>
+              <Text style={{ fontFamily: MONO_FAMILY, fontSize: 11, color: colors.inkMute }}>
                 {orderId}
               </Text>
             </View>

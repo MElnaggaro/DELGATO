@@ -1,10 +1,10 @@
-import { isValidElement, type ReactNode } from 'react';
+import { Children, isValidElement, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, Text, View, type ViewStyle } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
 import { useHaptics } from '@/shared/hooks/useHaptics';
 
-type Variant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'solid-gold';
+type Variant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'solid-gold' | 'destructive';
 type Size = 'md' | 'lg';
 
 type Props = {
@@ -15,9 +15,9 @@ type Props = {
   loading?: boolean;
   leading?: ReactNode;
   trailing?: ReactNode;
-  /** Button label. Accepts a string (most common), a number, or a custom node. */
+  /** Button label. String/number wins; otherwise children render as-is. */
   children?: ReactNode;
-  /** Explicit label prop alternative — wins over `children` when set. Use when children would be a node accidentally. */
+  /** Explicit label prop — wins over `children` when set. */
   label?: string;
   onPress?: () => void;
   haptic?: boolean;
@@ -26,15 +26,10 @@ type Props = {
 };
 
 /**
- * Primary CTAs in the brand. The "signature state" — 2px inset gold ring on
- * press — is encoded by toggling border styles, since RN doesn't have a true
- * inset box-shadow. The visual effect matches the reference.
- *
- * Label safety: we used to silently drop labels when callers passed a
- * `<Text>` node as children (RN crashes on nested Text in some configs and
- * renders blank in others). Now we accept either a string-like child (wrapped
- * in Text) or a custom element (rendered as-is), and a separate `label` prop
- * for clarity.
+ * Primary CTAs. Mirrors design-reference `.dl-btn` exactly:
+ *   border: 0; min-height 48 (lg=56); radius 12; padding 0 20;
+ *   font: Arabic SemiBold 16 (lg=17); line-height 1.
+ *   primary: bg olive / fg canvas; press: bg olive-700 + 2px inset gold ring.
  */
 export function Button({
   variant = 'primary',
@@ -59,15 +54,22 @@ export function Button({
     if (variant === 'primary') {
       return {
         backgroundColor: pressed ? colors.olive700 : colors.olive,
-        borderWidth: 2,
-        borderColor: pressed ? colors.gold : colors.olive,
+        borderWidth: pressed ? 2 : 0,
+        borderColor: pressed ? colors.gold : 'transparent',
+      };
+    }
+    if (variant === 'destructive') {
+      return {
+        backgroundColor: pressed ? '#A1271C' : colors.statusIssue,
+        borderWidth: pressed ? 2 : 0,
+        borderColor: pressed ? colors.gold : 'transparent',
       };
     }
     if (variant === 'solid-gold') {
       return {
         backgroundColor: pressed ? colors.gold600 : colors.gold,
-        borderWidth: 2,
-        borderColor: pressed ? colors.olive : colors.gold,
+        borderWidth: pressed ? 2 : 0,
+        borderColor: pressed ? colors.olive : 'transparent',
       };
     }
     if (variant === 'secondary') {
@@ -80,11 +82,11 @@ export function Button({
     if (variant === 'tertiary') {
       return {
         backgroundColor: pressed ? colors.canvas200 : 'transparent',
-        borderWidth: 1.5,
+        borderWidth: 0,
         borderColor: 'transparent',
       };
     }
-    // ghost
+    // ghost — transparent fill, olive outline
     return {
       backgroundColor: pressed ? colors.canvas200 : 'transparent',
       borderWidth: 1.5,
@@ -93,14 +95,36 @@ export function Button({
   };
 
   const textColor =
-    variant === 'primary'
+    variant === 'primary' || variant === 'destructive'
       ? colors.canvas
       : variant === 'solid-gold'
         ? colors.ink
         : colors.olive;
 
-  const labelText = label ?? (typeof children === 'string' || typeof children === 'number' ? String(children) : undefined);
-  const customNode = labelText === undefined && children != null && isValidElement(children) ? children : null;
+  // Resolve label. Explicit `label` wins. Otherwise: if children is a single
+  // primitive (string/number) — render it as Text. If it's only valid React
+  // element(s), pass them through unwrapped so screens can drop in nested
+  // Text/icons without the button silently swallowing them.
+  let labelText: string | undefined = label;
+  let customNode: ReactNode = null;
+  if (labelText === undefined) {
+    if (typeof children === 'string' || typeof children === 'number') {
+      labelText = String(children);
+    } else if (children != null) {
+      const arr = Children.toArray(children).filter((c) => c !== null && c !== '');
+      if (arr.length === 1 && (typeof arr[0] === 'string' || typeof arr[0] === 'number')) {
+        labelText = String(arr[0]);
+      } else if (arr.length > 0 && arr.every(isValidElement)) {
+        customNode = arr;
+      } else if (arr.length > 0) {
+        // Mixed: stringify primitives, keep elements. Wrap whole thing in Text
+        // to satisfy RN's "text outside Text" requirement.
+        labelText = arr
+          .map((c) => (typeof c === 'string' || typeof c === 'number' ? String(c) : ''))
+          .join('');
+      }
+    }
+  }
 
   return (
     <Pressable
@@ -133,7 +157,7 @@ export function Button({
         <ActivityIndicator color={textColor} />
       ) : (
         <>
-          {leading ? <View>{leading}</View> : null}
+          {leading}
           {labelText !== undefined ? (
             <Text
               numberOfLines={1}
@@ -141,13 +165,17 @@ export function Button({
                 color: textColor,
                 fontFamily: fonts.arabicSemiBold,
                 fontSize: isLarge ? 17 : 16,
+                lineHeight: isLarge ? 22 : 20,
                 includeFontPadding: false,
+                textAlignVertical: 'center',
               }}
             >
               {labelText}
             </Text>
-          ) : customNode}
-          {trailing ? <View>{trailing}</View> : null}
+          ) : (
+            customNode
+          )}
+          {trailing}
         </>
       )}
     </Pressable>

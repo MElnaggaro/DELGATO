@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   Icon,
+  IconForward,
   Row,
   Section,
   StickyActionBar,
@@ -92,7 +93,7 @@ export default function Checkout() {
                 </Text>
               ) : null}
             </View>
-            <Icon.chevronDown size={18} color={colors.inkLight} />
+            <IconForward size={18} color={colors.inkLight} />
           </Pressable>
         </Section>
 

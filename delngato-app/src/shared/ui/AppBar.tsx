@@ -55,7 +55,9 @@ export function AppBar({ title, onBack, trailing }: Props) {
             </Text>
           ) : null}
         </View>
-        <View style={{ minWidth: 36, alignItems: 'flex-end' }}>{trailing}</View>
+        <View style={{ minWidth: 36, alignItems: 'center', justifyContent: 'center' }}>
+          {trailing}
+        </View>
       </View>
     </SafeAreaView>
   );
