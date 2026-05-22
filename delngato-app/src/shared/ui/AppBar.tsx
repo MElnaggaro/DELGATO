@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { IconBack } from './Icon';
 
 type Props = {
@@ -17,15 +18,16 @@ type Props = {
  * in RTL). No bottom border by default; cards underneath provide separation.
  */
 export function AppBar({ title, onBack, trailing }: Props) {
+  const { isRtl, flexDirection } = useRtl();
   return (
     <SafeAreaView edges={['top']} style={{ backgroundColor: colors.canvas }}>
       <View
         style={{
           minHeight: 56,
-          paddingHorizontal: 14,
-          flexDirection: 'row',
+          paddingHorizontal: 18,
+          flexDirection,
           alignItems: 'center',
-          gap: 8,
+          gap: 12,
         }}
       >
         {onBack ? (
@@ -34,31 +36,34 @@ export function AppBar({ title, onBack, trailing }: Props) {
             accessibilityLabel="رجوع"
             onPress={onBack}
             hitSlop={12}
-            style={{ padding: 6 }}
+            style={{ padding: 6, marginStart: -6 }}
           >
             <IconBack size={24} color={colors.ink} />
           </Pressable>
-        ) : (
-          <View style={{ width: 36 }} />
-        )}
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        ) : null}
+        <View style={{ flex: 1, minWidth: 0 }}>
           {title ? (
             <Text
               numberOfLines={1}
               style={{
-                fontFamily: fonts.arabicSemiBold,
-                fontSize: 16,
+                fontFamily: fonts.arabicBold,
+                fontSize: 18,
                 color: colors.ink,
+                textAlign: isRtl ? 'right' : 'left',
+                includeFontPadding: false,
               }}
             >
               {title}
             </Text>
           ) : null}
         </View>
-        <View style={{ minWidth: 36, alignItems: 'center', justifyContent: 'center' }}>
-          {trailing}
-        </View>
+        {trailing ? (
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            {trailing}
+          </View>
+        ) : null}
       </View>
     </SafeAreaView>
   );
 }
+

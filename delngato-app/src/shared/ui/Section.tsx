@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 type Props = {
   /** Micro caption label (12px ink-mute) — for settings/form-style groupings. */
@@ -40,12 +41,13 @@ export function Section({
   paddingHorizontal = 18,
   paddingTop = 14,
 }: Props) {
+  const { isRtl, flexDirection } = useRtl();
   return (
     <View style={{ paddingHorizontal, paddingTop }}>
       {!hideLabel && title ? (
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection,
             justifyContent: 'space-between',
             alignItems: 'baseline',
             marginBottom: 12,
@@ -58,6 +60,7 @@ export function Section({
               fontSize: 18,
               color: colors.ink,
               includeFontPadding: false,
+              textAlign: isRtl ? 'right' : 'left',
             }}
           >
             {title}
@@ -70,6 +73,7 @@ export function Section({
                   fontSize: 13,
                   color: colors.olive,
                   includeFontPadding: false,
+                  textAlign: isRtl ? 'right' : 'left',
                 }}
               >
                 {action.label}
@@ -87,6 +91,7 @@ export function Section({
             color: colors.inkMute,
             marginBottom: 8,
             includeFontPadding: false,
+            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {label}
@@ -96,3 +101,4 @@ export function Section({
     </View>
   );
 }
+

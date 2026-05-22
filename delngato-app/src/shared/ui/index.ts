@@ -23,3 +23,8 @@ export { ShopCard } from './ShopCard';
 export { Spinner } from './Spinner';
 export { Stepper } from './Stepper';
 export { StickyActionBar, STICKY_CTA_HEIGHT } from './StickyActionBar';
+export { CategoryChip } from './CategoryChip';
+export { CategoryChipRow } from './CategoryChipRow';
+export { ActiveOrderCard } from './ActiveOrderCard';
+
+

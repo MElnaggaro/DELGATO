@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Chip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
+import { CategoryChip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import {
@@ -95,9 +95,9 @@ export default function Search() {
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                   {recent.map((r) => (
-                    <Chip key={r} onPress={() => submit(r)}>
+                    <CategoryChip key={r} onPress={() => submit(r)}>
                       {r}
-                    </Chip>
+                    </CategoryChip>
                   ))}
                 </View>
               </View>
@@ -119,9 +119,9 @@ export default function Search() {
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                 {TRENDING_SEARCHES.map((trend) => (
-                  <Chip key={trend} onPress={() => submit(trend)} icon={<Icon.search size={14} color={colors.ink} />}>
+                  <CategoryChip key={trend} onPress={() => submit(trend)} icon={<Icon.search size={14} color={colors.ink} />}>
                     {trend}
-                  </Chip>
+                  </CategoryChip>
                 ))}
               </View>
             </View>

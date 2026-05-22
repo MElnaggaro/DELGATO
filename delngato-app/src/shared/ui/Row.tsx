@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 type Props = {
   label: string;
@@ -10,10 +11,11 @@ type Props = {
 
 /** Two-column label/value row used by cart and order summaries. */
 export function Row({ label, value, bold }: Props) {
+  const { isRtl, flexDirection } = useRtl();
   return (
     <View
       style={{
-        flexDirection: 'row',
+        flexDirection,
         justifyContent: 'space-between',
         alignItems: 'baseline',
         paddingVertical: 4,
@@ -40,3 +42,4 @@ export function Row({ label, value, bold }: Props) {
     </View>
   );
 }
+

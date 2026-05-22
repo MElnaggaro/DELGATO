@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Badge, Button, Chip, EmptyState, Icon, LiveDot } from '@/shared/ui';
+import { Badge, Button, CategoryChip, CategoryChipRow, EmptyState, Icon, LiveDot } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useOrdersStore } from '@/features/orders/store';
@@ -36,21 +36,17 @@ export default function OrdersTab() {
           {t('orders.title')}
         </Text>
       </View>
-      <View style={{ paddingHorizontal: 18, paddingBottom: 12 }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <Chip active={tab === 'all'} onPress={() => setTab('all')}>
-              {`الكل · ${arDigits(orders.length)}`}
-            </Chip>
-            <Chip active={tab === 'live'} onPress={() => setTab('live')}>
-              {`شغّال · ${arDigits(liveCount)}`}
-            </Chip>
-            <Chip active={tab === 'done'} onPress={() => setTab('done')}>
-              {`متم · ${arDigits(doneCount)}`}
-            </Chip>
-          </View>
-        </ScrollView>
-      </View>
+      <CategoryChipRow>
+        <CategoryChip active={tab === 'all'} onPress={() => setTab('all')}>
+          {`الكل · ${arDigits(orders.length)}`}
+        </CategoryChip>
+        <CategoryChip active={tab === 'live'} onPress={() => setTab('live')}>
+          {`شغّال · ${arDigits(liveCount)}`}
+        </CategoryChip>
+        <CategoryChip active={tab === 'done'} onPress={() => setTab('done')}>
+          {`متم · ${arDigits(doneCount)}`}
+        </CategoryChip>
+      </CategoryChipRow>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }}>
         {filtered.length === 0 ? (
@@ -174,7 +170,7 @@ function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
           gap: 4,
         }}
       >
-        <LiveDot size={6} color={colors.statusPendingText} />
+        <LiveDot size={6} color={colors.olive} />
         <Text
           style={{
             fontFamily: fonts.arabicSemiBold,

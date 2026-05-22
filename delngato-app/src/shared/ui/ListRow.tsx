@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { IconForward } from './Icon';
 
 type Props = {
@@ -16,12 +17,13 @@ type Props = {
 
 export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: Props) {
   const Container: React.ComponentType<any> = onPress ? Pressable : View;
+  const { isRtl, flexDirection } = useRtl();
   return (
     <Container
       onPress={onPress}
       android_ripple={onPress ? { color: colors.canvas200 } : undefined}
       style={({ pressed }: { pressed?: boolean }) => ({
-        flexDirection: 'row',
+        flexDirection,
         alignItems: 'center',
         gap: 12,
         paddingVertical: 14,
@@ -49,20 +51,34 @@ export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: 
             fontFamily: fonts.arabicSemiBold,
             fontSize: 14,
             color: danger ? colors.statusIssueText : colors.ink,
+            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {label}
         </Text>
         {sub ? (
           <Text
-            style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight, marginTop: 2 }}
+            style={{
+              fontFamily: fonts.arabic,
+              fontSize: 12,
+              color: colors.inkLight,
+              marginTop: 2,
+              textAlign: isRtl ? 'right' : 'left',
+            }}
           >
             {sub}
           </Text>
         ) : null}
       </View>
       {value ? (
-        <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 13, color: colors.inkLight }}>
+        <Text
+          style={{
+            fontFamily: fonts.arabicMedium,
+            fontSize: 13,
+            color: colors.inkLight,
+            textAlign: isRtl ? 'right' : 'left',
+          }}
+        >
           {value}
         </Text>
       ) : null}
@@ -70,3 +86,4 @@ export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: 
     </Container>
   );
 }
+

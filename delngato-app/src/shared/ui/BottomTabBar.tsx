@@ -3,6 +3,7 @@ import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { Icon } from './Icon';
 
 export type TabKey = 'home' | 'search' | 'orders' | 'profile';
@@ -28,6 +29,7 @@ const Container = Platform.OS === 'ios' ? BlurView : View;
  * surface — same height, same paddings, no blur (matches "feel native" rule).
  */
 export function BottomTabBar({ active, tabs, onTabPress }: Props) {
+  const { isRtl, flexDirection } = useRtl();
   return (
     <Container
       // BlurView ignores unknown props; View ignores tint/intensity.
@@ -43,7 +45,7 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
       <SafeAreaView edges={['bottom']}>
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection,
             paddingTop: 8,
             paddingHorizontal: 8,
           }}
@@ -103,3 +105,4 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
     </Container>
   );
 }
+

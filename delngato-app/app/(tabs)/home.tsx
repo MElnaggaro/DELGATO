@@ -6,8 +6,10 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import {
+  ActiveOrderCard,
   Badge,
-  Chip,
+  CategoryChip,
+  CategoryChipRow,
   EmptyState,
   Icon,
   IconForward,
@@ -163,77 +165,21 @@ export default function Home() {
         {/* Active order banner — solid ink with gold-tinted bike icon, live pulse, RTL-forward chevron. */}
         {liveOrder ? (
           <View style={{ paddingHorizontal: 18, paddingBottom: 14 }}>
-            <Pressable
+            <ActiveOrderCard
+              order={liveOrder}
               onPress={() => router.push({ pathname: '/tracking', params: { orderId: liveOrder.id } })}
-              style={({ pressed }) => ({
-                backgroundColor: colors.ink,
-                borderRadius: 14,
-                paddingVertical: 12,
-                paddingHorizontal: 14,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 12,
-                opacity: pressed ? 0.92 : 1,
-              })}
-            >
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  backgroundColor: 'rgba(232,177,79,0.18)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon.bike size={20} color={colors.gold} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <LiveDot size={8} color={colors.gold} />
-                  <Text
-                    style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.canvas }}
-                  >
-                    {t('orders.liveBadge')}
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: fonts.arabic,
-                      fontSize: 11,
-                      color: 'rgba(250,248,243,0.5)',
-                    }}
-                  >
-                    {liveOrder.id}
-                  </Text>
-                </View>
-                <Text
-                  style={{
-                    fontFamily: fonts.arabic,
-                    fontSize: 12,
-                    color: 'rgba(250,248,243,0.7)',
-                    marginTop: 4,
-                  }}
-                >
-                  {liveOrder.statusText} · {liveOrder.shop}
-                </Text>
-              </View>
-              <IconForward size={20} color={colors.canvas} />
-            </Pressable>
+            />
           </View>
         ) : null}
 
         {/* Filter chips — sit between active banner and hero per design ordering. */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 18, gap: 8, paddingBottom: 8 }}
-        >
+        <CategoryChipRow>
           {CATEGORIES.map((c) => (
-            <Chip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
+            <CategoryChip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
               {c.label}
-            </Chip>
+            </CategoryChip>
           ))}
-        </ScrollView>
+        </CategoryChipRow>
 
         {/* Hero offer — olive→olive-700 gradient with gold accent ring around the bike icon. */}
         <Rise delay={120} style={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 16 }}>

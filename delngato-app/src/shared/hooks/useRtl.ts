@@ -12,11 +12,14 @@ import { useTranslation } from 'react-i18next';
 export function useRtl() {
   const { i18n } = useTranslation();
   const isRtl = i18n.language === 'ar' || I18nManager.isRTL;
+  
   return {
     isRtl,
+    flexDirection: (I18nManager.isRTL ? 'row' : (isRtl ? 'row-reverse' : 'row')) as 'row' | 'row-reverse',
     /** Pick `rtl` value in RTL contexts, `ltr` otherwise. */
     pick<T>(rtl: T, ltr: T): T {
       return isRtl ? rtl : ltr;
     },
   };
 }
+

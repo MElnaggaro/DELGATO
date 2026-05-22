@@ -16,6 +16,7 @@ import { applyRtlForLocale, resolveInitialLocale } from '@/services/i18n/rtl';
 import { queryClient } from '@/services/api/queryClient';
 import { colors } from '@/shared/theme';
 import { useAuthStore, wireAuthIntoApiClient } from '@/features/auth/store';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 wireAuthIntoApiClient();
 
@@ -86,17 +87,27 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <I18nextProvider i18n={i18n}>
             <StatusBar style="light" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: colors.canvas },
-                animation: 'slide_from_right',
-                animationDuration: 300,
-              }}
-            />
+            <RootStack />
           </I18nextProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
+
+function RootStack() {
+  const { isRtl } = useRtl();
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: {
+          backgroundColor: colors.canvas,
+        },
+        animation: isRtl ? 'slide_from_left' : 'slide_from_right',
+        animationDuration: 300,
+      }}
+    />
+  );
+}
+

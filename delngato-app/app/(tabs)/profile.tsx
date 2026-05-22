@@ -13,10 +13,12 @@ import { formatNationalDisplay } from '@/shared/utils/phone';
 import { useCartStore } from '@/features/cart/store';
 import { useAddressStore } from '@/features/addresses/store';
 import { useOrdersStore } from '@/features/orders/store';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 export default function Profile() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { flexDirection } = useRtl();
   const arDigits = useArabicDigits();
   const user = useAuthStore((s) => s.user);
   const phone = useAuthStore((s) => s.phone);
@@ -231,7 +233,7 @@ export default function Profile() {
         <View style={{ paddingHorizontal: 22, paddingTop: 8 }}>
           <Pressable
             onPress={() => setLogoutVisible(true)}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 }}
+            style={{ flexDirection, alignItems: 'center', gap: 8, paddingVertical: 12 }}
           >
             <Icon.logout size={18} color={colors.statusIssueText} />
             <Text
@@ -278,6 +280,7 @@ export default function Profile() {
 }
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  const { isRtl } = useRtl();
   return (
     <View style={{ paddingHorizontal: 18, paddingTop: 4, paddingBottom: 14 }}>
       <Text
@@ -287,6 +290,7 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
           color: colors.inkMute,
           letterSpacing: 0.4,
           marginBottom: 8,
+          textAlign: isRtl ? 'right' : 'left',
         }}
       >
         {title}

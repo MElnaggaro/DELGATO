@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { AppBar, Button, Chip, EmptyState, Icon, ShopCard } from '@/shared/ui';
+import { AppBar, Button, CategoryChip, CategoryChipRow, EmptyState, Icon, ShopCard } from '@/shared/ui';
 import { colors } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
 import { CATEGORIES, SHOPS, type CategoryKey, type Shop } from '@/features/catalog/data';
@@ -61,17 +61,13 @@ export default function Category() {
       />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 18, gap: 8, paddingTop: 6, paddingBottom: 14 }}
-        >
+        <CategoryChipRow>
           {FILTERS.map((f) => (
-            <Chip key={f} active={filter === f} onPress={() => setFilter(f)}>
+            <CategoryChip key={f} active={filter === f} onPress={() => setFilter(f)}>
               {f}
-            </Chip>
+            </CategoryChip>
           ))}
-        </ScrollView>
+        </CategoryChipRow>
 
         <View style={{ paddingHorizontal: 18, gap: 10 }}>
           {shops.length === 0 ? (
