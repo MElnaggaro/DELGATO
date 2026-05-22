@@ -9,7 +9,7 @@ const AR_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'] a
  */
 export function useArabicDigits() {
   const { i18n } = useTranslation();
-  const isAr = i18n.language === 'ar';
+  const isAr = !!i18n.language?.startsWith('ar');
   return (value: number | string): string => {
     const s = String(value);
     if (!isAr) return s;

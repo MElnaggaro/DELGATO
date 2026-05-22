@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 import type { Product } from '@/features/catalog/data';
 import { Badge } from './Badge';
 import { Icon } from './Icon';
@@ -17,6 +18,8 @@ type Props = {
 
 export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
   const arDigits = useArabicDigits();
+  const { isRtl, flexDirection, pick } = useRtl();
+
   return (
     <Pressable
       onPress={onTap}
@@ -44,7 +47,8 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
           style={{
             position: 'absolute',
             top: 4,
-            insetInlineEnd: 10,
+            right: pick(undefined, 10),
+            left: pick(10, undefined),
             fontFamily: fonts.arabicBold,
             fontSize: 60,
             lineHeight: 60,
@@ -66,26 +70,27 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
             lineHeight: 18,
             color: colors.ink,
             minHeight: 36,
+            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {product.name}
         </Text>
-        <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}>
+        <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
           {product.sub}
         </Text>
       </View>
       <View
         style={{
-          flexDirection: 'row',
+          flexDirection,
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 15, color: colors.ink }}>
+        <View style={{ flexDirection, alignItems: 'baseline', gap: 4 }}>
+          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 15, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
             {arDigits(product.price)}
           </Text>
-          <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight }}>
+          <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
             ج.م
           </Text>
         </View>

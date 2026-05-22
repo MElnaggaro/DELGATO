@@ -5,6 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { AppBar, Badge, Button, Icon, Stepper, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { PRODUCTS, SHOPS, findProduct, findShop } from '@/features/catalog/data';
 import { useCartStore } from '@/features/cart/store';
@@ -24,6 +25,7 @@ export default function Product() {
   const [qty, setQty] = useState(inCart?.qty ?? 1);
   const [note, setNote] = useState('');
   const arDigits = useArabicDigits();
+  const { isRtl, flexDirection, pick } = useRtl();
 
   const isFav = favorites.includes(product.id);
 
@@ -72,7 +74,7 @@ export default function Product() {
             {product.name[0]}
           </Text>
           {product.tag ? (
-            <View style={{ position: 'absolute', top: 14, insetInlineStart: 14 }}>
+            <View style={{ position: 'absolute', top: 14, left: pick(14, undefined), right: pick(undefined, 14) }}>
               <Badge variant={product.tag === 'عرض' ? 'pending' : 'solid-olive'}>
                 {product.tag}
               </Badge>
@@ -82,17 +84,17 @@ export default function Product() {
 
         {/* Title */}
         <View style={{ paddingHorizontal: 18, paddingTop: 20 }}>
-          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink }}>
+          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
             {product.name}
           </Text>
           <Text
-            style={{ fontFamily: fonts.arabic, fontSize: 13, color: colors.inkLight, marginTop: 6 }}
+            style={{ fontFamily: fonts.arabic, fontSize: 13, color: colors.inkLight, marginTop: 6, textAlign: isRtl ? 'right' : 'left' }}
           >
             {product.sub}
           </Text>
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection,
               alignItems: 'baseline',
               gap: 6,
               marginTop: 12,
@@ -114,7 +116,7 @@ export default function Product() {
               backgroundColor: colors.canvas200,
               borderRadius: 10,
               padding: 12,
-              flexDirection: 'row',
+              flexDirection,
               alignItems: 'center',
               gap: 10,
             }}
@@ -134,16 +136,16 @@ export default function Product() {
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}>
+              <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
                 تطلبه من
               </Text>
               <Text
-                style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink }}
+                style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
               >
                 {shop.name}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ flexDirection, alignItems: 'center', gap: 4 }}>
               <Icon.clock size={13} color={colors.inkLight} />
               <Text
                 style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}
@@ -163,11 +165,12 @@ export default function Product() {
               color: colors.inkMute,
               letterSpacing: 0.4,
               marginBottom: 8,
+              textAlign: isRtl ? 'right' : 'left',
             }}
           >
             الوصف
           </Text>
-          <Text style={{ fontFamily: fonts.arabic, fontSize: 14, lineHeight: 24, color: colors.inkLight }}>
+          <Text style={{ fontFamily: fonts.arabic, fontSize: 14, lineHeight: 24, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
             منتج طازج من اختيار {shop.name}. مناسب للاستهلاك اليومي للعيلة. التواريخ والصلاحية مكتوبة على العبوة.
           </Text>
         </View>
@@ -181,6 +184,7 @@ export default function Product() {
               color: colors.inkMute,
               letterSpacing: 0.4,
               marginBottom: 8,
+              textAlign: isRtl ? 'right' : 'left',
             }}
           >
             ملاحظة للمحل{' '}
@@ -202,13 +206,13 @@ export default function Product() {
               fontFamily: fonts.arabic,
               fontSize: 15,
               color: colors.ink,
-              textAlign: 'right',
+              textAlign: isRtl ? 'right' : 'left',
             }}
           />
         </View>
       </ScrollView>
 
-      <StickyActionBar style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      <StickyActionBar style={{ flexDirection, alignItems: 'center', gap: 12 }}>
         <Stepper value={qty} min={1} onChange={setQty} />
         <View style={{ flex: 1 }}>
           <Button

@@ -6,6 +6,7 @@ import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 
 import { AppBar, Button, Card, Icon, LiveDot, OrderProgress } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 
 const MONO_FAMILY = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
@@ -24,6 +25,7 @@ const ORDER_ITEMS = [
 export default function Tracking() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { isRtl, flexDirection, pick } = useRtl();
   const params = useLocalSearchParams<{ orderId?: string }>();
   const orderId = params.orderId ?? 'DLN-٢٠٤٧';
   const [step, setStep] = useState<Step>(1);
@@ -120,12 +122,13 @@ export default function Tracking() {
               style={{
                 position: 'absolute',
                 top: 10,
-                insetInlineStart: 10,
+                left: pick(10, undefined),
+                right: pick(undefined, 10),
                 backgroundColor: 'rgba(250,248,243,0.92)',
                 borderRadius: 100,
                 paddingHorizontal: 12,
                 paddingVertical: 6,
-                flexDirection: 'row',
+                flexDirection,
                 alignItems: 'center',
                 gap: 6,
               }}
@@ -143,7 +146,7 @@ export default function Tracking() {
           <Card padding={16}>
             <View
               style={{
-                flexDirection: 'row',
+                flexDirection,
                 justifyContent: 'space-between',
                 alignItems: 'baseline',
                 marginBottom: 14,
@@ -151,12 +154,12 @@ export default function Tracking() {
             >
               <View>
                 <Text
-                  style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}
+                  style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}
                 >
                   {t(`tracking.status.${STATUS_HEAD[step]}`)}
                 </Text>
                 <Text
-                  style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.olive, marginTop: 2 }}
+                  style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.olive, marginTop: 2, textAlign: isRtl ? 'right' : 'left' }}
                 >
                   {t(`tracking.eta.${ETA[step]}`)}
                 </Text>
@@ -173,7 +176,7 @@ export default function Tracking() {
         {step >= 2 && step < 3 ? (
           <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
             <Card padding={14}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={{ flexDirection, alignItems: 'center', gap: 12 }}>
                 <View
                   style={{
                     width: 48,
@@ -190,12 +193,12 @@ export default function Tracking() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text
-                    style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight }}
+                    style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}
                   >
                     {t('tracking.captain')}
                   </Text>
                   <Text
-                    style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink }}
+                    style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
                   >
                     محمود السيد
                   </Text>
@@ -205,6 +208,7 @@ export default function Tracking() {
                       fontSize: 12,
                       color: colors.inkLight,
                       marginTop: 2,
+                      textAlign: isRtl ? 'right' : 'left',
                     }}
                   >
                     موتوسيكل · لوحة ٢١٣٤ د ل
@@ -240,6 +244,7 @@ export default function Tracking() {
               color: colors.inkMute,
               letterSpacing: 0.4,
               marginBottom: 8,
+              textAlign: isRtl ? 'right' : 'left',
             }}
           >
             {t('tracking.orderDetails')}
@@ -249,21 +254,21 @@ export default function Tracking() {
               <View
                 key={it.name}
                 style={{
-                  flexDirection: 'row',
+                  flexDirection,
                   justifyContent: 'space-between',
                   paddingVertical: 8,
                   borderBottomWidth: i < ORDER_ITEMS.length - 1 ? 1 : 0,
                   borderBottomColor: colors.canvas300,
                 }}
               >
-                <Text style={{ fontFamily: fonts.arabic, fontSize: 14, color: colors.ink }}>
+                <Text style={{ fontFamily: fonts.arabic, fontSize: 14, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
                   <Text style={{ fontFamily: fonts.arabicBold, color: colors.olive }}>
                     {it.qty.toLocaleString('ar-EG')}×{' '}
                   </Text>
                   {it.name}
                 </Text>
                 <Text
-                  style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink }}
+                  style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
                 >
                   {it.price.toLocaleString('ar-EG')} ج.م
                 </Text>

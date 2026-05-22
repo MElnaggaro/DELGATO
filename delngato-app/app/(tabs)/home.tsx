@@ -21,6 +21,7 @@ import {
 import { FadeUp, Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { useSelectedAddress } from '@/features/addresses/store';
 import { CATEGORIES, SHOPS, type CategoryKey } from '@/features/catalog/data';
 import { useOrdersStore } from '@/features/orders/store';
@@ -29,6 +30,7 @@ export default function Home() {
   const router = useRouter();
   const { t } = useTranslation();
   const arDigits = useArabicDigits();
+  const { isRtl, flexDirection, pick } = useRtl();
   const addr = useSelectedAddress();
   const [cat, setCat] = useState<CategoryKey>('all');
 
@@ -48,7 +50,7 @@ export default function Home() {
             paddingHorizontal: 18,
             paddingTop: 14,
             paddingBottom: 6,
-            flexDirection: 'row',
+            flexDirection,
             alignItems: 'center',
             gap: 10,
           }}
@@ -58,14 +60,14 @@ export default function Home() {
             style={{ flex: 1, gap: 2 }}
             hitSlop={6}
           >
-            <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkMute }}>
+            <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkMute, textAlign: isRtl ? 'right' : 'left' }}>
               {t('home.deliveryTo')}
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ flexDirection, alignItems: 'center', gap: 4 }}>
               <Icon.pin size={16} color={colors.olive} />
               <Text
                 numberOfLines={1}
-                style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink }}
+                style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
               >
                 {addr
                   ? `${addr.label === 'home' ? 'البيت' : addr.label === 'work' ? 'الشغل' : 'العنوان'} · ${addr.street}`
@@ -190,20 +192,23 @@ export default function Home() {
             style={{
               borderRadius: 14,
               padding: 18,
-              flexDirection: 'row',
+              flexDirection,
               alignItems: 'center',
               gap: 14,
               overflow: 'hidden',
             }}
           >
             <View style={{ flex: 1, gap: 8 }}>
-              <Badge variant="solid-gold">{t('home.offerToday')}</Badge>
+              <View style={{ flexDirection, alignItems: 'center' }}>
+                <Badge variant="solid-gold">{t('home.offerToday')}</Badge>
+              </View>
               <Text
                 style={{
                   fontFamily: fonts.arabicBold,
                   fontSize: 20,
                   color: colors.canvas,
                   lineHeight: 26,
+                  textAlign: isRtl ? 'right' : 'left',
                 }}
               >
                 {t('home.offerTitle')}
@@ -213,6 +218,7 @@ export default function Home() {
                   fontFamily: fonts.arabic,
                   fontSize: 12,
                   color: 'rgba(250,248,243,0.7)',
+                  textAlign: isRtl ? 'right' : 'left',
                 }}
               >
                 {t('home.offerCode')}{' '}

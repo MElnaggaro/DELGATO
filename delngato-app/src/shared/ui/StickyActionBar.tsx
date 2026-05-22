@@ -77,8 +77,8 @@ export function StickyActionBar({ children, style, inline }: Props) {
       pointerEvents="box-none"
       style={{
         position: 'absolute',
-        insetInlineStart: 0,
-        insetInlineEnd: 0,
+        left: 0,
+        right: 0,
         bottom: 0,
         backgroundColor: colors.canvas,
         borderTopWidth: 1,

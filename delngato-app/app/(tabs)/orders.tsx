@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { Badge, Button, CategoryChip, CategoryChipRow, EmptyState, Icon, LiveDot } from '@/shared/ui';
+import { Badge, Button, CategoryChip, CategoryChipRow, EmptyState, Icon, LiveDot, PressableScale } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { useOrdersStore } from '@/features/orders/store';
 import type { OrderHistory, OrderStatus } from '@/features/catalog/data';
 
@@ -16,6 +18,7 @@ export default function OrdersTab() {
   const { t } = useTranslation();
   const router = useRouter();
   const arDigits = useArabicDigits();
+  const { isRtl } = useRtl();
   const orders = useOrdersStore((s) => s.orders);
   const [tab, setTab] = useState<Filter>('all');
 
@@ -32,7 +35,7 @@ export default function OrdersTab() {
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <SafeAreaView edges={['top']} />
       <View style={{ paddingHorizontal: 18, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink }}>
+        <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
           {t('orders.title')}
         </Text>
       </View>
@@ -48,7 +51,7 @@ export default function OrdersTab() {
         </CategoryChip>
       </CategoryChipRow>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
         {filtered.length === 0 ? (
           <EmptyState
             icon={<Icon.receipt size={28} color={colors.olive} />}
@@ -61,15 +64,16 @@ export default function OrdersTab() {
             }
           />
         ) : (
-          <View style={{ gap: 10 }}>
+          <Animated.View style={{ gap: 10 }}>
             {filtered.map((o) => (
-              <OrderCard
-                key={o.id}
-                order={o}
-                onPress={() => router.push({ pathname: '/order-detail', params: { id: o.id } })}
-              />
+              <Animated.View key={o.id} layout={LinearTransition}>
+                <OrderCard
+                  order={o}
+                  onPress={() => router.push({ pathname: '/order-detail', params: { id: o.id } })}
+                />
+              </Animated.View>
             ))}
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
     </View>
@@ -78,6 +82,7 @@ export default function OrdersTab() {
 
 function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => void }) {
   const arDigits = useArabicDigits();
+  const { isRtl, flexDirection } = useRtl();
   const isLive = order.status === 'live';
   const isCancelled = order.status === 'cancelled';
   const borderColor = isLive
@@ -87,19 +92,23 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
       : 'transparent';
 
   return (
-    <Pressable
+    <PressableScale
       onPress={onPress}
-      style={({ pressed }) => ({
+      scaleTo={0.98}
+      style={{
         backgroundColor: colors.bgElevated,
         borderRadius: 12,
         padding: 14,
-        opacity: pressed ? 0.94 : 1,
         ...shadow.card,
-        borderStartWidth: 3,
-        borderStartColor: borderColor,
-      })}
+        borderRightWidth: isRtl ? 3 : 0,
+        borderRightColor: isRtl ? borderColor : 'transparent',
+        borderLeftWidth: isRtl ? 0 : 3,
+        borderLeftColor: isRtl ? 'transparent' : borderColor,
+        flexDirection,
+        alignItems: 'center',
+      }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+      <View style={{ flexDirection, alignItems: 'center', gap: 12, marginBottom: 10, width: '100%' }}>
         <View
           style={{
             width: 40,
@@ -117,11 +126,11 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
         <View style={{ flex: 1 }}>
           <Text
             numberOfLines={1}
-            style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.ink }}
+            style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
           >
             {order.shop}
           </Text>
-          <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}>
+          <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
             {order.id} · {order.date}
           </Text>
         </View>
@@ -130,33 +139,34 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
       {!isCancelled ? (
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection,
             justifyContent: 'space-between',
             alignItems: 'baseline',
+            width: '100%',
           }}
         >
-          <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight }}>
+          <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
             {arDigits(order.items)} منتج
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.ink }}>
+          <View style={{ flexDirection, alignItems: 'baseline', gap: 4 }}>
+            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
               {arDigits(order.total)}
             </Text>
             <Text
-              style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight }}
+              style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}
             >
               ج.م
             </Text>
           </View>
         </View>
       ) : null}
-    </Pressable>
+    </PressableScale>
   );
 }
 
 function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
+  const { isRtl, flexDirection } = useRtl();
   if (status === 'live') {
-    // Custom inline pill — Badge wraps children in <Text>, which can't host a sibling <View>.
     return (
       <View
         style={{
@@ -165,7 +175,7 @@ function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
           paddingVertical: 3,
           borderRadius: 100,
           backgroundColor: 'rgba(232,177,79,0.18)',
-          flexDirection: 'row',
+          flexDirection,
           alignItems: 'center',
           gap: 4,
         }}
@@ -177,6 +187,7 @@ function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
             fontSize: 12,
             color: colors.statusPendingText,
             includeFontPadding: false,
+            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {text}

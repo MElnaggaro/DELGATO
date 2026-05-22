@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 
 type Props = {
   count: number;
@@ -12,20 +13,21 @@ type Props = {
 
 export function MiniCartBar({ count, total, shopName, onPress }: Props) {
   const arDigits = useArabicDigits();
+  const { isRtl, flexDirection } = useRtl();
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       style={({ pressed }) => ({
         position: 'absolute',
-        insetInlineStart: 16,
-        insetInlineEnd: 16,
+        left: 16,
+        right: 16,
         bottom: 16,
         backgroundColor: pressed ? colors.olive700 : colors.olive,
         borderRadius: 14,
         paddingVertical: 12,
         paddingHorizontal: 16,
-        flexDirection: 'row',
+        flexDirection,
         alignItems: 'center',
         gap: 10,
         shadowColor: colors.ink,
@@ -50,18 +52,18 @@ export function MiniCartBar({ count, total, shopName, onPress }: Props) {
         </Text>
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.canvas }}>
+        <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.canvas, textAlign: isRtl ? 'right' : 'left' }}>
           عرض السلة
         </Text>
-        <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: 'rgba(250,248,243,0.7)' }}>
+        <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: 'rgba(250,248,243,0.7)', textAlign: isRtl ? 'right' : 'left' }}>
           {shopName}
         </Text>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-        <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.canvas }}>
+      <View style={{ flexDirection, alignItems: 'baseline', gap: 4 }}>
+        <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.canvas, textAlign: isRtl ? 'right' : 'left' }}>
           {arDigits(total)}
         </Text>
-        <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: 'rgba(250,248,243,0.7)' }}>
+        <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: 'rgba(250,248,243,0.7)', textAlign: isRtl ? 'right' : 'left' }}>
           ج.م
         </Text>
       </View>

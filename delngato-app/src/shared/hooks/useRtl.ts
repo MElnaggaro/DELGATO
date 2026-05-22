@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
  */
 export function useRtl() {
   const { i18n } = useTranslation();
-  const isRtl = i18n.language === 'ar' || I18nManager.isRTL;
+  const isRtl = !!i18n.language?.startsWith('ar') || I18nManager.isRTL;
   
   return {
     isRtl,

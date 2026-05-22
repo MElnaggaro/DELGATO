@@ -29,7 +29,7 @@ const Container = Platform.OS === 'ios' ? BlurView : View;
  * surface — same height, same paddings, no blur (matches "feel native" rule).
  */
 export function BottomTabBar({ active, tabs, onTabPress }: Props) {
-  const { isRtl, flexDirection } = useRtl();
+  const { isRtl, flexDirection, pick } = useRtl();
   return (
     <Container
       // BlurView ignores unknown props; View ignores tint/intensity.
@@ -67,7 +67,8 @@ export function BottomTabBar({ active, tabs, onTabPress }: Props) {
                       style={{
                         position: 'absolute',
                         top: -4,
-                        insetInlineStart: -8,
+                        right: pick(-8, undefined),
+                        left: pick(undefined, -8),
                         backgroundColor: colors.gold,
                         borderRadius: 100,
                         paddingHorizontal: 6,
