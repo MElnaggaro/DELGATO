@@ -1,8 +1,16 @@
-import { Children, isValidElement, type ReactNode } from 'react';
-import { ActivityIndicator, Pressable, Text, View, type ViewStyle } from 'react-native';
+import { Children, isValidElement, useState, type ReactNode } from 'react';
+import { ActivityIndicator, Pressable, Text, type ViewStyle } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
-import { colors, fonts } from '@/shared/theme';
+import { colors, fonts, radius } from '@/shared/theme';
 import { useHaptics } from '@/shared/hooks/useHaptics';
+import { ease } from '@/shared/motion';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type Variant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'solid-gold' | 'destructive';
 type Size = 'md' | 'lg';
@@ -50,47 +58,57 @@ export function Button({
   const isDisabled = disabled || loading;
   const isLarge = size === 'lg';
 
-  const surface = (pressed: boolean): ViewStyle => {
+  const [isPressed, setIsPressed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const surface = (pressed: boolean, hovered: boolean): ViewStyle => {
+    const active = pressed || hovered;
+
     if (variant === 'primary') {
       return {
-        backgroundColor: pressed ? colors.olive700 : colors.olive,
-        borderWidth: pressed ? 2 : 0,
-        borderColor: pressed ? colors.gold : 'transparent',
+        backgroundColor: active ? colors.olive700 : colors.olive,
+        borderWidth: 2,
+        borderColor: pressed ? colors.gold : (hovered ? colors.olive700 : colors.olive),
       };
     }
     if (variant === 'destructive') {
       return {
-        backgroundColor: pressed ? '#A1271C' : colors.statusIssue,
-        borderWidth: pressed ? 2 : 0,
-        borderColor: pressed ? colors.gold : 'transparent',
+        backgroundColor: active ? '#A1271C' : colors.statusIssue,
+        borderWidth: 2,
+        borderColor: pressed ? colors.gold : (hovered ? '#A1271C' : colors.statusIssue),
       };
     }
     if (variant === 'solid-gold') {
       return {
-        backgroundColor: pressed ? colors.gold600 : colors.gold,
-        borderWidth: pressed ? 2 : 0,
-        borderColor: pressed ? colors.olive : 'transparent',
+        backgroundColor: active ? colors.gold600 : colors.gold,
+        borderWidth: 2,
+        borderColor: pressed ? colors.olive : (hovered ? colors.gold600 : colors.gold),
       };
     }
     if (variant === 'secondary') {
       return {
-        backgroundColor: pressed ? colors.canvas200 : colors.canvas,
+        backgroundColor: active ? colors.canvas200 : colors.canvas,
         borderWidth: 1.5,
         borderColor: colors.olive,
       };
     }
     if (variant === 'tertiary') {
       return {
-        backgroundColor: pressed ? colors.canvas200 : 'transparent',
+        backgroundColor: active ? colors.canvas200 : 'transparent',
         borderWidth: 0,
         borderColor: 'transparent',
       };
     }
-    // ghost — transparent fill, olive outline
+    // ghost — transparent fill, NO outline (matches design CSS)
     return {
-      backgroundColor: pressed ? colors.canvas200 : 'transparent',
-      borderWidth: 1.5,
-      borderColor: colors.olive,
+      backgroundColor: active ? colors.canvas200 : 'transparent',
+      borderWidth: 0,
+      borderColor: 'transparent',
     };
   };
 
@@ -127,21 +145,35 @@ export function Button({
   }
 
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? labelText}
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
+      onPressIn={() => {
+        setIsPressed(true);
+        scale.value = withTiming(0.98, { duration: 100, easing: ease.out });
+      }}
+      onPressOut={() => {
+        setIsPressed(false);
+        scale.value = withTiming(1, { duration: 100, easing: ease.out });
+      }}
+      onHoverIn={() => {
+        setIsHovered(true);
+      }}
+      onHoverOut={() => {
+        setIsHovered(false);
+      }}
       onPress={() => {
         if (haptic) haptics.tap();
         onPress?.();
       }}
       hitSlop={8}
-      style={({ pressed }) => [
+      style={[
         {
           width: full ? '100%' : undefined,
           minHeight: isLarge ? 56 : 48,
-          borderRadius: 12,
+          borderRadius: radius.button,
           paddingHorizontal: 20,
           alignItems: 'center',
           justifyContent: 'center',
@@ -149,7 +181,8 @@ export function Button({
           gap: 8,
           opacity: isDisabled ? 0.4 : 1,
         },
-        surface(pressed),
+        surface(isPressed, isHovered),
+        animStyle,
         style,
       ]}
     >
@@ -165,7 +198,7 @@ export function Button({
                 color: textColor,
                 fontFamily: fonts.arabicSemiBold,
                 fontSize: isLarge ? 17 : 16,
-                lineHeight: isLarge ? 22 : 20,
+                lineHeight: isLarge ? 17 : 16,
                 includeFontPadding: false,
                 textAlignVertical: 'center',
               }}
@@ -178,6 +211,7 @@ export function Button({
           {trailing}
         </>
       )}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
+
