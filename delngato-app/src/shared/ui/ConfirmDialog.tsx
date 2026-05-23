@@ -92,56 +92,60 @@ export function ConfirmDialog({
           ) : null}
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 20 }}>
             {cancelLabel ? (
-              <Pressable
-                onPress={onCancel}
-                style={({ pressed }) => ({
-                  flex: 1,
-                  minHeight: 44,
-                  borderRadius: 10,
-                  backgroundColor: pressed ? colors.canvas300 : colors.canvas200,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 12,
-                })}
-              >
-                <Text
-                  style={{
-                    fontFamily: fonts.arabicSemiBold,
-                    fontSize: 15,
-                    color: colors.ink,
-                    includeFontPadding: false,
-                  }}
-                >
-                  {cancelLabel}
-                </Text>
+              <Pressable onPress={onCancel} style={{ flex: 1 }}>
+                {({ pressed }) => (
+                  <View
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 10,
+                      backgroundColor: pressed ? colors.canvas300 : colors.canvas200,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingHorizontal: 12,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabicSemiBold,
+                        fontSize: 15,
+                        color: colors.ink,
+                        includeFontPadding: false,
+                      }}
+                    >
+                      {cancelLabel}
+                    </Text>
+                  </View>
+                )}
               </Pressable>
             ) : null}
-            <Pressable
-              onPress={onConfirm}
-              style={({ pressed }) => {
+            <Pressable onPress={onConfirm} style={{ flex: 1 }}>
+              {({ pressed }) => {
                 const base = destructive ? colors.statusIssue : colors.olive;
                 const pressedBg = destructive ? '#A1271C' : colors.olive700;
-                return {
-                  flex: 1,
-                  minHeight: 44,
-                  borderRadius: 10,
-                  backgroundColor: pressed ? pressedBg : base,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 12,
-                };
+                return (
+                  <View
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 10,
+                      backgroundColor: pressed ? pressedBg : base,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingHorizontal: 12,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabicSemiBold,
+                        fontSize: 15,
+                        color: colors.canvas,
+                        includeFontPadding: false,
+                      }}
+                    >
+                      {confirmLabel}
+                    </Text>
+                  </View>
+                );
               }}
-            >
-              <Text
-                style={{
-                  fontFamily: fonts.arabicSemiBold,
-                  fontSize: 15,
-                  color: colors.canvas,
-                  includeFontPadding: false,
-                }}
-              >
-                {confirmLabel}
-              </Text>
             </Pressable>
           </View>
         </Pressable>

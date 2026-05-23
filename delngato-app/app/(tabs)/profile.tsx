@@ -244,19 +244,56 @@ export default function Profile() {
 
         <View style={{ paddingHorizontal: 22, paddingTop: 8 }}>
           <Pressable
-            onPress={() => setLogoutVisible(true)}
-            style={{ flexDirection, alignItems: 'center', gap: 8, paddingVertical: 12 }}
+            onPress={() => {
+              Alert.alert('دلنجاتُو', 'سيتم تفعيل هذه الخاصية قريباً', [{ text: 'تمام' }]);
+            }}
           >
-            <Icon.logout size={18} color={colors.statusIssueText} />
-            <Text
-              style={{
-                fontFamily: fonts.arabicSemiBold,
-                fontSize: 14,
-                color: colors.statusIssueText,
-              }}
-            >
-              {t('profile.logout')}
-            </Text>
+            {({ pressed }) => (
+              <View
+                style={{
+                  flexDirection,
+                  alignItems: 'center',
+                  gap: 8,
+                  paddingVertical: 12,
+                  opacity: pressed ? 0.7 : 1,
+                }}
+              >
+                <Icon.trash size={18} color={colors.inkMute} />
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicSemiBold,
+                    fontSize: 14,
+                    color: colors.inkMute,
+                  }}
+                >
+                  حذف الحساب نهائياً
+                </Text>
+              </View>
+            )}
+          </Pressable>
+          <Pressable onPress={() => setLogoutVisible(true)}>
+            {({ pressed }) => (
+              <View
+                style={{
+                  flexDirection,
+                  alignItems: 'center',
+                  gap: 8,
+                  paddingVertical: 12,
+                  opacity: pressed ? 0.7 : 1,
+                }}
+              >
+                <Icon.logout size={18} color={colors.statusIssueText} />
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicSemiBold,
+                    fontSize: 14,
+                    color: colors.statusIssueText,
+                  }}
+                >
+                  {t('profile.logout')}
+                </Text>
+              </View>
+            )}
           </Pressable>
         </View>
 
