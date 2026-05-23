@@ -42,8 +42,21 @@ export default function Shop() {
       return;
     }
     const existing = items.find((i) => i.id === productId);
-    if (existing) setItemQty(productId, qty);
-    else addItem(product, shop, qty);
+    if (existing) {
+      setItemQty(productId, qty);
+      return;
+    }
+    const result = addItem(product, shop, qty);
+    if (!result.ok && result.reason === 'conflict') {
+      router.push({
+        pathname: '/merchant-conflict',
+        params: {
+          newShopId: shop.id,
+          newProductId: productId,
+          newQty: String(qty),
+        },
+      });
+    }
   };
 
   return (
@@ -142,6 +155,88 @@ export default function Shop() {
             <Text style={{ fontFamily: fonts.arabic, fontSize: 13, lineHeight: 22, color: colors.inkLight }}>
               {shop.desc}
             </Text>
+          </View>
+
+          {/* Quick actions strip */}
+          <View style={{ flexDirection, gap: 8, marginTop: 12 }}>
+            <Pressable
+              onPress={() => router.push({ pathname: '/reviews', params: { shopId: shop.id } })}
+              style={({ pressed }) => ({
+                flex: 1,
+                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: colors.canvas300,
+                padding: 10,
+                flexDirection,
+                alignItems: 'center',
+                gap: 8,
+              })}
+            >
+              <Icon.star size={16} color={colors.gold} />
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicBold,
+                    fontSize: 12.5,
+                    color: colors.ink,
+                    textAlign: isRtl ? 'right' : 'left',
+                  }}
+                >
+                  التقييمات
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.arabic,
+                    fontSize: 10,
+                    color: colors.inkLight,
+                    textAlign: isRtl ? 'right' : 'left',
+                  }}
+                >
+                  {shop.rating} · شوف الكل
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                router.push({ pathname: '/contact-merchant', params: { shopId: shop.id } })
+              }
+              style={({ pressed }) => ({
+                flex: 1,
+                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: colors.canvas300,
+                padding: 10,
+                flexDirection,
+                alignItems: 'center',
+                gap: 8,
+              })}
+            >
+              <Icon.message size={16} color={colors.olive} />
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicBold,
+                    fontSize: 12.5,
+                    color: colors.ink,
+                    textAlign: isRtl ? 'right' : 'left',
+                  }}
+                >
+                  تواصل مع المحل
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.arabic,
+                    fontSize: 10,
+                    color: colors.inkLight,
+                    textAlign: isRtl ? 'right' : 'left',
+                  }}
+                >
+                  رد في دقايق
+                </Text>
+              </View>
+            </Pressable>
           </View>
         </View>
 

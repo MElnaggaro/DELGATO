@@ -19,6 +19,7 @@ import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
 import { useCartStore, useCartSubtotal } from '@/features/cart/store';
 import { useSelectedAddress } from '@/features/addresses/store';
+import { useLoyaltyStore } from '@/features/loyalty/store';
 
 type PayKind = 'cash' | 'card' | 'wallet';
 type Timing = 'asap' | 'sched';
@@ -32,14 +33,24 @@ export default function Checkout() {
   const items = useCartStore((s) => s.items);
   const subtotal = useCartSubtotal();
   const addr = useSelectedAddress();
+  const appliedPromo = useCartStore((s) => s.appliedPromo);
+  const tip = useCartStore((s) => s.tip);
+  const scheduled = useCartStore((s) => s.scheduled);
+  const deliveryNote = useCartStore((s) => s.deliveryNote);
+  const setAppliedPromo = useCartStore((s) => s.setAppliedPromo);
+  const walletBalance = useLoyaltyStore((s) => s.walletBalance);
   const [pay, setPay] = useState<PayKind>('cash');
-  const [timing, setTiming] = useState<Timing>('asap');
+  const [timing, setTiming] = useState<Timing>(scheduled ? 'sched' : 'asap');
   const [placing, setPlacing] = useState(false);
-  const total = subtotal + DELIVERY_FEE;
+  const total = subtotal + DELIVERY_FEE + tip;
 
   const placeOrder = () => {
     if (pay === 'card') {
       router.push('/payment');
+      return;
+    }
+    if (pay === 'wallet') {
+      router.push('/wallet-pay');
       return;
     }
     setPlacing(true);
@@ -101,13 +112,16 @@ export default function Checkout() {
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {([
               { k: 'asap', t: t('checkout.timingAsap'), s: '١٥–٢٠ د' },
-              { k: 'sched', t: t('checkout.timingSchedule'), s: t('checkout.timingChoose') },
+              { k: 'sched', t: t('checkout.timingSchedule'), s: scheduled?.slot ?? t('checkout.timingChoose') },
             ] as { k: Timing; t: string; s: string }[]).map((o) => {
               const active = timing === o.k;
               return (
                 <Pressable
                   key={o.k}
-                  onPress={() => setTiming(o.k)}
+                  onPress={() => {
+                    setTiming(o.k);
+                    if (o.k === 'sched') router.push('/scheduled-delivery');
+                  }}
                   style={{
                     flex: 1,
                     backgroundColor: active ? colors.olive : colors.bgElevated,
@@ -143,6 +157,49 @@ export default function Checkout() {
           </View>
         </Section>
 
+        {/* Delivery note row */}
+        <Section label="ملاحظة للكابتن">
+          <LinkRow
+            icon={<Icon.message size={18} color={colors.olive} />}
+            title={deliveryNote || 'ضيف ملاحظة للكابتن'}
+            sub={deliveryNote ? 'اضغط للتعديل' : 'مثلاً: اتصل قبل ما توصل'}
+            onPress={() => router.push('/delivery-notes')}
+          />
+        </Section>
+
+        {/* Promo row */}
+        <Section label="كود الخصم">
+          <LinkRow
+            iconBg="rgba(232,177,79,0.18)"
+            icon={<Icon.tag size={18} color={colors.statusPendingText} />}
+            title={
+              appliedPromo
+                ? `${appliedPromo.title} · ${appliedPromo.value}`
+                : 'عندك كود خصم؟'
+            }
+            titleColor={appliedPromo ? colors.olive : colors.ink}
+            sub={appliedPromo ? `كود ${appliedPromo.code}` : 'اضغط للإضافة'}
+            trailing={
+              appliedPromo ? (
+                <Pressable onPress={() => setAppliedPromo(null)} hitSlop={8}>
+                  <Icon.x size={16} color={colors.inkMute} />
+                </Pressable>
+              ) : null
+            }
+            onPress={() => router.push('/promo-code')}
+          />
+        </Section>
+
+        {/* Tip row */}
+        <Section label="إكرامية الكابتن">
+          <LinkRow
+            icon={<Icon.heart size={18} color={colors.olive} />}
+            title={tip > 0 ? `${arDigits(tip)} ج.م إكرامية` : 'بلاش إكرامية'}
+            sub={tip > 0 ? 'هتروح للكابتن ١٠٠٪' : 'الإكرامية اختيارية وبتروح للكابتن'}
+            onPress={() => router.push('/tip-driver')}
+          />
+        </Section>
+
         <Section label={t('checkout.paymentSection')}>
           <View style={{ gap: 8 }}>
             {([
@@ -160,10 +217,10 @@ export default function Checkout() {
               },
               {
                 k: 'wallet' as const,
-                l: t('checkout.paymentWallet'),
-                s: t('checkout.paymentWalletSub'),
-                icon: <Icon.wallet size={20} color={colors.olive} />,
-                disabled: true,
+                l: `محفظة دلنجاتُو · ${arDigits(walletBalance)} ج.م`,
+                s: 'كاش باك ١٠٪',
+                icon: <Icon.wallet size={20} color={pay === 'wallet' ? colors.canvas : colors.olive} />,
+                disabled: false,
               },
             ]).map((o) => {
               const active = pay === o.k;
@@ -270,6 +327,7 @@ export default function Checkout() {
             >
               <Row label={t('cart.totalItems')} value={`${arDigits(subtotal)} ج.م`} />
               <Row label={t('cart.deliveryFee')} value={`${arDigits(DELIVERY_FEE)} ج.م`} />
+              {tip > 0 ? <Row label="إكرامية الكابتن" value={`${arDigits(tip)} ج.م`} /> : null}
               <Row label={t('cart.grandTotal')} value={`${arDigits(total)} ج.م`} bold />
             </View>
           </Card>
@@ -325,5 +383,78 @@ export default function Checkout() {
         </Button>
       </StickyActionBar>
     </View>
+  );
+}
+
+function LinkRow({
+  icon,
+  iconBg,
+  title,
+  titleColor,
+  sub,
+  trailing,
+  onPress,
+}: {
+  icon: React.ReactNode;
+  iconBg?: string;
+  title: string;
+  titleColor?: string;
+  sub?: string;
+  trailing?: React.ReactNode;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => ({
+        backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+        borderRadius: 12,
+        padding: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        borderWidth: 1,
+        borderColor: colors.canvas300,
+      })}
+    >
+      <View
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          backgroundColor: iconBg ?? 'rgba(31,74,61,0.08)',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {icon}
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{
+            fontFamily: fonts.arabicSemiBold,
+            fontSize: 13.5,
+            color: titleColor ?? colors.ink,
+          }}
+          numberOfLines={1}
+        >
+          {title}
+        </Text>
+        {sub ? (
+          <Text
+            style={{
+              fontFamily: fonts.arabic,
+              fontSize: 11,
+              color: colors.inkLight,
+              marginTop: 2,
+            }}
+            numberOfLines={1}
+          >
+            {sub}
+          </Text>
+        ) : null}
+      </View>
+      {trailing ?? <IconForward size={18} color={colors.inkLight} />}
+    </Pressable>
   );
 }

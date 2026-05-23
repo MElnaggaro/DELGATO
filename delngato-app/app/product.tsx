@@ -1,17 +1,28 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { AppBar, Badge, Button, Icon, Stepper, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
+import {
+  AppBar,
+  Badge,
+  Button,
+  Icon,
+  Stepper,
+  StickyActionBar,
+  STICKY_CTA_HEIGHT,
+  showToast,
+} from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { PRODUCTS, SHOPS, findProduct, findShop } from '@/features/catalog/data';
 import { useCartStore } from '@/features/cart/store';
+import { useDiscoveryStore } from '@/features/discovery/store';
 
 export default function Product() {
   const params = useLocalSearchParams<{ id?: string; shopId?: string }>();
+  const router = useRouter();
   const product = useMemo(() => findProduct(params.id ?? '') ?? PRODUCTS[0]!, [params.id]);
   const shop = useMemo(() => findShop(params.shopId ?? '') ?? SHOPS[0]!, [params.shopId]);
 
@@ -20,6 +31,7 @@ export default function Product() {
   const setItemQty = useCartStore((s) => s.setItemQty);
   const favorites = useCartStore((s) => s.favorites);
   const toggleFavorite = useCartStore((s) => s.toggleFavorite);
+  const pushRecent = useDiscoveryStore((s) => s.pushRecent);
   const inCart = items.find((i) => i.id === product.id);
 
   const [qty, setQty] = useState(inCart?.qty ?? 1);
@@ -29,9 +41,31 @@ export default function Product() {
 
   const isFav = favorites.includes(product.id);
 
+  // Track recently-viewed once per mount.
+  useMemo(() => {
+    if (product.id) pushRecent(product.id);
+  }, [product.id, pushRecent]);
+
   const onAdd = () => {
-    if (inCart) setItemQty(product.id, qty);
-    else addItem(product, shop, qty);
+    if (inCart) {
+      setItemQty(product.id, qty);
+      showToast(`اتحدث المنتج في السلة`, <Icon.check size={16} color={colors.gold} />);
+      safeBack(`/shop?id=${shop.id}`);
+      return;
+    }
+    const result = addItem(product, shop, qty);
+    if (!result.ok && result.reason === 'conflict') {
+      router.push({
+        pathname: '/merchant-conflict',
+        params: {
+          newShopId: shop.id,
+          newProductId: product.id,
+          newQty: String(qty),
+        },
+      });
+      return;
+    }
+    showToast(`اتضاف ${arDigits(qty)}× ${product.name}`, <Icon.check size={16} color={colors.gold} />);
     safeBack(`/shop?id=${shop.id}`);
   };
 
@@ -209,6 +243,52 @@ export default function Product() {
               textAlign: isRtl ? 'right' : 'left',
             }}
           />
+        </View>
+
+        {/* Customize / Similar quick links */}
+        <View style={{ paddingHorizontal: 18, paddingBottom: 24, flexDirection, gap: 8 }}>
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: '/customize', params: { id: product.id, shopId: shop.id } })
+            }
+            style={({ pressed }) => ({
+              flex: 1,
+              backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.canvas300,
+              padding: 12,
+              flexDirection,
+              alignItems: 'center',
+              gap: 8,
+            })}
+          >
+            <Icon.edit size={16} color={colors.olive} />
+            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink }}>
+              خصّص الطلب
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: '/similar', params: { id: product.id, shopId: shop.id } })
+            }
+            style={({ pressed }) => ({
+              flex: 1,
+              backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.canvas300,
+              padding: 12,
+              flexDirection,
+              alignItems: 'center',
+              gap: 8,
+            })}
+          >
+            <Icon.star size={16} color={colors.olive} />
+            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink }}>
+              منتجات شبيهة
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
 

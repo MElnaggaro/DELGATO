@@ -1,27 +1,14 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
-import { AppBar } from '@/shared/ui';
+import { AppBar, ToggleSwitch } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
-
-type SettingsState = {
-  orders: boolean;
-  promos: boolean;
-  news: boolean;
-  push: boolean;
-  sms: boolean;
-};
+import { useSettingsStore, type NotificationPrefs } from '@/features/settings';
 
 export default function NotificationSettings() {
-  const [s, setS] = useState<SettingsState>({
-    orders: true,
-    promos: true,
-    news: false,
-    push: true,
-    sms: true,
-  });
-  const t = (k: keyof SettingsState) => setS({ ...s, [k]: !s[k] });
+  const prefs = useSettingsStore((s) => s.notifications);
+  const setNotification = useSettingsStore((s) => s.setNotification);
+  const t = (k: keyof NotificationPrefs) => setNotification(k, !prefs[k]);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -32,29 +19,29 @@ export default function NotificationSettings() {
           <Toggle
             label="تحديثات الطلبات"
             sub="حالة الطلب، الكابتن، التوصيل"
-            v={s.orders}
+            v={prefs.orders}
             onChange={() => t('orders')}
           />
           <Hairline />
           <Toggle
             label="عروض وخصومات"
             sub="آخر العروض من المحلات"
-            v={s.promos}
+            v={prefs.promos}
             onChange={() => t('promos')}
           />
           <Hairline />
           <Toggle
             label="أخبار دلنجاتُو"
             sub="محلات جديدة وميزات جديدة"
-            v={s.news}
+            v={prefs.news}
             onChange={() => t('news')}
           />
         </Group>
 
         <Group title="القناة">
-          <Toggle label="إشعارات داخل التطبيق" v={s.push} onChange={() => t('push')} />
+          <Toggle label="إشعارات داخل التطبيق" v={prefs.push} onChange={() => t('push')} />
           <Hairline />
-          <Toggle label="رسائل SMS" v={s.sms} onChange={() => t('sms')} />
+          <Toggle label="رسائل SMS" v={prefs.sms} onChange={() => t('sms')} />
         </Group>
       </ScrollView>
     </View>
@@ -124,34 +111,7 @@ function Toggle({
           </Text>
         ) : null}
       </View>
-      <Pressable
-        onPress={onChange}
-        accessibilityRole="switch"
-        accessibilityState={{ checked: v }}
-        style={{
-          width: 44,
-          height: 26,
-          borderRadius: 100,
-          backgroundColor: v ? colors.olive : colors.canvas300,
-          justifyContent: 'center',
-          padding: 3,
-        }}
-      >
-        <View
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 100,
-            backgroundColor: colors.bgElevated,
-            alignSelf: v ? 'flex-end' : 'flex-start',
-            shadowColor: '#000',
-            shadowOpacity: 0.15,
-            shadowOffset: { width: 0, height: 2 },
-            shadowRadius: 2,
-            elevation: 1,
-          }}
-        />
-      </Pressable>
+      <ToggleSwitch value={v} onChange={onChange} />
     </View>
   );
 }

@@ -15,48 +15,94 @@ export type CartItem = {
   shopId: string;
 };
 
+export type AppliedPromo = {
+  code: string;
+  title: string;
+  value: string;
+  shopId?: string;
+};
+
+export type ScheduledSlot = {
+  day: string;
+  daySub: string;
+  slot: string;
+};
+
+export type AddItemResult =
+  | { ok: true }
+  | { ok: false; reason: 'conflict'; existingShop: string; existingShopId: string };
+
 type State = {
   items: CartItem[];
   favorites: string[];
+  appliedPromo: AppliedPromo | null;
+  tip: number;
+  scheduled: ScheduledSlot | null;
+  deliveryNote: string;
 };
 
 type Actions = {
-  addItem: (product: Product, shop: Shop, qty?: number) => void;
+  addItem: (product: Product, shop: Shop, qty?: number) => AddItemResult;
   setItemQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
   clear: () => void;
+  forceReplaceWith: (product: Product, shop: Shop, qty?: number) => void;
   toggleFavorite: (shopId: string) => void;
   replaceWith: (items: CartItem[]) => void;
+  setAppliedPromo: (promo: AppliedPromo | null) => void;
+  setTip: (tip: number) => void;
+  setScheduled: (slot: ScheduledSlot | null) => void;
+  setDeliveryNote: (note: string) => void;
 };
+
+function pushItem(items: CartItem[], product: Product, shop: Shop, qty: number): CartItem[] {
+  const existing = items.findIndex((i) => i.id === product.id);
+  if (existing !== -1) {
+    const next = [...items];
+    next[existing] = { ...next[existing]!, qty: next[existing]!.qty + qty };
+    return next;
+  }
+  return [
+    ...items,
+    {
+      id: product.id,
+      name: product.name,
+      sub: product.sub,
+      price: product.price,
+      qty,
+      hue: product.hue,
+      shop: shop.name,
+      shopId: shop.id,
+    },
+  ];
+}
 
 export const useCartStore = create<State & Actions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       items: [],
       favorites: ['abuhassan', 'noor'],
-      addItem: (product, shop, qty = 1) =>
-        set((s) => {
-          const existing = s.items.findIndex((i) => i.id === product.id);
-          if (existing !== -1) {
-            const next = [...s.items];
-            next[existing] = { ...next[existing]!, qty: next[existing]!.qty + qty };
-            return { items: next };
-          }
+      appliedPromo: null,
+      tip: 0,
+      scheduled: null,
+      deliveryNote: '',
+      addItem: (product, shop, qty = 1) => {
+        const current = get().items;
+        if (current.length > 0 && current[0]!.shopId && current[0]!.shopId !== shop.id) {
           return {
-            items: [
-              ...s.items,
-              {
-                id: product.id,
-                name: product.name,
-                sub: product.sub,
-                price: product.price,
-                qty,
-                hue: product.hue,
-                shop: shop.name,
-                shopId: shop.id,
-              },
-            ],
+            ok: false,
+            reason: 'conflict',
+            existingShop: current[0]!.shop,
+            existingShopId: current[0]!.shopId,
           };
+        }
+        set({ items: pushItem(current, product, shop, qty) });
+        return { ok: true };
+      },
+      forceReplaceWith: (product, shop, qty = 1) =>
+        set({
+          items: pushItem([], product, shop, qty),
+          appliedPromo: null,
         }),
       setItemQty: (id, qty) =>
         set((s) => {
@@ -66,7 +112,8 @@ export const useCartStore = create<State & Actions>()(
           };
         }),
       remove: (id) => set((s) => ({ items: s.items.filter((i) => i.id !== id) })),
-      clear: () => set({ items: [] }),
+      clear: () =>
+        set({ items: [], appliedPromo: null, tip: 0, scheduled: null, deliveryNote: '' }),
       toggleFavorite: (shopId) =>
         set((s) => ({
           favorites: s.favorites.includes(shopId)
@@ -74,6 +121,10 @@ export const useCartStore = create<State & Actions>()(
             : [...s.favorites, shopId],
         })),
       replaceWith: (items) => set({ items }),
+      setAppliedPromo: (promo) => set({ appliedPromo: promo }),
+      setTip: (tip) => set({ tip }),
+      setScheduled: (scheduled) => set({ scheduled }),
+      setDeliveryNote: (deliveryNote) => set({ deliveryNote }),
     }),
     {
       name: 'delngato.cart',

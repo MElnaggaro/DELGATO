@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { AppBar, Button, Chip, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
+import { AppBar, Button, Chip, Icon, StickyActionBar, STICKY_CTA_HEIGHT, showToast } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
@@ -142,7 +142,10 @@ export default function Rate() {
           size="lg"
           full
           disabled={stars === 0}
-          onPress={() => router.back()}
+          onPress={() => {
+            showToast('شكراً على رأيك', <Icon.check size={16} color={colors.gold} />);
+            router.back();
+          }}
         >
           إرسال التقييم
         </Button>

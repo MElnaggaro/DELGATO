@@ -17,6 +17,7 @@ import { queryClient } from '@/services/api/queryClient';
 import { colors } from '@/shared/theme';
 import { useAuthStore, wireAuthIntoApiClient } from '@/features/auth/store';
 import { useRtl } from '@/shared/hooks/useRtl';
+import { ToastHost } from '@/shared/ui/toast';
 
 wireAuthIntoApiClient();
 
@@ -100,6 +101,7 @@ function RootStack() {
           animationDuration: 300,
         }}
       />
+      <ToastHost />
     </View>
   );
 }

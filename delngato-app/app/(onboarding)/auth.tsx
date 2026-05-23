@@ -162,7 +162,10 @@ export default function AuthPhoneScreen() {
           >
             {t('common.continue')}
           </Button>
-          <Pressable style={{ marginTop: 14, alignItems: 'center' }}>
+          <Pressable
+            style={{ marginTop: 14, alignItems: 'center' }}
+            onPress={() => router.push('/(onboarding)/forgot-password')}
+          >
             <Text
               style={{
                 fontFamily: fonts.arabic,
@@ -170,9 +173,9 @@ export default function AuthPhoneScreen() {
                 color: colors.inkLight,
               }}
             >
-              {t('auth.supportPrompt')}{' '}
+              مشكلة في الدخول؟{' '}
               <Text style={{ fontFamily: fonts.arabicSemiBold, color: colors.olive }}>
-                {t('auth.supportLink')}
+                نسيت كلمة السر
               </Text>
             </Text>
           </Pressable>

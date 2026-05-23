@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
@@ -224,7 +224,10 @@ export default function Tracking() {
                 <CircleButton
                   variant="primary"
                   onPress={() =>
-                    Alert.alert('الشات', 'هتقدر تكلم الكابتن في تحديث قريب.', [{ text: 'تمام' }])
+                    router.push({
+                      pathname: '/chat',
+                      params: { kind: 'driver', name: 'محمود السيد', avatar: 'م' },
+                    })
                   }
                   accessibilityLabel="شات مع الكابتن"
                 >

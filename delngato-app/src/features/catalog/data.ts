@@ -294,6 +294,74 @@ export const ORDERS_HISTORY: OrderHistory[] = [
 export const RECENT_SEARCHES = ['لبن', 'صيدلية', 'خبز', 'طعمية'];
 export const TRENDING_SEARCHES = ['كنافة', 'بيض بلدي', 'مياه', 'شاي', 'مكرونة'];
 
+export type DealKind = 'hero' | 'percent' | 'cashback' | 'bogo' | 'flat';
+
+export type Deal = {
+  id: string;
+  kind: DealKind;
+  title: string;
+  sub: string;
+  bgFrom: string;
+  bgTo: string;
+  icon: 'bike' | 'pill' | 'wallet' | 'utensils' | 'tag';
+  code: string;
+  value: string;
+  shopId?: string;
+};
+
+export const DEALS: Deal[] = [
+  { id: 'd1', kind: 'hero', title: 'توصيل ببلاش', sub: 'على أول طلب بكود DLN10', bgFrom: '#1F4A3D', bgTo: '#173629', icon: 'bike', code: 'DLN10', value: 'توصيل مجاني' },
+  { id: 'd2', kind: 'percent', title: 'خصم ٢٥٪', sub: 'على كل صيدلية النور', bgFrom: '#2C5C4B', bgTo: '#1F4A3D', icon: 'pill', code: 'NOOR25', value: '-٢٥٪', shopId: 'noor' },
+  { id: 'd3', kind: 'cashback', title: 'كاش باك ١٠٪', sub: 'على المحفظة لمدة أسبوع', bgFrom: '#E8B14F', bgTo: '#C9933A', icon: 'wallet', code: 'WALLET10', value: '+١٠٪' },
+  { id: 'd4', kind: 'bogo', title: '١+١ مجاناً', sub: 'فول وطعمية المصري — كل يوم جمعة', bgFrom: '#A66B2C', bgTo: '#7A4D1F', icon: 'utensils', code: 'FRIDAY', value: '١+١', shopId: 'masry' },
+  { id: 'd5', kind: 'flat', title: '٢٠ ج.م خصم', sub: 'على أي طلب فوق ١٥٠ ج.م', bgFrom: '#3C6B4F', bgTo: '#234731', icon: 'tag', code: 'SAVE20', value: '-٢٠ ج' },
+];
+
+export type Review = {
+  id: string;
+  name: string;
+  avatar: string;
+  stars: number;
+  date: string;
+  body: string;
+  tags: string[];
+};
+
+export const REVIEWS: Review[] = [
+  { id: 'r1', name: 'سارة عبد الله', avatar: 'س', stars: 5, date: 'إمبارح', body: 'المنتج وصل طازج والكابتن لطيف. هطلب تاني أكيد.', tags: ['التوصيل سريع', 'المنتجات نضيفة'] },
+  { id: 'r2', name: 'محمد إبراهيم', avatar: 'م', stars: 4, date: 'من ٣ أيام', body: 'كله كويس بس التوصيل اتأخر شوية. عموماً تجربة ممتازة.', tags: ['الكابتن مؤدب'] },
+  { id: 'r3', name: 'هدى مصطفى', avatar: 'هـ', stars: 5, date: 'الأسبوع اللي فات', body: 'أحسن من ٢٤ ساعة. الجبنة طازة والأسعار مناسبة.', tags: ['الأسعار مناسبة', 'المنتجات نضيفة'] },
+  { id: 'r4', name: 'يوسف حلمي', avatar: 'ي', stars: 5, date: 'من أسبوعين', body: 'ربنا يبارك في دلنجاتُو. وفّروا علينا وقت وفلوس مواصلات.', tags: ['التوصيل سريع'] },
+];
+
+export type AddonOption = { id: string; name: string; price: number };
+
+export const PRODUCT_ADDONS = {
+  size: {
+    label: 'الحجم',
+    required: true,
+    kind: 'one' as const,
+    options: [
+      { id: 's', name: 'صغير', price: 0 },
+      { id: 'm', name: 'وسط', price: 8 },
+      { id: 'l', name: 'كبير', price: 16 },
+    ],
+  },
+  extras: {
+    label: 'إضافات',
+    required: false,
+    kind: 'multi' as const,
+    options: [
+      { id: 'e1', name: 'كيس إضافي', price: 2 },
+      { id: 'e2', name: 'تغليف هدية', price: 10 },
+      { id: 'e3', name: 'فاتورة مطبوعة', price: 0 },
+    ],
+  },
+  notes: { label: 'ملاحظات للمحل', required: false, kind: 'text' as const },
+};
+
+export const FEATURED_IDS = ['abuhassan', 'masry', 'noor'];
+
 export function findShop(id: string): Shop | undefined {
   return SHOPS.find((s) => s.id === id);
 }

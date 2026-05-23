@@ -162,13 +162,62 @@ export default function OrderDetail() {
         </View>
 
         <View style={{ paddingHorizontal: 18, paddingTop: 18, gap: 10 }}>
+          {isLive ? (
+            <>
+              <Button
+                variant="secondary"
+                full
+                leading={<Icon.message size={16} color={colors.olive} />}
+                onPress={() =>
+                  router.push({
+                    pathname: '/chat',
+                    params: { kind: 'driver', name: 'محمود السيد', avatar: 'م' },
+                  })
+                }
+              >
+                شات مع الكابتن
+              </Button>
+              <Button
+                variant="ghost"
+                full
+                leading={<Icon.x size={16} color={colors.statusIssueText} />}
+                onPress={() => router.push({ pathname: '/cancel-order', params: { id: order.id } })}
+              >
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicSemiBold,
+                    fontSize: 16,
+                    color: colors.statusIssueText,
+                  }}
+                >
+                  إلغاء الطلب
+                </Text>
+              </Button>
+            </>
+          ) : null}
           {!isLive && order.status !== 'cancelled' ? (
             <>
               <Button variant="primary" full onPress={() => router.push('/cart')}>
                 إعادة الطلب
               </Button>
+              <Button
+                variant="secondary"
+                full
+                leading={<Icon.receipt size={16} color={colors.olive} />}
+                onPress={() => router.push({ pathname: '/invoice', params: { id: order.id } })}
+              >
+                عرض الفاتورة
+              </Button>
               <Button variant="ghost" full onPress={() => router.push('/rate')}>
                 {t('tracking.rate')}
+              </Button>
+              <Button
+                variant="ghost"
+                full
+                leading={<Icon.refresh size={16} color={colors.olive} />}
+                onPress={() => router.push({ pathname: '/refund', params: { id: order.id } })}
+              >
+                طلب استرجاع
               </Button>
             </>
           ) : null}

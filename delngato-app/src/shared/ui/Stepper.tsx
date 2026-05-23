@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
+import { Bump } from '@/shared/motion';
 import { Icon } from './Icon';
 
 type Props = {
@@ -43,17 +44,18 @@ export function Stepper({ value, onChange, min = 0, compact = false }: Props) {
       >
         <Icon.minus size={iconSize} color={colors.olive} />
       </Pressable>
-      <Text
-        style={{
-          minWidth: 22,
-          textAlign: 'center',
-          fontFamily: fonts.arabicSemiBold,
-          fontSize: compact ? 14 : 16,
-          color: colors.ink,
-        }}
-      >
-        {arDigits(value)}
-      </Text>
+      <Bump trigger={value} style={{ minWidth: 22, alignItems: 'center', justifyContent: 'center' }}>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: fonts.arabicSemiBold,
+            fontSize: compact ? 14 : 16,
+            color: colors.ink,
+          }}
+        >
+          {arDigits(value)}
+        </Text>
+      </Bump>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="زيادة"

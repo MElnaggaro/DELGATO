@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -29,6 +29,8 @@ export default function Cart() {
   const arDigits = useArabicDigits();
   const items = useCartStore((s) => s.items);
   const setItemQty = useCartStore((s) => s.setItemQty);
+  const appliedPromo = useCartStore((s) => s.appliedPromo);
+  const setAppliedPromo = useCartStore((s) => s.setAppliedPromo);
   const subtotal = useCartSubtotal();
   const [confirm, setConfirm] = useState<{ id: string; name: string } | null>(null);
 
@@ -200,46 +202,92 @@ export default function Cart() {
 
         {/* Promo */}
         <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
-          <Card padding={14}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  backgroundColor: 'rgba(232,177,79,0.18)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon.tag size={18} color={colors.statusPendingText} />
+          <Pressable onPress={() => router.push('/promo-code')}>
+            <Card padding={14}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    backgroundColor: 'rgba(232,177,79,0.18)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Icon.tag size={18} color={colors.statusPendingText} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  {appliedPromo ? (
+                    <>
+                      <Text
+                        style={{
+                          fontFamily: fonts.arabicBold,
+                          fontSize: 13,
+                          color: colors.olive,
+                        }}
+                      >
+                        {appliedPromo.title} · {appliedPromo.value}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: fonts.arabicMedium,
+                          fontSize: 11,
+                          color: colors.inkLight,
+                          marginTop: 2,
+                        }}
+                      >
+                        كود {appliedPromo.code}
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text
+                        style={{
+                          fontFamily: fonts.arabicSemiBold,
+                          fontSize: 13,
+                          color: colors.ink,
+                        }}
+                      >
+                        {t('cart.promoTitle')}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: fonts.arabic,
+                          fontSize: 11,
+                          color: colors.inkLight,
+                        }}
+                      >
+                        {t('cart.promoSub')}
+                      </Text>
+                    </>
+                  )}
+                </View>
+                {appliedPromo ? (
+                  <Pressable
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      setAppliedPromo(null);
+                    }}
+                    hitSlop={8}
+                    style={{ padding: 4 }}
+                  >
+                    <Icon.x size={16} color={colors.inkMute} />
+                  </Pressable>
+                ) : (
+                  <Text
+                    style={{
+                      fontFamily: fonts.arabicSemiBold,
+                      fontSize: 13,
+                      color: colors.olive,
+                    }}
+                  >
+                    {t('cart.promoAdd')}
+                  </Text>
+                )}
               </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink }}
-                >
-                  {t('cart.promoTitle')}
-                </Text>
-                <Text
-                  style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}
-                >
-                  {t('cart.promoSub')}
-                </Text>
-              </View>
-              <Pressable
-                onPress={() =>
-                  Alert.alert('كود الخصم', 'هتقدر تضيف كود من تحديث قريب.', [{ text: 'تمام' }])
-                }
-                hitSlop={6}
-              >
-                <Text
-                  style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.olive }}
-                >
-                  {t('cart.promoAdd')}
-                </Text>
-              </Pressable>
-            </View>
-          </Card>
+            </Card>
+          </Pressable>
         </View>
 
         {/* Totals */}

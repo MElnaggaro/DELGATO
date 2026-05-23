@@ -1,22 +1,22 @@
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useMemo, useState, useCallback } from 'react';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import {
   ActiveOrderCard,
-  Badge,
   CategoryChip,
   CategoryChipRow,
+  CategoryIconTile,
   EmptyState,
+  HeroDealCard,
   Icon,
-  IconForward,
-  LiveDot,
+  QuickAccessTile,
   SearchField,
   Section,
   ShopCard,
+  showToast,
 } from '@/shared/ui';
 import { FadeUp, Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
@@ -26,6 +26,14 @@ import { useSelectedAddress } from '@/features/addresses/store';
 import { CATEGORIES, SHOPS, type CategoryKey } from '@/features/catalog/data';
 import { useOrdersStore } from '@/features/orders/store';
 
+const CATEGORY_ICON: Record<NonNullable<(typeof CATEGORIES)[number]['icon']>, React.ReactNode> = {
+  store: <Icon.store size={26} color={colors.olive} />,
+  pill: <Icon.pill size={26} color={colors.olive} />,
+  utensils: <Icon.utensils size={26} color={colors.olive} />,
+  cookie: <Icon.cookie size={26} color={colors.olive} />,
+  leaf: <Icon.leaf size={26} color={colors.olive} />,
+};
+
 export default function Home() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -33,6 +41,7 @@ export default function Home() {
   const { isRtl, flexDirection, pick } = useRtl();
   const addr = useSelectedAddress();
   const [cat, setCat] = useState<CategoryKey>('all');
+  const [refreshing, setRefreshing] = useState(false);
 
   const orders = useOrdersStore((s) => s.orders);
   const liveOrder = useMemo(() => orders.find((o) => o.status === 'live'), [orders]);
@@ -41,6 +50,14 @@ export default function Home() {
   );
 
   const filtered = cat === 'all' ? SHOPS : SHOPS.filter((s) => s.catKey === cat);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      showToast('تم تحديث المحلات', <Icon.check size={16} color={colors.gold} />);
+    }, 900);
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -60,14 +77,26 @@ export default function Home() {
             style={{ flex: 1, gap: 2 }}
             hitSlop={6}
           >
-            <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkMute, textAlign: isRtl ? 'right' : 'left' }}>
+            <Text
+              style={{
+                fontFamily: fonts.arabicMedium,
+                fontSize: 11,
+                color: colors.inkMute,
+                textAlign: isRtl ? 'right' : 'left',
+              }}
+            >
               {t('home.deliveryTo')}
             </Text>
             <View style={{ flexDirection, alignItems: 'center', gap: 4 }}>
               <Icon.pin size={16} color={colors.olive} />
               <Text
                 numberOfLines={1}
-                style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
+                style={{
+                  fontFamily: fonts.arabicSemiBold,
+                  fontSize: 15,
+                  color: colors.ink,
+                  textAlign: isRtl ? 'right' : 'left',
+                }}
               >
                 {addr
                   ? `${addr.label === 'home' ? 'البيت' : addr.label === 'work' ? 'الشغل' : 'العنوان'} · ${addr.street}`
@@ -122,8 +151,16 @@ export default function Home() {
       <ScrollView
         contentContainerStyle={{ paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.olive}
+            colors={[colors.olive]}
+          />
+        }
       >
-        {/* Categories scroller (icon row, no section title — matches design-reference Home.jsx). */}
+        {/* Category icon strip (5 tiles, horizontal scroll) */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -131,51 +168,28 @@ export default function Home() {
           contentContainerStyle={{ paddingHorizontal: 18, gap: 12, paddingBottom: 14 }}
         >
           {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
-            <Pressable
+            <CategoryIconTile
               key={c.key}
+              icon={c.icon ? CATEGORY_ICON[c.icon] : <Icon.store size={26} color={colors.olive} />}
+              label={c.label}
               onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
-              style={{ alignItems: 'center', gap: 8, minWidth: 64 }}
-            >
-              <View
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 16,
-                  backgroundColor: colors.canvas200,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {c.icon === 'store' ? (
-                  <Icon.store size={26} color={colors.olive} />
-                ) : c.icon === 'pill' ? (
-                  <Icon.pill size={26} color={colors.olive} />
-                ) : c.icon === 'utensils' ? (
-                  <Icon.utensils size={26} color={colors.olive} />
-                ) : c.icon === 'cookie' ? (
-                  <Icon.cookie size={26} color={colors.olive} />
-                ) : (
-                  <Icon.leaf size={26} color={colors.olive} />
-                )}
-              </View>
-              <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.ink }}>
-                {c.label}
-              </Text>
-            </Pressable>
+            />
           ))}
         </ScrollView>
 
-        {/* Active order banner — solid ink with gold-tinted bike icon, live pulse, RTL-forward chevron. */}
+        {/* Active order banner */}
         {liveOrder ? (
           <View style={{ paddingHorizontal: 18, paddingBottom: 14 }}>
             <ActiveOrderCard
               order={liveOrder}
-              onPress={() => router.push({ pathname: '/tracking', params: { orderId: liveOrder.id } })}
+              onPress={() =>
+                router.push({ pathname: '/tracking', params: { orderId: liveOrder.id } })
+              }
             />
           </View>
         ) : null}
 
-        {/* Filter chips — sit between active banner and hero per design ordering. */}
+        {/* Category filter chips */}
         <CategoryChipRow>
           {CATEGORIES.map((c) => (
             <CategoryChip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
@@ -184,67 +198,54 @@ export default function Home() {
           ))}
         </CategoryChipRow>
 
-        {/* Hero offer — olive→olive-700 gradient with gold accent ring around the bike icon. */}
+        {/* Hero deal banner */}
         <Rise delay={120} style={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 16 }}>
-          <LinearGradient
-            colors={[colors.olive, colors.olive700]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              borderRadius: 14,
-              padding: 18,
-              flexDirection,
-              alignItems: 'center',
-              gap: 14,
-              overflow: 'hidden',
-            }}
-          >
-            <View style={{ flex: 1, gap: 8 }}>
-              <View style={{ flexDirection, alignItems: 'center' }}>
-                <Badge variant="solid-gold">{t('home.offerToday')}</Badge>
-              </View>
-              <Text
-                style={{
-                  fontFamily: fonts.arabicBold,
-                  fontSize: 20,
-                  color: colors.canvas,
-                  lineHeight: 26,
-                  textAlign: isRtl ? 'right' : 'left',
-                }}
-              >
-                {t('home.offerTitle')}
-              </Text>
+          <HeroDealCard
+            badge={t('home.offerToday')}
+            title={t('home.offerTitle')}
+            sub={
               <Text
                 style={{
                   fontFamily: fonts.arabic,
                   fontSize: 12,
                   color: 'rgba(250,248,243,0.7)',
                   textAlign: isRtl ? 'right' : 'left',
+                  marginTop: 6,
                 }}
               >
                 {t('home.offerCode')}{' '}
                 <Text style={{ fontFamily: fonts.arabicBold, color: colors.gold }}>DLN10</Text>
               </Text>
-            </View>
-            <View
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: 100,
-                backgroundColor: 'rgba(232,177,79,0.25)',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon.bike size={36} color={colors.gold} />
-            </View>
-          </LinearGradient>
+            }
+            icon={<Icon.bike size={36} color={colors.gold} />}
+            onPress={() => router.push('/deals')}
+          />
         </Rise>
 
-        {/* Nearby shops section — 18px h3 title + "عرض الكل" trailing action. */}
+        {/* Quick access — 3 tiles */}
+        <View style={{ paddingHorizontal: 18, paddingBottom: 16, flexDirection: 'row', gap: 8 }}>
+          <QuickAccessTile
+            icon={<Icon.tag size={20} color={colors.statusPendingText} />}
+            label="العروض"
+            accent="gold"
+            onPress={() => router.push('/deals')}
+          />
+          <QuickAccessTile
+            icon={<Icon.star size={20} color={colors.olive} />}
+            label="محلات مميزة"
+            onPress={() => router.push('/featured')}
+          />
+          <QuickAccessTile
+            icon={<Icon.heart size={20} color={colors.olive} />}
+            label="مقترح ليك"
+            onPress={() => router.push('/recommendations')}
+          />
+        </View>
+
+        {/* Nearby shops */}
         <Section
           title={t('home.nearbyShops')}
-          action={{ label: t('common.viewAll'), onPress: () => setCat('all') }}
+          action={{ label: t('common.viewAll'), onPress: () => router.push('/nearby') }}
           paddingTop={4}
         >
           <View style={{ gap: 10 }}>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -13,6 +13,8 @@ import { formatNationalDisplay } from '@/shared/utils/phone';
 import { useCartStore } from '@/features/cart/store';
 import { useAddressStore } from '@/features/addresses/store';
 import { useOrdersStore } from '@/features/orders/store';
+import { useLoyaltyStore } from '@/features/loyalty/store';
+import { REFERRAL_REWARD_AMOUNT } from '@/features/loyalty/data';
 import { useRtl } from '@/shared/hooks/useRtl';
 
 export default function Profile() {
@@ -26,6 +28,8 @@ export default function Profile() {
   const favorites = useCartStore((s) => s.favorites);
   const addresses = useAddressStore((s) => s.list);
   const orders = useOrdersStore((s) => s.orders);
+  const walletBalance = useLoyaltyStore((s) => s.walletBalance);
+  const points = useLoyaltyStore((s) => s.points);
   const [logoutVisible, setLogoutVisible] = useState(false);
 
   const displayName = user?.displayName ?? 'أحمد محمد';
@@ -113,7 +117,7 @@ export default function Profile() {
           </View>
         </FadeUp>
 
-        {/* Stats */}
+        {/* Loyalty tiles */}
         <View
           style={{
             paddingHorizontal: 18,
@@ -123,20 +127,43 @@ export default function Profile() {
           }}
         >
           {[
-            { l: 'محفظة - ج.م', v: 248, icon: <Icon.wallet size={18} color={colors.olive} />, bg: 'rgba(31,74,61,0.08)' },
-            { l: 'نقطة', v: '١,٨٢٠', icon: <Icon.star size={18} color={colors.gold} />, bg: 'rgba(232,177,79,0.12)' },
-            { l: 'ادع صديق - ج.م', v: 30, icon: <Icon.heart size={18} color={colors.olive} />, bg: 'rgba(31,74,61,0.08)' },
+            {
+              l: 'محفظة · ج.م',
+              v: walletBalance,
+              icon: <Icon.wallet size={18} color={colors.olive} />,
+              bg: 'rgba(31,74,61,0.08)',
+              color: colors.olive,
+              to: '/wallet',
+            },
+            {
+              l: 'نقطة',
+              v: points,
+              icon: <Icon.star size={18} color={colors.statusPendingText} />,
+              bg: 'rgba(232,177,79,0.18)',
+              color: colors.gold600,
+              to: '/points',
+            },
+            {
+              l: 'ادعِ صديق · ج.م',
+              v: REFERRAL_REWARD_AMOUNT,
+              icon: <Icon.heart size={18} color={colors.olive} />,
+              bg: 'rgba(31,74,61,0.08)',
+              color: colors.olive,
+              to: '/referral',
+            },
           ].map((s) => (
-            <View
+            <Pressable
               key={s.l}
-              style={{
+              onPress={() => router.push(s.to as never)}
+              style={({ pressed }) => ({
                 flex: 1,
                 backgroundColor: colors.bgElevated,
                 borderRadius: 12,
                 padding: 12,
                 alignItems: 'center',
+                opacity: pressed ? 0.85 : 1,
                 ...shadow.card,
-              }}
+              })}
             >
               <View
                 style={{
@@ -151,15 +178,20 @@ export default function Profile() {
               >
                 {s.icon}
               </View>
-              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.olive }}>
-                {typeof s.v === 'number' ? arDigits(s.v) : s.v}
+              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: s.color }}>
+                {arDigits(s.v)}
               </Text>
               <Text
-                style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, marginTop: 4 }}
+                style={{
+                  fontFamily: fonts.arabic,
+                  fontSize: 11,
+                  color: colors.inkLight,
+                  marginTop: 4,
+                }}
               >
                 {s.l}
               </Text>
-            </View>
+            </Pressable>
           ))}
         </View>
 
@@ -198,21 +230,19 @@ export default function Profile() {
             icon={<Icon.globe size={18} color={colors.olive} />}
             label={t('settings.languageTitle')}
             value={t('settings.ar')}
-            onPress={() =>
-              Alert.alert(t('settings.languageTitle'), t('settings.languageHint'), [
-                { text: t('common.ok') ?? 'تمام' },
-              ])
-            }
+            onPress={() => router.push('/language')}
           />
           <Hairline />
           <ListRow
             icon={<Icon.shieldCheck size={18} color={colors.olive} />}
-            label="الخصوصية والأمان"
-            onPress={() =>
-              Alert.alert(t('profile.comingSoonTitle'), t('profile.comingSoonBody'), [
-                { text: t('common.ok') ?? 'تمام' },
-              ])
-            }
+            label="الخصوصية"
+            onPress={() => router.push('/privacy')}
+          />
+          <Hairline />
+          <ListRow
+            icon={<Icon.shieldCheck size={18} color={colors.olive} />}
+            label="الأمان وتسجيل الدخول"
+            onPress={() => router.push('/security')}
           />
         </Group>
 
@@ -232,22 +262,20 @@ export default function Profile() {
           <Hairline />
           <ListRow
             icon={<Icon.info size={18} color={colors.olive} />}
+            label="بلّغ عن مشكلة"
+            onPress={() => router.push('/report-issue')}
+          />
+          <Hairline />
+          <ListRow
+            icon={<Icon.info size={18} color={colors.olive} />}
             label="عن دلنجاتُو"
             sub="إصدار ١٫٠٫٠"
-            onPress={() =>
-              Alert.alert('دلنجاتُو', 'من الدلنجات · لأهل الدلنجات\nإصدار ١٫٠٫٠', [
-                { text: 'تمام' },
-              ])
-            }
+            onPress={() => {}}
           />
         </Group>
 
         <View style={{ paddingHorizontal: 22, paddingTop: 8 }}>
-          <Pressable
-            onPress={() => {
-              Alert.alert('دلنجاتُو', 'سيتم تفعيل هذه الخاصية قريباً', [{ text: 'تمام' }]);
-            }}
-          >
+          <Pressable onPress={() => router.push('/delete-account')}>
             {({ pressed }) => (
               <View
                 style={{
