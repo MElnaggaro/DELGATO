@@ -16,7 +16,7 @@ const REASONS = [
 
 export default function ContactMerchant() {
   const router = useRouter();
-  const { isRtl, flexDirection } = useRtl();
+  const { isRtl, flexDirection, textStart } = useRtl();
   const params = useLocalSearchParams<{ shopId?: string }>();
   const shop = findShop(params.shopId ?? '');
   const merchantName = shop?.name ?? 'سوبر ماركت أبو حسن';
@@ -57,7 +57,7 @@ export default function ContactMerchant() {
                 fontFamily: fonts.arabicBold,
                 fontSize: 16,
                 color: colors.ink,
-                textAlign: isRtl ? 'right' : 'left',
+                textAlign: textStart,
               }}
             >
               {merchantName}
@@ -68,7 +68,7 @@ export default function ContactMerchant() {
                 fontSize: 12,
                 color: colors.inkLight,
                 marginTop: 4,
-                textAlign: isRtl ? 'right' : 'left',
+                textAlign: textStart,
               }}
             >
               {shop?.cat ?? 'بقالة'} · مفتوح دلوقتي
@@ -104,7 +104,7 @@ export default function ContactMerchant() {
             letterSpacing: 0.4,
             marginTop: 22,
             marginBottom: 10,
-            textAlign: isRtl ? 'right' : 'left',
+            textAlign: textStart,
           }}
         >
           أسباب التواصل
@@ -119,24 +119,29 @@ export default function ContactMerchant() {
                   params: { kind: 'merchant', name: merchantName, avatar: shop?.letter ?? 'م' },
                 })
               }
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: colors.canvas300,
-                paddingHorizontal: 16,
-                paddingVertical: 14,
-                flexDirection,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              })}
             >
-              <Text
-                style={{ fontFamily: fonts.arabicMedium, fontSize: 14, color: colors.ink }}
-              >
-                {r}
-              </Text>
-              <IconForward size={18} color={colors.inkLight} />
+              {({ pressed }) => (
+                <View
+                  style={{
+                    backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: colors.canvas300,
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                    flexDirection,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text
+                    style={{ fontFamily: fonts.arabicMedium, fontSize: 14, color: colors.ink }}
+                  >
+                    {r}
+                  </Text>
+                  <IconForward size={18} color={colors.inkLight} />
+                </View>
+              )}
             </Pressable>
           ))}
         </View>
@@ -156,56 +161,59 @@ function ContactCard({
   sub: string;
   onPress: () => void;
 }) {
-  const { isRtl, flexDirection } = useRtl();
+  const { isRtl, flexDirection, textStart } = useRtl();
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({
-        backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-        borderRadius: 12,
-        padding: 14,
-        flexDirection,
-        alignItems: 'center',
-        gap: 12,
-        ...shadow.card,
-      })}
-    >
-      <View
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
-          backgroundColor: 'rgba(31,74,61,0.08)',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {icon}
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text
+    <Pressable onPress={onPress}>
+      {({ pressed }) => (
+        <View
           style={{
-            fontFamily: fonts.arabicSemiBold,
-            fontSize: 14,
-            color: colors.ink,
-            textAlign: isRtl ? 'right' : 'left',
+            backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+            borderRadius: 12,
+            padding: 14,
+            flexDirection,
+            alignItems: 'center',
+            gap: 12,
+            ...shadow.card,
           }}
         >
-          {title}
-        </Text>
-        <Text
-          style={{
-            fontFamily: fonts.arabic,
-            fontSize: 12,
-            color: colors.inkLight,
-            marginTop: 2,
-            textAlign: isRtl ? 'right' : 'left',
-          }}
-        >
-          {sub}
-        </Text>
-      </View>
-      <IconForward size={18} color={colors.inkLight} />
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              backgroundColor: 'rgba(31,74,61,0.08)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {icon}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontFamily: fonts.arabicSemiBold,
+                fontSize: 14,
+                color: colors.ink,
+                textAlign: textStart,
+              }}
+            >
+              {title}
+            </Text>
+            <Text
+              style={{
+                fontFamily: fonts.arabic,
+                fontSize: 12,
+                color: colors.inkLight,
+                marginTop: 2,
+                textAlign: textStart,
+              }}
+            >
+              {sub}
+            </Text>
+          </View>
+          <IconForward size={18} color={colors.inkLight} />
+        </View>
+      )}
     </Pressable>
   );
 }

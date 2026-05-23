@@ -11,7 +11,7 @@ import { useCartStore } from '@/features/cart/store';
 
 export default function Shop() {
   const router = useRouter();
-  const { isRtl, flexDirection, pick } = useRtl();
+  const { isRtl, flexDirection, pick, textStart } = useRtl();
   const params = useLocalSearchParams<{ id?: string }>();
   const shop = useMemo(() => findShop(params.id ?? '') ?? SHOPS[0]!, [params.id]);
   const [section, setSection] = useState<string>('الكل');
@@ -170,81 +170,91 @@ export default function Shop() {
           <View style={{ flexDirection, gap: 8, marginTop: 12 }}>
             <Pressable
               onPress={() => router.push({ pathname: '/reviews', params: { shopId: shop.id } })}
-              style={({ pressed }) => ({
-                flex: 1,
-                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: colors.canvas300,
-                padding: 10,
-                flexDirection,
-                alignItems: 'center',
-                gap: 8,
-              })}
+              style={{ flex: 1 }}
             >
-              <Icon.star size={16} color={colors.gold} />
-              <View style={{ flex: 1 }}>
-                <Text
+              {({ pressed }) => (
+                <View
                   style={{
-                    fontFamily: fonts.arabicBold,
-                    fontSize: 12.5,
-                    color: colors.ink,
-                    textAlign: isRtl ? 'right' : 'left',
+                    backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: colors.canvas300,
+                    padding: 10,
+                    flexDirection,
+                    alignItems: 'center',
+                    gap: 8,
                   }}
                 >
-                  التقييمات
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: fonts.arabic,
-                    fontSize: 10,
-                    color: colors.inkLight,
-                    textAlign: isRtl ? 'right' : 'left',
-                  }}
-                >
-                  {shop.rating} · شوف الكل
-                </Text>
-              </View>
+                  <Icon.star size={16} color={colors.gold} />
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabicBold,
+                        fontSize: 12.5,
+                        color: colors.ink,
+                        textAlign: textStart,
+                      }}
+                    >
+                      التقييمات
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabic,
+                        fontSize: 10,
+                        color: colors.inkLight,
+                        textAlign: textStart,
+                      }}
+                    >
+                      {shop.rating} · شوف الكل
+                    </Text>
+                  </View>
+                </View>
+              )}
             </Pressable>
             <Pressable
               onPress={() =>
                 router.push({ pathname: '/contact-merchant', params: { shopId: shop.id } })
               }
-              style={({ pressed }) => ({
-                flex: 1,
-                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: colors.canvas300,
-                padding: 10,
-                flexDirection,
-                alignItems: 'center',
-                gap: 8,
-              })}
+              style={{ flex: 1 }}
             >
-              <Icon.message size={16} color={colors.olive} />
-              <View style={{ flex: 1 }}>
-                <Text
+              {({ pressed }) => (
+                <View
                   style={{
-                    fontFamily: fonts.arabicBold,
-                    fontSize: 12.5,
-                    color: colors.ink,
-                    textAlign: isRtl ? 'right' : 'left',
+                    backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: colors.canvas300,
+                    padding: 10,
+                    flexDirection,
+                    alignItems: 'center',
+                    gap: 8,
                   }}
                 >
-                  تواصل مع المحل
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: fonts.arabic,
-                    fontSize: 10,
-                    color: colors.inkLight,
-                    textAlign: isRtl ? 'right' : 'left',
-                  }}
-                >
-                  رد في دقايق
-                </Text>
-              </View>
+                  <Icon.message size={16} color={colors.olive} />
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabicBold,
+                        fontSize: 12.5,
+                        color: colors.ink,
+                        textAlign: textStart,
+                      }}
+                    >
+                      تواصل مع المحل
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabic,
+                        fontSize: 10,
+                        color: colors.inkLight,
+                        textAlign: textStart,
+                      }}
+                    >
+                      رد في دقايق
+                    </Text>
+                  </View>
+                </View>
+              )}
             </Pressable>
           </View>
         </View>
