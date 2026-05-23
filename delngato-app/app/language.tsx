@@ -12,7 +12,7 @@ const LANGUAGES = [
 ];
 
 export default function Language() {
-  const { isRtl } = useRtl();
+  const { isRtl, flexDirection } = useRtl();
   const current = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
 
@@ -23,13 +23,32 @@ export default function Language() {
       <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 28, paddingTop: 14 }}>
         <View
           style={{
-            backgroundColor: colors.bgElevated,
-            borderRadius: 12,
-            overflow: 'hidden',
-            ...shadow.card,
+            backgroundColor: colors.canvas200,
+            borderRadius: 10,
+            paddingVertical: 12,
+            paddingHorizontal: 14,
+            flexDirection,
+            gap: 10,
+            marginBottom: 14,
           }}
         >
-          {LANGUAGES.map((lang, i) => {
+          <Icon.info size={14} color={colors.inkLight} style={{ marginTop: 2 }} />
+          <Text
+            style={{
+              flex: 1,
+              fontFamily: fonts.arabic,
+              fontSize: 12,
+              color: colors.inkLight,
+              lineHeight: 18,
+              textAlign: isRtl ? 'right' : 'left',
+            }}
+          >
+            دلنجاتُو عربي بشكل أساسي. الإنجليزية في الطريق — هتيجي قريب.
+          </Text>
+        </View>
+
+        <View style={{ flexDirection: 'column', gap: 8 }}>
+          {LANGUAGES.map((lang) => {
             const active = current === lang.k;
             return (
               <Pressable
@@ -38,16 +57,18 @@ export default function Language() {
                 disabled={lang.disabled}
                 style={({ pressed }) => ({
                   paddingHorizontal: 16,
-                  paddingVertical: 16,
-                  flexDirection: 'row',
+                  paddingVertical: 14,
+                  backgroundColor: colors.canvas,
+                  borderRadius: 12,
+                  borderWidth: 1.5,
+                  borderColor: active ? colors.olive : colors.canvas300,
+                  flexDirection,
                   alignItems: 'center',
                   gap: 12,
-                  borderBottomWidth: i < LANGUAGES.length - 1 ? 1 : 0,
-                  borderBottomColor: colors.canvas300,
-                  backgroundColor: pressed ? colors.canvas200 : 'transparent',
-                  opacity: lang.disabled ? 0.5 : 1,
+                  opacity: lang.disabled ? 0.55 : pressed ? 0.8 : 1,
                 })}
               >
+                <Text style={{ fontSize: 28 }}>{lang.k === 'ar' ? '🇪🇬' : '🇺🇸'}</Text>
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{
@@ -62,17 +83,42 @@ export default function Language() {
                   <Text
                     style={{
                       fontFamily: fonts.arabic,
-                      fontSize: 12,
+                      fontSize: 11,
                       color: colors.inkLight,
-                      marginTop: 2,
                       textAlign: isRtl ? 'right' : 'left',
                     }}
                   >
                     {lang.native}
-                    {lang.disabled ? ' · قريباً' : ''}
                   </Text>
                 </View>
-                {active ? <Icon.check size={20} color={colors.olive} /> : null}
+                {lang.disabled ? (
+                  <View
+                    style={{
+                      backgroundColor: 'rgba(232,177,79,0.18)',
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 100,
+                    }}
+                  >
+                    <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 11, color: '#8A6418' }}>
+                      قريباً
+                    </Text>
+                  </View>
+                ) : active ? (
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 11,
+                      borderWidth: 2,
+                      borderColor: colors.olive,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: colors.olive }} />
+                  </View>
+                ) : null}
               </Pressable>
             );
           })}

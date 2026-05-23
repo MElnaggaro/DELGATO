@@ -60,6 +60,7 @@ import {
   Sun,
   Settings,
   Zap,
+  Download,
   type LucideProps,
 } from 'lucide-react-native';
 
@@ -130,6 +131,7 @@ export const Icon = {
   sun: wrap(Sun),
   settings: wrap(Settings),
   zap: wrap(Zap),
+  download: wrap(Download),
 } as const;
 
 /**
