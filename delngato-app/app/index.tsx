@@ -26,7 +26,7 @@ export default function Splash() {
 
   useEffect(() => {
     const id = setTimeout(() => {
-      if (!authed) router.replace('/(onboarding)/welcome');
+      if (!authed) router.replace('/(onboarding)/intro');
       else if (!hasAddresses) router.replace('/(onboarding)/location-permission');
       else router.replace('/(tabs)/home');
     }, 1400);

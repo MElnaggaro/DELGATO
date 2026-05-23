@@ -25,6 +25,7 @@ import { useRtl } from '@/shared/hooks/useRtl';
 import { useSelectedAddress } from '@/features/addresses/store';
 import { CATEGORIES, SHOPS, type CategoryKey } from '@/features/catalog/data';
 import { useOrdersStore } from '@/features/orders/store';
+import { useCartCount } from '@/features/cart/store';
 
 const CATEGORY_ICON: Record<NonNullable<(typeof CATEGORIES)[number]['icon']>, React.ReactNode> = {
   store: <Icon.store size={26} color={colors.olive} />,
@@ -48,6 +49,7 @@ export default function Home() {
   const unreadCount = useOrdersStore((s) =>
     s.notifications.reduce((n, x) => (x.read ? n : n + 1), 0),
   );
+  const cartCount = useCartCount();
 
   const filtered = cat === 'all' ? SHOPS : SHOPS.filter((s) => s.catKey === cat);
 
@@ -104,6 +106,51 @@ export default function Home() {
               </Text>
               <Icon.chevronDown size={16} color={colors.inkLight} />
             </View>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/cart')}
+            accessibilityLabel="سلة المشتريات"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 100,
+              backgroundColor: colors.canvas200,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon.bag size={20} color={colors.ink} />
+            {cartCount > 0 ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  left: pick(-2, undefined),
+                  right: pick(undefined, -2),
+                  minWidth: 18,
+                  height: 18,
+                  paddingHorizontal: 4,
+                  borderRadius: 18,
+                  backgroundColor: colors.gold,
+                  borderWidth: 2,
+                  borderColor: colors.canvas,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: fonts.arabicBold,
+                    fontSize: 10,
+                    lineHeight: 12,
+                    color: colors.ink,
+                    includeFontPadding: false,
+                  }}
+                >
+                  {arDigits(cartCount)}
+                </Text>
+              </View>
+            ) : null}
           </Pressable>
           <Pressable
             onPress={() => router.push('/notifications')}

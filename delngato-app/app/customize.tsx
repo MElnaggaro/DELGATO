@@ -23,7 +23,7 @@ import { useCartStore } from '@/features/cart/store';
 export default function Customize() {
   const router = useRouter();
   const arDigits = useArabicDigits();
-  const { isRtl } = useRtl();
+  const { isRtl, flexDirection } = useRtl();
   const params = useLocalSearchParams<{ id?: string; shopId?: string }>();
   const product = useMemo(() => findProduct(params.id ?? '') ?? PRODUCTS[0]!, [params.id]);
   const shop = useMemo(() => findShop(params.shopId ?? '') ?? SHOPS[0]!, [params.shopId]);
@@ -61,31 +61,76 @@ export default function Customize() {
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: STICKY_CTA_HEIGHT + 16, paddingTop: 10 }}
       >
-        <Text
-          style={{
-            fontFamily: fonts.arabicBold,
-            fontSize: 18,
-            color: colors.ink,
-            textAlign: isRtl ? 'right' : 'left',
-          }}
-        >
-          {product.name}
-        </Text>
-        <Text
-          style={{
-            fontFamily: fonts.arabic,
-            fontSize: 13,
-            color: colors.inkLight,
-            marginTop: 4,
-            textAlign: isRtl ? 'right' : 'left',
-          }}
-        >
-          {product.sub}
-        </Text>
+        <View style={{ flexDirection, alignItems: 'center', gap: 12 }}>
+          <View
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: 14,
+              backgroundColor: product.hue,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: fonts.arabicBold,
+                fontSize: 38,
+                lineHeight: 42,
+                color: 'rgba(15,26,23,0.18)',
+              }}
+            >
+              {product.name[0]}
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontFamily: fonts.arabicBold,
+                fontSize: 18,
+                color: colors.ink,
+                textAlign: isRtl ? 'right' : 'left',
+              }}
+            >
+              {product.name}
+            </Text>
+            <Text
+              style={{
+                fontFamily: fonts.arabic,
+                fontSize: 13,
+                color: colors.inkLight,
+                marginTop: 4,
+                textAlign: isRtl ? 'right' : 'left',
+              }}
+            >
+              {product.sub}
+            </Text>
+            <Text
+              style={{
+                fontFamily: fonts.arabicMedium,
+                fontSize: 13,
+                color: colors.inkLight,
+                marginTop: 6,
+                textAlign: isRtl ? 'right' : 'left',
+              }}
+            >
+              من {arDigits(product.price)} ج.م
+            </Text>
+          </View>
+        </View>
 
         <Text style={section(isRtl)}>
           {PRODUCT_ADDONS.size.label}
-          {PRODUCT_ADDONS.size.required ? null : (
+          {PRODUCT_ADDONS.size.required ? (
+            <>
+              <Text style={{ color: colors.statusIssueText }}> *</Text>
+              <Text style={{ fontFamily: fonts.arabicSemiBold, color: colors.statusIssueText }}>
+                {' '}
+                · مطلوب
+              </Text>
+            </>
+          ) : (
             <Text style={{ fontFamily: fonts.arabic, color: colors.inkLight }}> (اختياري)</Text>
           )}
         </Text>
@@ -103,7 +148,9 @@ export default function Customize() {
 
         <Text style={section(isRtl)}>
           {PRODUCT_ADDONS.extras.label}{' '}
-          <Text style={{ fontFamily: fonts.arabic, color: colors.inkLight }}>(اختياري)</Text>
+          <Text style={{ fontFamily: fonts.arabic, color: colors.inkLight }}>
+            · اختياري · اختار اللي تحبه
+          </Text>
         </Text>
         <View style={{ gap: 8 }}>
           {PRODUCT_ADDONS.extras.options.map((o) => (

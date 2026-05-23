@@ -10,6 +10,12 @@ type Props = {
   title?: string;
   onBack?: () => void;
   trailing?: ReactNode;
+  /** Surface background. Defaults to canvas; use `ink` for dark screens like gallery. */
+  bg?: string;
+  /** Tint for back chevron + title. Defaults to ink (over canvas); pass canvas for dark surfaces. */
+  tint?: string;
+  /** Center-aligned title (used when surfacing a counter like "١ / ٤"). */
+  centerTitle?: boolean;
 };
 
 /**
@@ -17,10 +23,12 @@ type Props = {
  * picks the visually-correct glyph for the current direction (right-pointing
  * in RTL). No bottom border by default; cards underneath provide separation.
  */
-export function AppBar({ title, onBack, trailing }: Props) {
+export function AppBar({ title, onBack, trailing, bg, tint, centerTitle }: Props) {
   const { isRtl, flexDirection } = useRtl();
+  const surface = bg ?? colors.canvas;
+  const fg = tint ?? colors.ink;
   return (
-    <SafeAreaView edges={['top']} style={{ backgroundColor: colors.canvas }}>
+    <SafeAreaView edges={['top']} style={{ backgroundColor: surface }}>
       <View
         style={{
           minHeight: 56,
@@ -38,7 +46,7 @@ export function AppBar({ title, onBack, trailing }: Props) {
             hitSlop={12}
             style={{ padding: 6, marginStart: -6 }}
           >
-            <IconBack size={24} color={colors.ink} />
+            <IconBack size={24} color={fg} />
           </Pressable>
         ) : null}
         <View style={{ flex: 1, minWidth: 0 }}>
@@ -48,8 +56,8 @@ export function AppBar({ title, onBack, trailing }: Props) {
               style={{
                 fontFamily: fonts.arabicBold,
                 fontSize: 18,
-                color: colors.ink,
-                textAlign: 'left',
+                color: fg,
+                textAlign: centerTitle ? 'center' : 'left',
                 includeFontPadding: false,
               }}
             >

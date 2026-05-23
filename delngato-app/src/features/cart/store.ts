@@ -35,6 +35,7 @@ export type AddItemResult =
 type State = {
   items: CartItem[];
   favorites: string[];
+  notifyList: string[];
   appliedPromo: AppliedPromo | null;
   tip: number;
   scheduled: ScheduledSlot | null;
@@ -48,6 +49,7 @@ type Actions = {
   clear: () => void;
   forceReplaceWith: (product: Product, shop: Shop, qty?: number) => void;
   toggleFavorite: (shopId: string) => void;
+  toggleNotify: (productId: string) => boolean;
   replaceWith: (items: CartItem[]) => void;
   setAppliedPromo: (promo: AppliedPromo | null) => void;
   setTip: (tip: number) => void;
@@ -82,6 +84,7 @@ export const useCartStore = create<State & Actions>()(
     (set, get) => ({
       items: [],
       favorites: ['abuhassan', 'noor'],
+      notifyList: [],
       appliedPromo: null,
       tip: 0,
       scheduled: null,
@@ -120,6 +123,15 @@ export const useCartStore = create<State & Actions>()(
             ? s.favorites.filter((x) => x !== shopId)
             : [...s.favorites, shopId],
         })),
+      toggleNotify: (productId) => {
+        const subscribed = get().notifyList.includes(productId);
+        set((s) => ({
+          notifyList: subscribed
+            ? s.notifyList.filter((x) => x !== productId)
+            : [...s.notifyList, productId],
+        }));
+        return !subscribed;
+      },
       replaceWith: (items) => set({ items }),
       setAppliedPromo: (promo) => set({ appliedPromo: promo }),
       setTip: (tip) => set({ tip }),
@@ -137,3 +149,5 @@ export const useCartSubtotal = () =>
   useCartStore((s) => s.items.reduce((acc, i) => acc + i.qty * i.price, 0));
 export const useCartCount = () =>
   useCartStore((s) => s.items.reduce((acc, i) => acc + i.qty, 0));
+export const useNotifySubscribed = (productId: string) =>
+  useCartStore((s) => s.notifyList.includes(productId));

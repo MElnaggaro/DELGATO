@@ -36,6 +36,7 @@ export type Product = {
   hue: string;
   tag: string | null;
   section: string;
+  available?: boolean;
 };
 
 export type Notification = {
@@ -181,7 +182,7 @@ export const PRODUCTS: Product[] = [
   { id: 'p8', name: 'شاي العروسة', sub: 'فتلة · ١٠٠ فتلة', price: 55, hue: '#D8C7B0', tag: null, section: 'مشروبات' },
   { id: 'p9', name: 'مياه نستله', sub: 'عبوة ٦ × ١٫٥ لتر', price: 45, hue: '#E4ECEF', tag: null, section: 'مشروبات' },
   { id: 'p10', name: 'مكرونة ريجينا', sub: 'سباجتي · ٤٠٠ جم', price: 19, hue: '#F5EDD8', tag: null, section: 'بقالة' },
-  { id: 'p11', name: 'تونة الوادي', sub: '١٦٠ جم', price: 38, hue: '#E1E3D8', tag: null, section: 'معلبات' },
+  { id: 'p11', name: 'تونة الوادي', sub: '١٦٠ جم', price: 38, hue: '#E1E3D8', tag: null, section: 'معلبات', available: false },
   { id: 'p12', name: 'كنافة بالقشطة', sub: 'كيلو · طازجة', price: 220, hue: '#F4DCA8', tag: 'موسم', section: 'حلويات' },
 ];
 

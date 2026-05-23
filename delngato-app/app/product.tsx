@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -45,6 +45,16 @@ export default function Product() {
   useMemo(() => {
     if (product.id) pushRecent(product.id);
   }, [product.id, pushRecent]);
+
+  // Redirect unavailable products to the dedicated screen.
+  useEffect(() => {
+    if (product.available === false) {
+      router.replace({
+        pathname: '/unavailable',
+        params: { id: product.id, shopId: shop.id },
+      });
+    }
+  }, [product.available, product.id, shop.id, router]);
 
   const onAdd = () => {
     if (inCart) {
