@@ -59,6 +59,7 @@ import {
   Banknote,
   Sun,
   Settings,
+  Zap,
   type LucideProps,
 } from 'lucide-react-native';
 
@@ -128,6 +129,7 @@ export const Icon = {
   x: wrap(X),
   sun: wrap(Sun),
   settings: wrap(Settings),
+  zap: wrap(Zap),
 } as const;
 
 /**
