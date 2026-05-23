@@ -13,6 +13,7 @@ export function CategoryChipRow({ children }: Props) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      style={{ flexGrow: 0 }}
       contentContainerStyle={{
         paddingHorizontal: 18,
         paddingVertical: 4,

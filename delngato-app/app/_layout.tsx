@@ -1,7 +1,7 @@
 import '../global.css';
 
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, I18nManager } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -46,20 +46,11 @@ export default function RootLayout() {
     let cancelled = false;
     void (async () => {
       try {
-        const resolved = await resolveInitialLocale();
-        if (cancelled) return;
-
-        // Arabic-first: lock native RTL before initializing anything that
-        // depends on direction (i18n, navigation, gesture handler). If the
-        // native flag is wrong, applyRtlForLocale triggers a one-time reload
-        // — bail out of the rest of bootstrap so we don't flash LTR layout
-        // before the reload lands.
-        const reloaded = await applyRtlForLocale(resolved);
+        const reloaded = await applyRtlForLocale('ar');
         if (reloaded || cancelled) return;
-
-        await initI18n(resolved);
+        
+        await initI18n('ar');
         await hydrateSession();
-        setLocale(resolved);
       } catch (e) {
         console.warn('[RootLayout] init error, falling back to defaults:', e);
         await initI18n('ar');

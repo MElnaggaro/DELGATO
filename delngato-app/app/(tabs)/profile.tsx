@@ -83,18 +83,17 @@ export default function Profile() {
               <Text style={{ fontFamily: fonts.arabicBold, fontSize: 17, color: colors.canvas }}>
                 {displayName}
               </Text>
-              <Text
-                style={{
-                  fontFamily: fonts.arabic,
-                  fontSize: 12,
-                  color: 'rgba(250,248,243,0.7)',
-                  marginTop: 2,
-                  writingDirection: 'ltr',
-                  textAlign: 'left',
-                }}
-              >
-                +20 {phoneDisplay}
-              </Text>
+              <View style={{ direction: 'ltr', alignSelf: 'flex-start', marginTop: 2 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.arabic,
+                    fontSize: 12,
+                    color: 'rgba(250,248,243,0.7)',
+                  }}
+                >
+                  +20 {phoneDisplay}
+                </Text>
+              </View>
             </View>
             <Pressable
               onPress={() => router.push('/edit-profile')}
@@ -124,9 +123,9 @@ export default function Profile() {
           }}
         >
           {[
-            { l: 'طلب متم', v: doneCount },
-            { l: 'محل مفضل', v: favorites.length },
-            { l: 'عنوان', v: addresses.length },
+            { l: 'محفظة - ج.م', v: 248, icon: <Icon.wallet size={18} color={colors.olive} />, bg: 'rgba(31,74,61,0.08)' },
+            { l: 'نقطة', v: '١,٨٢٠', icon: <Icon.star size={18} color={colors.gold} />, bg: 'rgba(232,177,79,0.12)' },
+            { l: 'ادع صديق - ج.م', v: 30, icon: <Icon.heart size={18} color={colors.olive} />, bg: 'rgba(31,74,61,0.08)' },
           ].map((s) => (
             <View
               key={s.l}
@@ -139,11 +138,24 @@ export default function Profile() {
                 ...shadow.card,
               }}
             >
-              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.olive }}>
-                {arDigits(s.v)}
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  backgroundColor: s.bg,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 10,
+                }}
+              >
+                {s.icon}
+              </View>
+              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.olive }}>
+                {typeof s.v === 'number' ? arDigits(s.v) : s.v}
               </Text>
               <Text
-                style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, marginTop: 2 }}
+                style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, marginTop: 4 }}
               >
                 {s.l}
               </Text>

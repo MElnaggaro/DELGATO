@@ -41,17 +41,17 @@ export default function OrdersTab() {
       </View>
       <CategoryChipRow>
         <CategoryChip active={tab === 'all'} onPress={() => setTab('all')}>
-          {`الكل · ${arDigits(orders.length)}`}
+          {`الكل ${arDigits(orders.length)}`}
         </CategoryChip>
         <CategoryChip active={tab === 'live'} onPress={() => setTab('live')}>
-          {`شغّال · ${arDigits(liveCount)}`}
+          {`شغّال ${arDigits(liveCount)}`}
         </CategoryChip>
         <CategoryChip active={tab === 'done'} onPress={() => setTab('done')}>
-          {`متم · ${arDigits(doneCount)}`}
+          {`متم ${arDigits(doneCount)}`}
         </CategoryChip>
       </CategoryChipRow>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
         {filtered.length === 0 ? (
           <EmptyState
             icon={<Icon.receipt size={28} color={colors.olive} />}
@@ -104,8 +104,6 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
         borderRightColor: isRtl ? borderColor : 'transparent',
         borderLeftWidth: isRtl ? 0 : 3,
         borderLeftColor: isRtl ? 'transparent' : borderColor,
-        flexDirection,
-        alignItems: 'center',
       }}
     >
       <View style={{ flexDirection, alignItems: 'center', gap: 12, marginBottom: 10, width: '100%' }}>
