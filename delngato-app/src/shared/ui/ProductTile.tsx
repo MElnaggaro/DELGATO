@@ -98,23 +98,28 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
             <Stepper compact value={qty} min={0} onChange={(n) => onChange?.(n)} />
           </View>
         ) : (
-          <View style={{ width: 30, height: 30, borderRadius: 8, overflow: 'hidden' }}>
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                onAdd?.();
-              }}
-              accessibilityLabel="أضف"
-              style={({ pressed }) => ({
-                flex: 1,
-                backgroundColor: pressed ? colors.olive700 : colors.olive,
-                alignItems: 'center',
-                justifyContent: 'center',
-              })}
-            >
-              <Icon.plus size={16} color={colors.canvas} />
-            </Pressable>
-          </View>
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation();
+              onAdd?.();
+            }}
+            accessibilityLabel="أضف"
+          >
+            {({ pressed }) => (
+              <View
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  backgroundColor: pressed ? colors.olive700 : colors.olive,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Icon.plus size={16} color={colors.canvas} />
+              </View>
+            )}
+          </Pressable>
         )}
       </View>
     </Pressable>
