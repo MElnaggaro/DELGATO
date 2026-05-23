@@ -150,7 +150,7 @@ export default function Shop() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 18, gap: 6, paddingVertical: 10 }}
+            contentContainerStyle={{ paddingHorizontal: 18, gap: 6, paddingTop: 6, paddingBottom: 12 }}
           >
             {sections.map((s) => (
               <Chip key={s} active={section === s} onPress={() => setSection(s)}>
@@ -158,7 +158,6 @@ export default function Shop() {
               </Chip>
             ))}
           </ScrollView>
-          <View style={{ height: 1, backgroundColor: colors.canvas300 }} />
         </View>
 
         {/* Grid */}
