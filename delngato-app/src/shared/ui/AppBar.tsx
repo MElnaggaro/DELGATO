@@ -49,7 +49,7 @@ export function AppBar({ title, onBack, trailing }: Props) {
                 fontFamily: fonts.arabicBold,
                 fontSize: 18,
                 color: colors.ink,
-                textAlign: isRtl ? 'right' : 'left',
+                textAlign: 'left',
                 includeFontPadding: false,
               }}
             >
@@ -66,4 +66,3 @@ export function AppBar({ title, onBack, trailing }: Props) {
     </SafeAreaView>
   );
 }
-

@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 
 import { AppBar, Chip, Icon, IconBack, LiveDot } from '@/shared/ui';
@@ -54,22 +55,23 @@ export default function Chat() {
       style={{ flex: 1, backgroundColor: colors.canvas }}
     >
       {/* Custom AppBar with avatar + presence */}
-      <View
-        style={{
-          flexDirection,
-          alignItems: 'center',
-          gap: 12,
-          paddingHorizontal: 18,
-          paddingTop: 14,
-          paddingBottom: 12,
-          backgroundColor: colors.canvas,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.canvas300,
-        }}
-      >
-        <Pressable onPress={() => safeBack('/tracking')} hitSlop={8} style={{ padding: 6 }}>
-          <IconBack size={24} color={colors.ink} />
-        </Pressable>
+      <SafeAreaView edges={['top']} style={{ backgroundColor: colors.canvas }}>
+        <View
+          style={{
+            flexDirection,
+            alignItems: 'center',
+            gap: 12,
+            paddingHorizontal: 18,
+            paddingTop: 14,
+            paddingBottom: 12,
+            backgroundColor: colors.canvas,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.canvas300,
+          }}
+        >
+          <Pressable onPress={() => safeBack('/tracking')} hitSlop={8} style={{ padding: 6 }}>
+            <IconBack size={24} color={colors.ink} />
+          </Pressable>
         <View
           style={{
             width: 38,
@@ -105,10 +107,12 @@ export default function Chat() {
         <Pressable hitSlop={8} style={{ padding: 6 }}>
           <Icon.phone size={22} color={colors.olive} />
         </Pressable>
-      </View>
+        </View>
+      </SafeAreaView>
 
       <ScrollView
         ref={scrollRef}
+        style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: 18, paddingVertical: 14, gap: 8 }}
         showsVerticalScrollIndicator={false}
       >
@@ -206,6 +210,7 @@ export default function Chat() {
 
       <ScrollView
         horizontal
+        style={{ flexGrow: 0, flexShrink: 0 }}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 14, paddingVertical: 8, gap: 8 }}
       >

@@ -82,7 +82,7 @@ export default function Home() {
                 fontFamily: fonts.arabicMedium,
                 fontSize: 11,
                 color: colors.inkMute,
-                textAlign: isRtl ? 'right' : 'left',
+                textAlign: 'left',
               }}
             >
               {t('home.deliveryTo')}
@@ -95,7 +95,7 @@ export default function Home() {
                   fontFamily: fonts.arabicSemiBold,
                   fontSize: 15,
                   color: colors.ink,
-                  textAlign: isRtl ? 'right' : 'left',
+                  textAlign: 'left',
                 }}
               >
                 {addr

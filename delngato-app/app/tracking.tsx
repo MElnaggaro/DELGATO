@@ -334,25 +334,30 @@ function CircleButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       hitSlop={6}
-      style={({ pressed }) => ({
-        width: 44,
-        height: 44,
-        borderRadius: 100,
-        backgroundColor:
-          variant === 'primary'
-            ? pressed
-              ? colors.olive700
-              : colors.olive
-            : pressed
-              ? colors.canvas200
-              : colors.bgElevated,
-        borderWidth: 1.5,
-        borderColor: colors.olive,
-        alignItems: 'center',
-        justifyContent: 'center',
-      })}
     >
-      {children}
+      {({ pressed }) => (
+        <View
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 100,
+            backgroundColor:
+              variant === 'primary'
+                ? pressed
+                  ? colors.olive700
+                  : colors.olive
+                : pressed
+                  ? colors.canvas200
+                  : colors.bgElevated,
+            borderWidth: 1.5,
+            borderColor: colors.olive,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {children}
+        </View>
+      )}
     </Pressable>
   );
 }
