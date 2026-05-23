@@ -31,19 +31,22 @@ export default function Addresses() {
               <Pressable
                 key={a.id}
                 onPress={() => select(a.id)}
-                style={({ pressed }) => ({
-                  backgroundColor: colors.bgElevated,
-                  borderRadius: 12,
-                  padding: 14,
-                  flexDirection: 'row',
-                  gap: 12,
-                  alignItems: 'center',
-                  borderWidth: 1.5,
-                  borderColor: isSel ? colors.olive : 'transparent',
-                  opacity: pressed ? 0.94 : 1,
-                  ...shadow.card,
-                })}
               >
+                {({ pressed }) => (
+                  <View
+                    style={{
+                      backgroundColor: colors.bgElevated,
+                      borderRadius: 12,
+                      padding: 14,
+                      flexDirection: 'row',
+                      gap: 12,
+                      alignItems: 'center',
+                      borderWidth: 1.5,
+                      borderColor: isSel ? colors.olive : 'transparent',
+                      opacity: pressed ? 0.94 : 1,
+                      ...shadow.card,
+                    }}
+                  >
                 <View
                   style={{
                     width: 44,
@@ -91,6 +94,8 @@ export default function Addresses() {
                 >
                   <Icon.edit size={18} color={colors.inkMute} />
                 </Pressable>
+                  </View>
+                )}
               </Pressable>
             );
           })}
@@ -98,24 +103,29 @@ export default function Addresses() {
 
         <Pressable
           onPress={() => router.push({ pathname: '/(onboarding)/address-setup', params: { manual: '1' } })}
-          style={({ pressed }) => ({
-            marginTop: 14,
-            borderRadius: 12,
-            padding: 16,
-            backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-            borderWidth: 1.5,
-            borderColor: colors.canvas300,
-            borderStyle: 'dashed',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          })}
         >
+          {({ pressed }) => (
+            <View
+              style={{
+                marginTop: 14,
+                borderRadius: 12,
+                padding: 16,
+                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                borderWidth: 1.5,
+                borderColor: colors.canvas300,
+                borderStyle: 'dashed',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+            >
           <Icon.plus size={18} color={colors.olive} />
           <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.olive }}>
             ضيف عنوان جديد
           </Text>
+            </View>
+          )}
         </Pressable>
       </ScrollView>
     </View>
