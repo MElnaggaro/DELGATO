@@ -16,20 +16,17 @@ type Props = {
 };
 
 export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: Props) {
-  const Container: React.ComponentType<any> = onPress ? Pressable : View;
-  const { isRtl, flexDirection } = useRtl();
-  return (
-    <Container
-      onPress={onPress}
-      android_ripple={onPress ? { color: colors.canvas200 } : undefined}
-      style={({ pressed }: { pressed?: boolean }) => ({
-        flexDirection,
+  const { isRtl } = useRtl();
+
+  const content = (
+    <View
+      style={{
+        flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
         paddingVertical: 14,
         paddingHorizontal: 16,
-        opacity: pressed ? 0.7 : 1,
-      })}
+      }}
     >
       {icon ? (
         <View
@@ -51,7 +48,6 @@ export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: 
             fontFamily: fonts.arabicSemiBold,
             fontSize: 14,
             color: danger ? colors.statusIssueText : colors.ink,
-            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {label}
@@ -63,7 +59,6 @@ export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: 
               fontSize: 12,
               color: colors.inkLight,
               marginTop: 2,
-              textAlign: isRtl ? 'right' : 'left',
             }}
           >
             {sub}
@@ -76,14 +71,27 @@ export function ListRow({ icon, label, sub, value, trailing, onPress, danger }: 
             fontFamily: fonts.arabicMedium,
             fontSize: 13,
             color: colors.inkLight,
-            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {value}
         </Text>
       ) : null}
       {trailing !== undefined ? trailing : onPress ? <IconForward size={18} color={colors.inkMute} /> : null}
-    </Container>
+    </View>
   );
+
+  if (onPress) {
+    return (
+      <Pressable
+        onPress={onPress}
+        android_ripple={{ color: colors.canvas200 }}
+        style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  return content;
 }
 
