@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -9,8 +10,7 @@ import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { useLoyaltyStore } from '@/features/loyalty/store';
-
-const TOPUP_OPTIONS = [50, 100, 200, 500];
+import { TopupSheet } from '@/features/loyalty/TopupSheet';
 
 export default function Wallet() {
   const router = useRouter();
@@ -22,6 +22,7 @@ export default function Wallet() {
   const topUp = useLoyaltyStore((s) => s.topUp);
 
   const recent = walletTx.slice(0, 5);
+  const [topupOpen, setTopupOpen] = useState(false);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -150,8 +151,7 @@ export default function Wallet() {
               <Pressable
                 onPress={() => {
                   if (action.id === 'charge') {
-                    topUp(50);
-                    showToast(`اتشحن ${arDigits(50)} ج.م`, <Icon.plus size={16} color={colors.gold} />);
+                    setTopupOpen(true);
                   } else if (action.id === 'pay') {
                     router.push('/wallet-pay');
                   }
@@ -309,17 +309,18 @@ export default function Wallet() {
           السجل
         </Button>
       </ScrollView>
+
+      <TopupSheet
+        visible={topupOpen}
+        onClose={() => setTopupOpen(false)}
+        onConfirm={({ amount, method }) => {
+          topUp(amount, method);
+          showToast(
+            `اتشحنت المحفظة بـ ${arDigits(amount)} ج.م`,
+            <Icon.check size={16} color={colors.gold} />,
+          );
+        }}
+      />
     </View>
   );
-}
-
-function section() {
-  return {
-    fontFamily: fonts.arabicSemiBold,
-    fontSize: 12,
-    color: colors.inkMute,
-    letterSpacing: 0.4,
-    marginTop: 20,
-    marginBottom: 10,
-  } as const;
 }
