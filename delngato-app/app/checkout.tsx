@@ -16,6 +16,7 @@ import {
 } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { useCartStore, useCartSubtotal } from '@/features/cart/store';
 import { useSelectedAddress } from '@/features/addresses/store';
@@ -29,6 +30,7 @@ const DELIVERY_FEE = 10;
 export default function Checkout() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { alignStart } = useRtl();
   const arDigits = useArabicDigits();
   const items = useCartStore((s) => s.items);
   const subtotal = useCartSubtotal();
@@ -65,19 +67,20 @@ export default function Checkout() {
 
       <ScrollView contentContainerStyle={{ paddingBottom: STICKY_CTA_HEIGHT + 16 }}>
         <Section label={t('checkout.addressSection')}>
-          <Pressable
-            onPress={() => router.push('/addresses')}
-            style={({ pressed }) => ({
-              backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-              borderRadius: 12,
-              padding: 14,
-              flexDirection: 'row',
-              gap: 12,
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: colors.canvas300,
-            })}
-          >
+          <Pressable onPress={() => router.push('/addresses')}>
+            {({ pressed }) => (
+              <View
+                style={{
+                  backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                  borderRadius: 12,
+                  padding: 14,
+                  flexDirection: 'row',
+                  gap: 12,
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.canvas300,
+                }}
+              >
             <View
               style={{
                 width: 36,
@@ -105,6 +108,8 @@ export default function Checkout() {
               ) : null}
             </View>
             <IconForward size={18} color={colors.inkLight} />
+          </View>
+          )}
           </Pressable>
         </Section>
 
@@ -128,8 +133,10 @@ export default function Checkout() {
                     borderRadius: 12,
                     paddingVertical: 14,
                     paddingHorizontal: 12,
-                    borderWidth: 1,
-                    borderColor: active ? colors.olive : colors.canvas300,
+                    borderWidth: active ? 0 : 1,
+                    borderColor: active ? 'transparent' : colors.canvas300,
+                    alignItems: alignStart,
+                    gap: 4,
                   }}
                 >
                   <Text
@@ -403,20 +410,22 @@ function LinkRow({
   trailing?: React.ReactNode;
   onPress: () => void;
 }) {
+  const { textStart } = useRtl();
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({
-        backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-        borderRadius: 12,
-        padding: 12,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        borderWidth: 1,
-        borderColor: colors.canvas300,
-      })}
-    >
+    <Pressable onPress={onPress}>
+      {({ pressed }) => (
+        <View
+          style={{
+            backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+            borderRadius: 12,
+            padding: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            borderWidth: 1,
+            borderColor: colors.canvas300,
+          }}
+        >
       <View
         style={{
           width: 36,
@@ -435,6 +444,7 @@ function LinkRow({
             fontFamily: fonts.arabicSemiBold,
             fontSize: 13.5,
             color: titleColor ?? colors.ink,
+            textAlign: textStart,
           }}
           numberOfLines={1}
         >
@@ -447,6 +457,7 @@ function LinkRow({
               fontSize: 11,
               color: colors.inkLight,
               marginTop: 2,
+              textAlign: textStart,
             }}
             numberOfLines={1}
           >
@@ -455,6 +466,8 @@ function LinkRow({
         ) : null}
       </View>
       {trailing ?? <IconForward size={18} color={colors.inkLight} />}
+        </View>
+      )}
     </Pressable>
   );
 }

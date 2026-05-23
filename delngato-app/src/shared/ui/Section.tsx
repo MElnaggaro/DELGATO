@@ -41,7 +41,7 @@ export function Section({
   paddingHorizontal = 18,
   paddingTop = 14,
 }: Props) {
-  const { isRtl, flexDirection } = useRtl();
+  const { isRtl, flexDirection, textStart } = useRtl();
   return (
     <View style={{ paddingHorizontal, paddingTop }}>
       {!hideLabel && title ? (
@@ -60,7 +60,7 @@ export function Section({
               fontSize: 18,
               color: colors.ink,
               includeFontPadding: false,
-              textAlign: isRtl ? 'right' : 'left',
+              textAlign: textStart,
             }}
           >
             {title}
@@ -73,7 +73,7 @@ export function Section({
                   fontSize: 13,
                   color: colors.olive,
                   includeFontPadding: false,
-                  textAlign: isRtl ? 'right' : 'left',
+                  textAlign: textStart,
                 }}
               >
                 {action.label}
@@ -91,7 +91,7 @@ export function Section({
             color: colors.inkMute,
             marginBottom: 8,
             includeFontPadding: false,
-            textAlign: isRtl ? 'right' : 'left',
+            textAlign: textStart,
           }}
         >
           {label}
