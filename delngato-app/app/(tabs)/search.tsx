@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { CategoryChip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
+import { Chip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import {
@@ -95,9 +95,9 @@ export default function Search() {
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                   {recent.map((r) => (
-                    <CategoryChip key={r} onPress={() => submit(r)}>
+                    <Chip key={r} onPress={() => submit(r)}>
                       {r}
-                    </CategoryChip>
+                    </Chip>
                   ))}
                 </View>
               </View>
@@ -119,9 +119,9 @@ export default function Search() {
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                 {TRENDING_SEARCHES.map((trend) => (
-                  <CategoryChip key={trend} onPress={() => submit(trend)} icon={<Icon.search size={14} color={colors.ink} />}>
+                  <Chip key={trend} onPress={() => submit(trend)} icon={<Icon.search size={14} color={colors.ink} />}>
                     {trend}
-                  </CategoryChip>
+                  </Chip>
                 ))}
               </View>
             </View>
@@ -143,19 +143,21 @@ export default function Search() {
                   <Pressable
                     key={c.key}
                     onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
-                    style={({ pressed }) => ({
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: 14,
-                      borderRadius: 12,
-                      backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                      borderWidth: 1,
-                      borderColor: colors.canvas300,
-                      flexBasis: '48%',
-                      flexGrow: 1,
-                    })}
+                    style={{ flexBasis: '48%', flexGrow: 1 }}
                   >
+                    {({ pressed }) => (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: 14,
+                          borderRadius: 12,
+                          backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                          borderWidth: 1,
+                          borderColor: colors.canvas300,
+                        }}
+                      >
                     <View
                       style={{
                         width: 36,
@@ -181,6 +183,8 @@ export default function Search() {
                     <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.ink }}>
                       {c.label}
                     </Text>
+                    </View>
+                    )}
                   </Pressable>
                 ))}
               </View>
@@ -247,16 +251,19 @@ export default function Search() {
                           params: { id: p.id, shopId: SHOPS[0]!.id },
                         });
                       }}
-                      style={({ pressed }) => ({
-                        flexDirection: 'row',
-                        gap: 12,
-                        alignItems: 'center',
-                        padding: 10,
-                        borderRadius: 12,
-                        backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                        ...shadow.card,
-                      })}
                     >
+                      {({ pressed }) => (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            gap: 12,
+                            alignItems: 'center',
+                            padding: 10,
+                            borderRadius: 12,
+                            backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                            ...shadow.card,
+                          }}
+                        >
                       <View
                         style={{
                           width: 52,
@@ -301,6 +308,8 @@ export default function Search() {
                           ج.م
                         </Text>
                       </View>
+                        </View>
+                      )}
                     </Pressable>
                   ))}
                 </View>
