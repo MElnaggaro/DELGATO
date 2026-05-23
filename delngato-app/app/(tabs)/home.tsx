@@ -223,15 +223,15 @@ export default function Home() {
         </Rise>
 
         {/* Quick access — 3 tiles */}
-        <View style={{ paddingHorizontal: 18, paddingBottom: 16, flexDirection: 'row', gap: 8 }}>
+        <View style={{ paddingHorizontal: 18, paddingBottom: 16, flexDirection, gap: 8 }}>
           <QuickAccessTile
-            icon={<Icon.tag size={20} color={colors.statusPendingText} />}
+            icon={<Icon.tag size={20} color={colors.gold600} />}
             label="العروض"
             accent="gold"
             onPress={() => router.push('/deals')}
           />
           <QuickAccessTile
-            icon={<Icon.star size={20} color={colors.olive} />}
+            icon={<Icon.sun size={20} color={colors.olive} />}
             label="محلات مميزة"
             onPress={() => router.push('/featured')}
           />

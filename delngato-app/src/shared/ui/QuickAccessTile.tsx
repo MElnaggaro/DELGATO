@@ -20,28 +20,29 @@ type Props = {
  */
 export function QuickAccessTile({ icon, label, accent = 'olive', onPress }: Props) {
   return (
-    <PressableScale onPress={onPress} style={styles.card}>
-      <View
-        style={[
-          styles.iconBox,
-          {
-            backgroundColor:
-              accent === 'gold' ? 'rgba(232,177,79,0.18)' : 'rgba(31,74,61,0.08)',
-          },
-        ]}
-      >
-        {icon}
-      </View>
-      <Text style={styles.label} numberOfLines={1}>
-        {label}
-      </Text>
-    </PressableScale>
+    <View style={{ flex: 1 }}>
+      <PressableScale onPress={onPress} style={styles.card}>
+        <View
+          style={[
+            styles.iconBox,
+            {
+              backgroundColor:
+                accent === 'gold' ? 'rgba(232,177,79,0.18)' : 'rgba(31,74,61,0.08)',
+            },
+          ]}
+        >
+          {icon}
+        </View>
+        <Text style={styles.label} numberOfLines={1}>
+          {label}
+        </Text>
+      </PressableScale>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
     backgroundColor: colors.bgElevated,
     borderRadius: 12,
     paddingHorizontal: 8,

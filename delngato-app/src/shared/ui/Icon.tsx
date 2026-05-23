@@ -57,6 +57,8 @@ import {
   Flame,
   Cookie,
   Banknote,
+  Sun,
+  Settings,
   type LucideProps,
 } from 'lucide-react-native';
 
@@ -124,6 +126,8 @@ export const Icon = {
   wifi: wrap(Wifi),
   wifiOff: wrap(WifiOff),
   x: wrap(X),
+  sun: wrap(Sun),
+  settings: wrap(Settings),
 } as const;
 
 /**

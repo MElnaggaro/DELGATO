@@ -117,7 +117,7 @@ export default function Product() {
         </View>
 
         {/* Title */}
-        <View style={{ paddingHorizontal: 18, paddingTop: 20 }}>
+        <View style={{ paddingHorizontal: 18, paddingTop: 20, alignItems: isRtl ? 'flex-end' : 'flex-start' }}>
           <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
             {product.name}
           </Text>
@@ -169,7 +169,7 @@ export default function Product() {
                 {shop.letter}
               </Text>
             </View>
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, alignItems: isRtl ? 'flex-end' : 'flex-start' }}>
               <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
                 تطلبه من
               </Text>
@@ -191,7 +191,7 @@ export default function Product() {
         </View>
 
         {/* Description */}
-        <View style={{ paddingHorizontal: 18, paddingTop: 18 }}>
+        <View style={{ paddingHorizontal: 18, paddingTop: 18, alignItems: isRtl ? 'flex-end' : 'flex-start' }}>
           <Text
             style={{
               fontFamily: fonts.arabicSemiBold,
@@ -210,7 +210,7 @@ export default function Product() {
         </View>
 
         {/* Note */}
-        <View style={{ paddingHorizontal: 18, paddingTop: 18, paddingBottom: 24 }}>
+        <View style={{ paddingHorizontal: 18, paddingTop: 18, paddingBottom: 24, alignItems: isRtl ? 'flex-end' : 'flex-start' }}>
           <Text
             style={{
               fontFamily: fonts.arabicSemiBold,
@@ -230,6 +230,7 @@ export default function Product() {
             placeholder="مثلاً: من غير ثلج"
             placeholderTextColor={colors.inkMute}
             style={{
+              width: '100%',
               minHeight: 48,
               backgroundColor: colors.bgElevated,
               borderRadius: 8,
@@ -251,43 +252,55 @@ export default function Product() {
             onPress={() =>
               router.push({ pathname: '/customize', params: { id: product.id, shopId: shop.id } })
             }
-            style={({ pressed }) => ({
-              flex: 1,
-              backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: colors.canvas300,
-              padding: 12,
-              flexDirection,
-              alignItems: 'center',
-              gap: 8,
-            })}
+            style={{ flex: 1 }}
           >
-            <Icon.edit size={16} color={colors.olive} />
-            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink }}>
-              خصّص الطلب
-            </Text>
+            {({ pressed }) => (
+              <View
+                style={{
+                  backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: colors.canvas300,
+                  paddingVertical: 12,
+                  paddingHorizontal: 14,
+                  flexDirection,
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <Icon.settings size={16} color={colors.olive} />
+                <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink }}>
+                  خصّص الطلب
+                </Text>
+              </View>
+            )}
           </Pressable>
           <Pressable
             onPress={() =>
               router.push({ pathname: '/similar', params: { id: product.id, shopId: shop.id } })
             }
-            style={({ pressed }) => ({
-              flex: 1,
-              backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: colors.canvas300,
-              padding: 12,
-              flexDirection,
-              alignItems: 'center',
-              gap: 8,
-            })}
+            style={{ flex: 1 }}
           >
-            <Icon.star size={16} color={colors.olive} />
-            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink }}>
-              منتجات شبيهة
-            </Text>
+            {({ pressed }) => (
+              <View
+                style={{
+                  backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: colors.canvas300,
+                  paddingVertical: 12,
+                  paddingHorizontal: 14,
+                  flexDirection,
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <Icon.sun size={16} color={colors.olive} />
+                <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink }}>
+                  منتجات شبيهة
+                </Text>
+              </View>
+            )}
           </Pressable>
         </View>
       </ScrollView>
