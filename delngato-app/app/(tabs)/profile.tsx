@@ -155,42 +155,48 @@ export default function Profile() {
             <Pressable
               key={s.l}
               onPress={() => router.push(s.to as never)}
-              style={({ pressed }) => ({
-                flex: 1,
-                backgroundColor: colors.bgElevated,
-                borderRadius: 12,
-                padding: 12,
-                alignItems: 'center',
-                opacity: pressed ? 0.85 : 1,
-                ...shadow.card,
-              })}
+              style={{ flex: 1 }}
             >
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  backgroundColor: s.bg,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 10,
-                }}
-              >
-                {s.icon}
-              </View>
-              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: s.color }}>
-                {arDigits(s.v)}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: fonts.arabic,
-                  fontSize: 11,
-                  color: colors.inkLight,
-                  marginTop: 4,
-                }}
-              >
-                {s.l}
-              </Text>
+              {({ pressed }) => (
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: colors.bgElevated,
+                    borderRadius: 12,
+                    padding: 12,
+                    alignItems: 'center',
+                    opacity: pressed ? 0.85 : 1,
+                    ...shadow.card,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      backgroundColor: s.bg,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 10,
+                    }}
+                  >
+                    {s.icon}
+                  </View>
+                  <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: s.color }}>
+                    {arDigits(s.v)}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: fonts.arabic,
+                      fontSize: 11,
+                      color: colors.inkLight,
+                      marginTop: 4,
+                    }}
+                  >
+                    {s.l}
+                  </Text>
+                </View>
+              )}
             </Pressable>
           ))}
         </View>
