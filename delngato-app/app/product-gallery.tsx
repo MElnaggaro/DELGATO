@@ -3,6 +3,7 @@ import { Dimensions, Pressable, ScrollView, Share, Text, View } from 'react-nati
 import { useLocalSearchParams } from 'expo-router';
 
 import { AppBar, Icon } from '@/shared/ui';
+import { IconBack, IconForward } from '@/shared/ui/Icon';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
@@ -29,9 +30,14 @@ export default function ProductGallery() {
   };
 
   const goTo = (i: number) => {
-    setIndex(i);
-    scrollRef.current?.scrollTo({ x: i * screenW, animated: true });
+    const clamped = Math.max(0, Math.min(PHOTO_HUES.length - 1, i));
+    setIndex(clamped);
+    scrollRef.current?.scrollTo({ x: clamped * screenW, animated: true });
   };
+  const goPrev = () => goTo(index - 1);
+  const goNext = () => goTo(index + 1);
+  const atStart = index === 0;
+  const atEnd = index === PHOTO_HUES.length - 1;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.ink }}>
@@ -96,6 +102,50 @@ export default function ProductGallery() {
             </View>
           ))}
         </ScrollView>
+
+        {/* Prev / Next overlay arrows (RTL-safe via IconBack/IconForward). */}
+        <Pressable
+          onPress={goPrev}
+          disabled={atStart}
+          accessibilityLabel="السابق"
+          hitSlop={10}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            insetInlineStart: 12,
+            marginTop: -22,
+            width: 44,
+            height: 44,
+            borderRadius: 100,
+            backgroundColor: 'rgba(250,248,243,0.10)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: atStart ? 0.3 : 1,
+          }}
+        >
+          <IconBack size={22} color={colors.canvas} />
+        </Pressable>
+        <Pressable
+          onPress={goNext}
+          disabled={atEnd}
+          accessibilityLabel="التالي"
+          hitSlop={10}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            insetInlineEnd: 12,
+            marginTop: -22,
+            width: 44,
+            height: 44,
+            borderRadius: 100,
+            backgroundColor: 'rgba(250,248,243,0.10)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: atEnd ? 0.3 : 1,
+          }}
+        >
+          <IconForward size={22} color={colors.canvas} />
+        </Pressable>
       </View>
 
       {/* Thumbnail strip */}

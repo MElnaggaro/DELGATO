@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useAuthStore } from '@/features/auth/store';
 import { useAddressStore } from '@/features/addresses/store';
+import { useSettingsStore } from '@/features/settings';
 
 /**
  * Splash route (`/`). Brand reveal: olive surface, ivory monogram, wordmark
@@ -23,15 +25,41 @@ export default function Splash() {
   const { t } = useTranslation();
   const authed = useAuthStore((s) => s.authed);
   const hasAddresses = useAddressStore((s) => s.list.length > 0);
+  const biometricEnabled = useSettingsStore((s) => s.biometricEnabled);
 
   useEffect(() => {
-    const id = setTimeout(() => {
-      if (!authed) router.replace('/(onboarding)/intro');
-      else if (!hasAddresses) router.replace('/(onboarding)/location-permission');
-      else router.replace('/(tabs)/home');
+    let cancelled = false;
+    const id = setTimeout(async () => {
+      if (cancelled) return;
+      if (!authed) {
+        router.replace('/(onboarding)/intro');
+        return;
+      }
+      if (!hasAddresses) {
+        router.replace('/(onboarding)/location-permission');
+        return;
+      }
+      // Authed + setup complete. If biometric is enabled and device supports it,
+      // gate entry with a biometric prompt before showing home.
+      if (biometricEnabled) {
+        try {
+          const hw = await LocalAuthentication.hasHardwareAsync();
+          const enrolled = await LocalAuthentication.isEnrolledAsync();
+          if (!cancelled && hw && enrolled) {
+            router.replace('/(onboarding)/biometric');
+            return;
+          }
+        } catch {
+          /* fall through to home if capability check throws */
+        }
+      }
+      if (!cancelled) router.replace('/(tabs)/home');
     }, 1400);
-    return () => clearTimeout(id);
-  }, [router, authed, hasAddresses]);
+    return () => {
+      cancelled = true;
+      clearTimeout(id);
+    };
+  }, [router, authed, hasAddresses, biometricEnabled]);
 
   return (
     <View className="flex-1 bg-olive" style={{ backgroundColor: colors.olive }}>

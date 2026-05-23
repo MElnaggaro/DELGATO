@@ -222,6 +222,13 @@ export default function Profile() {
             sub={`${arDigits(favorites.length)} محلات`}
             onPress={() => router.push('/favorites')}
           />
+          <Hairline />
+          <ListRow
+            icon={<Icon.clock size={18} color={colors.olive} />}
+            label="شفت منتجات قبل كده"
+            sub="ارجع للي فتحته بسرعة"
+            onPress={() => router.push('/recently-viewed')}
+          />
         </Group>
 
         <Group title="التطبيق">

@@ -19,6 +19,7 @@ type Props = {
 export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection, pick } = useRtl();
+  const isUnavailable = product.available === false;
 
   return (
     <Pressable
@@ -57,7 +58,21 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
         >
           {product.name[0]}
         </Text>
-        {product.tag ? (
+        {isUnavailable ? (
+          <>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(15,26,23,0.35)',
+              }}
+            />
+            <Badge variant="issue">خلصت</Badge>
+          </>
+        ) : product.tag ? (
           <Badge variant={product.tag === 'عرض' ? 'pending' : 'solid-olive'}>{product.tag}</Badge>
         ) : null}
       </View>
@@ -93,7 +108,17 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
             ج.م
           </Text>
         </View>
-        {qty > 0 ? (
+        {isUnavailable ? (
+          <Text
+            style={{
+              fontFamily: fonts.arabicSemiBold,
+              fontSize: 11,
+              color: colors.statusIssueText,
+            }}
+          >
+            مش متاح
+          </Text>
+        ) : qty > 0 ? (
           <View onStartShouldSetResponder={() => true}>
             <Stepper compact value={qty} min={0} onChange={(n) => onChange?.(n)} />
           </View>

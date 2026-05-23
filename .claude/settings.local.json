@@ -29,7 +29,8 @@
       "Bash(Format-Table -AutoSize)",
       "Bash(cd /d D:\\\\PROJECTS\\\\DELGATO)",
       "Bash(dir /B)",
-      "Bash(grep -v \"//\")"
+      "Bash(grep -v \"//\")",
+      "Bash(echo \"EXIT=$?\")"
     ]
   }
 }

@@ -18,17 +18,20 @@ export default function Biometric() {
   const [state, setState] = useState<ScanState>('idle');
   const [supported, setSupported] = useState<boolean | null>(null);
   const hydrate = useAuthStore((s) => s.hydrateSession);
+  const authed = useAuthStore((s) => s.authed);
   const biometricEnabled = useSettingsStore((s) => s.biometricEnabled);
   const gateChecked = useRef(false);
 
-  // Settings gate — bounce to phone login if user hasn't enabled biometric.
+  // Settings gate — if user hasn't enabled biometric, route them on:
+  // - already authed → straight to home (don't trap returning users)
+  // - not authed → phone login
   useEffect(() => {
     if (gateChecked.current) return;
     gateChecked.current = true;
     if (!biometricEnabled) {
-      router.replace('/(onboarding)/auth');
+      router.replace(authed ? '/(tabs)/home' : '/(onboarding)/auth');
     }
-  }, [biometricEnabled, router]);
+  }, [biometricEnabled, authed, router]);
 
   // Capability detection.
   useEffect(() => {
