@@ -200,8 +200,8 @@ export function Button({
                 color: textColor,
                 fontFamily: fonts.arabicSemiBold,
                 fontSize: isLarge ? 17 : 16,
-                lineHeight: isLarge ? 17 : 16,
                 includeFontPadding: false,
+                textAlign: 'center',
                 textAlignVertical: 'center',
               }}
             >

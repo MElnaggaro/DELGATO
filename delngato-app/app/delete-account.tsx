@@ -1,78 +1,123 @@
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, View, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import {
   AppBar,
   Button,
-  ConfirmDialog,
   Icon,
-  StickyActionBar,
-  STICKY_CTA_HEIGHT,
   showToast,
 } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { useAuthStore } from '@/features/auth/store';
-
-const PHRASE = 'احذف';
+import { FadeUp } from '@/shared/motion';
 
 export default function DeleteAccount() {
   const router = useRouter();
-  const { isRtl } = useRtl();
+  const { bottom } = useSafeAreaInsets();
+  const { isRtl, flexDirection } = useRtl();
   const signOut = useAuthStore((s) => s.signOut);
-  const [confirm, setConfirm] = useState('');
-  const [visible, setVisible] = useState(false);
-  const enabled = confirm.trim() === PHRASE;
+  const [reason, setReason] = useState<string | null>(null);
+
+  const REASONS = [
+    'مش بستخدم التطبيق',
+    'مفيش محلات قريبة',
+    'تجربة سيئة',
+    'مخاوف خصوصية',
+    'سبب تاني',
+  ];
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <AppBar title="حذف الحساب" onBack={() => safeBack('/(tabs)/profile')} />
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: STICKY_CTA_HEIGHT + 16, paddingTop: 10 }}
+        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24, paddingTop: 14 }}
       >
-        <View
+        <FadeUp>
+          <View style={{ alignItems: 'center', textAlign: 'center', marginBottom: 22 }}>
+            <View
+              style={{
+                width: 88,
+                height: 88,
+                borderRadius: 100,
+                backgroundColor: 'rgba(197,59,44,0.1)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 18,
+              }}
+            >
+              <Icon.trash size={36} color={colors.statusIssueText} />
+            </View>
+            <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.ink }}>
+              هتمسح حسابك خالص؟
+            </Text>
+            <Text
+              style={{
+                fontFamily: fonts.arabic,
+                fontSize: 14,
+                color: colors.inkLight,
+                marginTop: 10,
+                lineHeight: 22,
+                maxWidth: 320,
+                textAlign: 'center',
+              }}
+            >
+              مفيش رجوع. كل بياناتك، طلباتك، عناوينك، نقاطك، ورصيدك في المحفظة هيتمسحوا بشكل نهائي.
+            </Text>
+          </View>
+        </FadeUp>
+
+        <Text
           style={{
-            backgroundColor: 'rgba(197,59,44,0.08)',
-            borderRadius: 12,
-            padding: 14,
-            flexDirection: 'row',
-            gap: 10,
-            alignItems: 'flex-start',
+            fontSize: 12,
+            color: colors.inkMute,
+            fontFamily: fonts.arabicSemiBold,
+            letterSpacing: 0.4,
+            marginBottom: 10,
+            textAlign: 'left',
           }}
         >
-          <Icon.info size={18} color={colors.statusIssueText} />
-          <Text
-            style={{
-              flex: 1,
-              fontFamily: fonts.arabic,
-              fontSize: 13,
-              color: colors.statusIssueText,
-              lineHeight: 21,
-              textAlign: isRtl ? 'right' : 'left',
-            }}
-          >
-            <Text style={{ fontFamily: fonts.arabicBold }}>حذف نهائي:</Text> هتمسح حسابك، عناوينك،
-            طلباتك، ورصيد المحفظة. الأكشن ده مش هيرجع.
-          </Text>
-        </View>
-
-        <Text style={{ marginTop: 24, fontFamily: fonts.arabicBold, fontSize: 17, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
           هتفقد:
         </Text>
-        <View style={{ marginTop: 10, gap: 8 }}>
+        <View style={{ gap: 8 }}>
           {[
-            'كل سجل طلباتك السابقة',
-            `${'٢٤٨'} ج.م رصيد في المحفظة`,
-            '١,٨٢٠ نقطة مكافآت',
-            'العناوين المحفوظة وطرق الدفع',
+            { label: 'رصيد المحفظة', value: '١٣٨ ج.م', icon: <Icon.wallet size={18} color={colors.statusIssueText} /> },
+            { label: 'النقاط المتراكمة', value: '١٬٨٢٠ نقطة', icon: <Icon.star size={18} color={colors.statusIssueText} /> },
+            { label: 'تاريخ الطلبات', value: '٥ طلب', icon: <Icon.receipt size={18} color={colors.statusIssueText} /> },
+            { label: 'العناوين المحفوظة', value: '٣ عنوان', icon: <Icon.pin size={18} color={colors.statusIssueText} /> },
           ].map((item) => (
-            <View key={item} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              <Icon.x size={14} color={colors.statusIssueText} />
-              <Text style={{ fontFamily: fonts.arabic, fontSize: 14, color: colors.inkLight }}>
-                {item}
+            <View
+              key={item.label}
+              style={{
+                backgroundColor: 'rgba(197,59,44,0.05)',
+                borderRadius: 10,
+                padding: 12,
+                flexDirection,
+                alignItems: 'center',
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  backgroundColor: 'rgba(197,59,44,0.1)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {item.icon}
+              </View>
+              <Text style={{ flex: 1, fontFamily: fonts.arabic, fontSize: 13.5, color: colors.ink, textAlign: 'left' }}>
+                {item.label}
+              </Text>
+              <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13.5, color: colors.statusIssueText }}>
+                {item.value}
               </Text>
             </View>
           ))}
@@ -80,62 +125,65 @@ export default function DeleteAccount() {
 
         <Text
           style={{
-            marginTop: 24,
+            marginTop: 22,
+            fontSize: 12,
+            color: colors.inkMute,
             fontFamily: fonts.arabicSemiBold,
-            fontSize: 13,
-            color: colors.ink,
-            textAlign: isRtl ? 'right' : 'left',
-            lineHeight: 21,
+            letterSpacing: 0.4,
+            marginBottom: 10,
+            textAlign: 'left',
           }}
         >
-          لتأكيد، اكتب{' '}
-          <Text style={{ fontFamily: fonts.arabicBold, color: colors.statusIssueText }}>
-            «{PHRASE}»
-          </Text>{' '}
-          في الخانة:
+          ساعدنا نتحسن — ليه قررت تمسح؟
         </Text>
-        <TextInput
-          value={confirm}
-          onChangeText={setConfirm}
-          placeholder={PHRASE}
-          placeholderTextColor={colors.inkMute}
-          style={{
-            marginTop: 10,
-            minHeight: 56,
-            backgroundColor: colors.bgElevated,
-            borderRadius: 8,
-            borderWidth: 1.5,
-            borderColor: enabled ? colors.statusIssue : colors.canvas300,
-            paddingHorizontal: 14,
-            fontFamily: fonts.arabicBold,
-            fontSize: 17,
-            color: colors.ink,
-            textAlign: isRtl ? 'right' : 'left',
-          }}
-        />
+        <View style={{ flexDirection, flexWrap: 'wrap', gap: 8 }}>
+          {REASONS.map((r) => (
+            <Pressable
+              key={r}
+              onPress={() => setReason(r)}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 100,
+                borderWidth: 1,
+                borderColor: reason === r ? colors.statusIssueText : colors.canvas300,
+                backgroundColor: reason === r ? 'rgba(197,59,44,0.05)' : colors.canvas,
+              }}
+            >
+              <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 13, color: reason === r ? colors.statusIssueText : colors.ink }}>
+                {r}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </ScrollView>
 
-      <StickyActionBar>
-        <Button variant="destructive" size="lg" full disabled={!enabled} onPress={() => setVisible(true)}>
-          احذف الحساب نهائياً
-        </Button>
-      </StickyActionBar>
-
-      <ConfirmDialog
-        visible={visible}
-        title="مؤكد تحذف حسابك؟"
-        body="الحذف نهائي. مش هتقدر ترجع للحساب أو البيانات."
-        cancelLabel="تراجع"
-        confirmLabel="احذف نهائياً"
-        destructive
-        onCancel={() => setVisible(false)}
-        onConfirm={async () => {
-          setVisible(false);
-          await signOut();
-          showToast('اتحذف حسابك', <Icon.check size={16} color={colors.gold} />);
-          router.replace('/');
+      <View
+        style={{
+          padding: 18,
+          paddingBottom: Math.max(24, bottom),
+          backgroundColor: colors.canvas,
+          borderTopWidth: 1,
+          borderTopColor: colors.canvas300,
+          flexDirection,
+          gap: 10,
         }}
-      />
+      >
+        <Button variant="ghost" style={{ flex: 1 }} onPress={() => safeBack('/(tabs)/profile')}>
+          تراجع
+        </Button>
+        <Button
+          variant="destructive"
+          style={{ flex: 1 }}
+          onPress={async () => {
+            await signOut();
+            showToast('اتحذف حسابك', <Icon.check size={16} color={colors.gold} />);
+            router.replace('/');
+          }}
+        >
+          متابعة
+        </Button>
+      </View>
     </View>
   );
 }
