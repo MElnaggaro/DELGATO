@@ -10,12 +10,15 @@ import { useTranslation } from 'react-i18next';
  * start fully applies forceRTL.
  */
 export function useRtl() {
+  const isRtl = true;
   return {
-    isRtl: true,
+    isRtl,
     flexDirection: 'row' as const,
+    textStart: (isRtl ? 'right' : 'left') as 'right' | 'left',
+    alignStart: (isRtl ? 'flex-end' : 'flex-start') as 'flex-end' | 'flex-start',
     /** Pick `rtl` value in RTL contexts, `ltr` otherwise. */
     pick<T>(rtl: T, ltr: T): T {
-      return true ? rtl : ltr;
+      return isRtl ? rtl : ltr;
     },
   };
 }

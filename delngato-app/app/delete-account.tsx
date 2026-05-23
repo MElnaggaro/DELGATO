@@ -38,7 +38,7 @@ export default function DeleteAccount() {
         contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 24, paddingTop: 14 }}
       >
         <FadeUp>
-          <View style={{ alignItems: 'center', textAlign: 'center', marginBottom: 22 }}>
+          <View style={{ alignItems: 'center', marginBottom: 22 }}>
             <View
               style={{
                 width: 88,
