@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react-native';
 
 import { AppBar, SuccessRing } from '@/shared/ui';
 import { FadeUp, Pulse } from '@/shared/motion';
@@ -167,6 +176,7 @@ export default function Biometric() {
                 />
               </View>
             ) : null}
+            {state === 'idle' && !unsupported ? <DirectionalHints /> : null}
             {state === 'success' ? (
               <SuccessRing size={140} checkSize={72} />
             ) : (
@@ -260,6 +270,110 @@ export default function Biometric() {
           </Text>
         </Pressable>
       </View>
+    </View>
+  );
+}
+
+/**
+ * Four chevrons positioned around the 140pt fingerprint circle, each pointing
+ * inward. They breathe with a soft inward translate + opacity pulse to draw the
+ * eye toward the tap target — premium, minimal, never noisy. Only rendered in
+ * the idle state.
+ */
+function DirectionalHints() {
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    progress.value = withRepeat(
+      withTiming(1, { duration: 1400, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      true,
+    );
+    return () => cancelAnimation(progress);
+  }, [progress]);
+
+  const topStyle = useAnimatedStyle(() => ({
+    opacity: 0.35 + progress.value * 0.4,
+    transform: [{ translateY: -6 + progress.value * 6 }],
+  }));
+  const bottomStyle = useAnimatedStyle(() => ({
+    opacity: 0.35 + progress.value * 0.4,
+    transform: [{ translateY: 6 - progress.value * 6 }],
+  }));
+  const startStyle = useAnimatedStyle(() => ({
+    opacity: 0.35 + progress.value * 0.4,
+    transform: [{ translateX: -6 + progress.value * 6 }],
+  }));
+  const endStyle = useAnimatedStyle(() => ({
+    opacity: 0.35 + progress.value * 0.4,
+    transform: [{ translateX: 6 - progress.value * 6 }],
+  }));
+
+  const hintColor = colors.olive;
+  const size = 22;
+
+  return (
+    <View
+      pointerEvents="none"
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+    >
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 4,
+            left: 0,
+            right: 0,
+            alignItems: 'center',
+          },
+          topStyle,
+        ]}
+      >
+        <ChevronDown size={size} color={hintColor} strokeWidth={2} />
+      </Animated.View>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            bottom: 4,
+            left: 0,
+            right: 0,
+            alignItems: 'center',
+          },
+          bottomStyle,
+        ]}
+      >
+        <ChevronUp size={size} color={hintColor} strokeWidth={2} />
+      </Animated.View>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            insetInlineStart: 4,
+            top: 0,
+            bottom: 0,
+            justifyContent: 'center',
+          },
+          startStyle,
+        ]}
+      >
+        <ChevronRight size={size} color={hintColor} strokeWidth={2} />
+      </Animated.View>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            insetInlineEnd: 4,
+            top: 0,
+            bottom: 0,
+            justifyContent: 'center',
+          },
+          endStyle,
+        ]}
+      >
+        <ChevronLeft size={size} color={hintColor} strokeWidth={2} />
+      </Animated.View>
     </View>
   );
 }

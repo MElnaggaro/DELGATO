@@ -22,6 +22,7 @@ type State = {
   privacy: PrivacyPrefs;
   biometricEnabled: boolean;
   language: 'ar' | 'en';
+  hasCompletedOnboarding: boolean;
 };
 
 type Actions = {
@@ -29,6 +30,7 @@ type Actions = {
   setPrivacy: (key: keyof PrivacyPrefs, value: boolean) => void;
   setBiometricEnabled: (enabled: boolean) => void;
   setLanguage: (lang: 'ar' | 'en') => void;
+  markOnboardingComplete: () => void;
 };
 
 export const useSettingsStore = create<State & Actions>()(
@@ -38,11 +40,13 @@ export const useSettingsStore = create<State & Actions>()(
       privacy: { shareLocation: true, allowMarketing: false, shareUsage: true },
       biometricEnabled: false,
       language: 'ar',
+      hasCompletedOnboarding: false,
       setNotification: (key, value) =>
         set((s) => ({ notifications: { ...s.notifications, [key]: value } })),
       setPrivacy: (key, value) => set((s) => ({ privacy: { ...s.privacy, [key]: value } })),
       setBiometricEnabled: (biometricEnabled) => set({ biometricEnabled }),
       setLanguage: (language) => set({ language }),
+      markOnboardingComplete: () => set({ hasCompletedOnboarding: true }),
     }),
     {
       name: 'delngato.settings',

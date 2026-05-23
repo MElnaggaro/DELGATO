@@ -12,6 +12,8 @@ type State = {
   user: User | null;
   /** In-memory mirror of the token in SecureStore — never persisted to AsyncStorage. */
   sessionToken: string | null;
+  /** Sticky flag: true once the user has ever successfully signed in. Survives sign-out. */
+  hasAuthenticatedBefore: boolean;
 };
 
 type Actions = {
@@ -27,6 +29,7 @@ const initialState: State = {
   phone: '',
   user: null,
   sessionToken: null,
+  hasAuthenticatedBefore: false,
 };
 
 export const useAuthStore = create<State & Actions>()(
@@ -36,7 +39,7 @@ export const useAuthStore = create<State & Actions>()(
       setPhone: (phone) => set({ phone }),
       setSession: async (token, user) => {
         await setSessionToken(token);
-        set({ authed: true, sessionToken: token, user });
+        set({ authed: true, sessionToken: token, user, hasAuthenticatedBefore: true });
       },
       hydrateSession: async () => {
         const token = await getSessionToken();
@@ -49,14 +52,21 @@ export const useAuthStore = create<State & Actions>()(
           /* swallow — sign out should still clear local state */
         }
         await clearSessionToken();
-        set({ ...initialState });
+        // Preserve hasAuthenticatedBefore so the splash treats this as a returning user
+        // and skips the first-time onboarding/welcome.
+        set((s) => ({ ...initialState, hasAuthenticatedBefore: s.hasAuthenticatedBefore }));
       },
     }),
     {
       name: 'delngato.auth',
       storage: createJSONStorage(() => zustandAsyncStorage),
       // Only persist non-sensitive fields. Token lives in SecureStore.
-      partialize: (s) => ({ authed: s.authed, phone: s.phone, user: s.user }),
+      partialize: (s) => ({
+        authed: s.authed,
+        phone: s.phone,
+        user: s.user,
+        hasAuthenticatedBefore: s.hasAuthenticatedBefore,
+      }),
     },
   ),
 );

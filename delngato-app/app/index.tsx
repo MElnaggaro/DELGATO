@@ -24,42 +24,63 @@ export default function Splash() {
   const router = useRouter();
   const { t } = useTranslation();
   const authed = useAuthStore((s) => s.authed);
+  const hasAuthenticatedBefore = useAuthStore((s) => s.hasAuthenticatedBefore);
   const hasAddresses = useAddressStore((s) => s.list.length > 0);
   const biometricEnabled = useSettingsStore((s) => s.biometricEnabled);
+  const hasCompletedOnboarding = useSettingsStore((s) => s.hasCompletedOnboarding);
 
   useEffect(() => {
     let cancelled = false;
     const id = setTimeout(async () => {
       if (cancelled) return;
-      if (!authed) {
-        router.replace('/(onboarding)/intro');
-        return;
-      }
-      if (!hasAddresses) {
-        router.replace('/(onboarding)/location-permission');
-        return;
-      }
-      // Authed + setup complete. If biometric is enabled and device supports it,
-      // gate entry with a biometric prompt before showing home.
+
+      // Probe biometric capability once; used by multiple branches below.
+      let biometricSupported = false;
       if (biometricEnabled) {
         try {
           const hw = await LocalAuthentication.hasHardwareAsync();
           const enrolled = await LocalAuthentication.isEnrolledAsync();
-          if (!cancelled && hw && enrolled) {
-            router.replace('/(onboarding)/biometric');
-            return;
-          }
+          biometricSupported = hw && enrolled;
         } catch {
-          /* fall through to home if capability check throws */
+          biometricSupported = false;
         }
       }
-      if (!cancelled) router.replace('/(tabs)/home');
+      if (cancelled) return;
+
+      // 1) Authenticated returning user (active session).
+      if (authed) {
+        if (!hasAddresses) {
+          router.replace('/(onboarding)/location-permission');
+          return;
+        }
+        if (biometricEnabled && biometricSupported) {
+          router.replace('/(onboarding)/biometric');
+          return;
+        }
+        router.replace('/(tabs)/home');
+        return;
+      }
+
+      // 2) Returning user with past auth history but currently signed out.
+      //    Skip onboarding + welcome — go straight to biometric (if available)
+      //    or phone login.
+      if (hasAuthenticatedBefore || hasCompletedOnboarding) {
+        if (biometricEnabled && biometricSupported) {
+          router.replace('/(onboarding)/biometric');
+          return;
+        }
+        router.replace('/(onboarding)/auth');
+        return;
+      }
+
+      // 3) First-time user — full onboarding.
+      router.replace('/(onboarding)/intro');
     }, 1400);
     return () => {
       cancelled = true;
       clearTimeout(id);
     };
-  }, [router, authed, hasAddresses, biometricEnabled]);
+  }, [router, authed, hasAuthenticatedBefore, hasAddresses, biometricEnabled, hasCompletedOnboarding]);
 
   return (
     <View className="flex-1 bg-olive" style={{ backgroundColor: colors.olive }}>

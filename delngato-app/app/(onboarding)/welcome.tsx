@@ -11,7 +11,14 @@ import { useSettingsStore } from '@/features/settings';
 export default function Welcome() {
   const router = useRouter();
   const biometricEnabled = useSettingsStore((s) => s.biometricEnabled);
+  const markOnboardingComplete = useSettingsStore((s) => s.markOnboardingComplete);
   const [biometricSupported, setBiometricSupported] = useState(false);
+
+  // Reaching the welcome hub means the user has cleared the intro carousel.
+  // Persist that so future launches skip directly to login/biometric.
+  useEffect(() => {
+    markOnboardingComplete();
+  }, [markOnboardingComplete]);
 
   useEffect(() => {
     (async () => {
