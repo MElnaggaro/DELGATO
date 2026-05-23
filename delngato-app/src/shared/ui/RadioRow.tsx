@@ -20,7 +20,7 @@ type Props = {
  * Mirrors design-reference radio card pattern.
  */
 export function RadioRow({ selected, onPress, label, sub, icon, disabled }: Props) {
-  const { flexDirection } = useRtl();
+  const { flexDirection, textStart } = useRtl();
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
@@ -48,8 +48,8 @@ export function RadioRow({ selected, onPress, label, sub, icon, disabled }: Prop
         </View>
       ) : null}
       <View style={{ flex: 1 }}>
-        <Text style={styles.label}>{label}</Text>
-        {sub ? <Text style={styles.sub}>{sub}</Text> : null}
+        <Text style={[styles.label, { textAlign: textStart }]}>{label}</Text>
+        {sub ? <Text style={[styles.sub, { textAlign: textStart }]}>{sub}</Text> : null}
       </View>
       <View
         style={[

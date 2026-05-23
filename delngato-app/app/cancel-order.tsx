@@ -129,10 +129,10 @@ export default function CancelOrder() {
       </ScrollView>
 
       <StickyActionBar style={{ flexDirection: 'row', gap: 10 }}>
-        <Button variant="ghost" full onPress={() => router.back()}>
+        <Button variant="ghost" style={{ flex: 1 }} onPress={() => router.back()}>
           رجوع
         </Button>
-        <Button variant="destructive" full onPress={() => setConfirm(true)}>
+        <Button variant="destructive" style={{ flex: 1 }} onPress={() => setConfirm(true)}>
           أكّد الإلغاء
         </Button>
       </StickyActionBar>
