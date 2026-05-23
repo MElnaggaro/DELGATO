@@ -22,7 +22,7 @@ type Status = 'idle' | 'checking' | 'ok' | 'invalid';
 
 export default function PromoCode() {
   const router = useRouter();
-  const { isRtl, flexDirection } = useRtl();
+  const { isRtl, flexDirection, textStart } = useRtl();
   const appliedPromo = useCartStore((s) => s.appliedPromo);
   const setAppliedPromo = useCartStore((s) => s.setAppliedPromo);
   const [code, setCode] = useState(appliedPromo?.code ?? '');
@@ -186,7 +186,7 @@ export default function PromoCode() {
             letterSpacing: 0.4,
             marginTop: 24,
             marginBottom: 10,
-            textAlign: isRtl ? 'right' : 'left',
+            textAlign: textStart,
           }}
         >
           أكواد متاحة ليك
@@ -200,57 +200,62 @@ export default function PromoCode() {
                 setCode(d.code);
                 setStatus('idle');
               }}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
-                borderRadius: 12,
-                padding: 12,
-                borderWidth: 1,
-                borderColor: colors.canvas300,
-                borderStyle: 'dashed',
-                flexDirection,
-                alignItems: 'center',
-                gap: 12,
-              })}
             >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 10,
-                  backgroundColor: colors.canvas200,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon.tag size={18} color={colors.olive} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13.5, color: colors.ink }}>
-                  {d.title}
-                </Text>
-                <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}>
-                  {d.sub}
-                </Text>
-              </View>
-              <View
-                style={{
-                  backgroundColor: colors.canvas200,
-                  paddingHorizontal: 10,
-                  paddingVertical: 6,
-                  borderRadius: 8,
-                }}
-              >
-                <Text
+              {({ pressed }) => (
+                <View
                   style={{
-                    fontFamily: fonts.arabicBold,
-                    fontSize: 12,
-                    color: colors.olive,
-                    letterSpacing: 1.2,
+                    backgroundColor: pressed ? colors.canvas200 : colors.bgElevated,
+                    borderRadius: 12,
+                    padding: 12,
+                    borderWidth: 1,
+                    borderColor: colors.canvas300,
+                    borderStyle: 'dashed',
+                    flexDirection,
+                    alignItems: 'center',
+                    gap: 12,
                   }}
                 >
-                  {d.code}
-                </Text>
-              </View>
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                      backgroundColor: colors.canvas200,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon.tag size={18} color={colors.olive} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13.5, color: colors.ink, textAlign: textStart }}>
+                      {d.title}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: textStart }}>
+                      {d.sub}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      backgroundColor: colors.canvas200,
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: fonts.arabicBold,
+                        fontSize: 12,
+                        color: colors.olive,
+                        letterSpacing: 1.2,
+                      }}
+                    >
+                      {d.code}
+                    </Text>
+                  </View>
+                </View>
+              )}
             </Pressable>
           ))}
         </View>
