@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { colors, fonts, shadow } from '@/shared/theme';
 import type { Shop } from '@/features/catalog/data';
@@ -24,80 +25,83 @@ export function ShopCard({ shop, onPress, compact }: Props) {
         onPress={onPress}
         accessibilityRole="button"
         style={({ pressed }) => ({
-          flexDirection: 'row',
           borderRadius: 12,
-          backgroundColor: colors.bgElevated,
-          overflow: 'hidden',
           opacity: shop.open ? (pressed ? 0.92 : 1) : 0.78,
         })}
       >
-        <View
-          style={{
-            width: tileWidth,
-            minWidth: tileWidth,
-            backgroundColor: shop.bgFrom,
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}
-        >
-          <Text
+        <View style={{ flexDirection: 'row', width: '100%', borderRadius: 12, overflow: 'hidden' }}>
+          <LinearGradient
+            colors={[shop.bgFrom, shop.bgTo || colors.olive900]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={{
-              position: 'absolute',
-              fontSize: phantomSize,
-              fontFamily: fonts.arabicBold,
-              color: 'rgba(250,248,243,0.10)',
-              top: -6,
-              left: 4,
-              lineHeight: phantomSize,
+              width: tileWidth,
+              minWidth: tileWidth,
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
             }}
           >
-            {shop.letter}
-          </Text>
-          <Text
-            style={{
-              fontFamily: fonts.arabicBold,
-              fontSize: letterSize,
-              color: colors.canvas,
-            }}
-          >
-            {shop.letter}
-          </Text>
-        </View>
-        <View style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 14, gap: 6, minWidth: 0 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <Text
-              numberOfLines={1}
               style={{
-                fontFamily: fonts.arabicSemiBold,
-                fontSize: 15,
-                color: colors.ink,
-                flex: 1,
+                position: 'absolute',
+                fontSize: phantomSize,
+                fontFamily: fonts.arabicBold,
+                color: 'rgba(250,248,243,0.10)',
+                top: -6,
+                right: 4,
+                lineHeight: phantomSize,
+                includeFontPadding: false,
               }}
             >
-              {shop.name}
+              {shop.letter}
             </Text>
-            <Badge variant={shop.open ? 'active' : 'issue'}>{shop.open ? 'مفتوح' : 'مغلق'}</Badge>
-          </View>
-          <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight }}>
-            {shop.cat} · {shop.distance}
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 2 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-              <Icon.star size={13} color={colors.gold} />
+            <Text
+              style={{
+                fontFamily: fonts.arabicBold,
+                fontSize: letterSize,
+                color: colors.canvas,
+                includeFontPadding: false,
+              }}
+            >
+              {shop.letter}
+            </Text>
+          </LinearGradient>
+          <View style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 14, gap: 6, minWidth: 0 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontFamily: fonts.arabicSemiBold,
+                  fontSize: 15,
+                  color: colors.ink,
+                  flex: 1,
+                }}
+              >
+                {shop.name}
+              </Text>
+              <Badge variant={shop.open ? 'active' : 'issue'}>{shop.open ? 'مفتوح' : 'مغلق'}</Badge>
+            </View>
+            <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight }}>
+              {shop.cat} · {shop.distance}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 2 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                <Icon.star size={13} color={colors.gold} />
+                <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
+                  {shop.rating}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Icon.clock size={13} color={colors.inkLight} />
+                <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
+                  {shop.eta}
+                </Text>
+              </View>
               <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
-                {shop.rating}
+                توصيل {shop.fee}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Icon.clock size={13} color={colors.inkLight} />
-              <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
-                {shop.eta}
-              </Text>
-            </View>
-            <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
-              توصيل {shop.fee}
-            </Text>
           </View>
         </View>
       </Pressable>

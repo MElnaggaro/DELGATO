@@ -47,11 +47,12 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
           style={{
             position: 'absolute',
             top: 4,
-            left: 10,
+            right: 10,
             fontFamily: fonts.arabicBold,
             fontSize: 60,
             lineHeight: 60,
             color: 'rgba(15,26,23,0.18)',
+            includeFontPadding: false,
           }}
         >
           {product.name[0]}
