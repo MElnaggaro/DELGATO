@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AppBar, Badge, Chip, EmptyState, Icon, MiniCartBar, ProductTile } from '@/shared/ui';
@@ -15,6 +15,13 @@ export default function Shop() {
   const params = useLocalSearchParams<{ id?: string }>();
   const shop = useMemo(() => findShop(params.id ?? '') ?? SHOPS[0]!, [params.id]);
   const [section, setSection] = useState<string>('الكل');
+  const [scrolled, setScrolled] = useState(false);
+
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const y = e.nativeEvent.contentOffset.y;
+    if (y > 8 && !scrolled) setScrolled(true);
+    else if (y <= 8 && scrolled) setScrolled(false);
+  };
 
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore((s) => s.addItem);
@@ -91,6 +98,8 @@ export default function Shop() {
 
       <ScrollView
         stickyHeaderIndices={[1]}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={{ paddingBottom: cartCount > 0 ? 120 : 24 }}
       >
         {/* Hero */}
@@ -240,8 +249,14 @@ export default function Shop() {
           </View>
         </View>
 
-        {/* Sticky section chips */}
-        <View style={{ backgroundColor: colors.canvas }}>
+        {/* Sticky section chips — gains a 1px bottom shadow once scrolled */}
+        <View
+          style={{
+            backgroundColor: colors.canvas,
+            borderBottomWidth: scrolled ? 1 : 0,
+            borderBottomColor: colors.canvas300,
+          }}
+        >
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

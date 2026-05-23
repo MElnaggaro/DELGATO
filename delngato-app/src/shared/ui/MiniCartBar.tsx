@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
+import { Bump, StickIn } from '@/shared/motion';
 
 type Props = {
   count: number;
@@ -15,7 +16,7 @@ export function MiniCartBar({ count, total, shopName, onPress }: Props) {
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection } = useRtl();
   return (
-    <View
+    <StickIn
       style={{
         position: 'absolute',
         left: 16,
@@ -48,7 +49,8 @@ export function MiniCartBar({ count, total, shopName, onPress }: Props) {
             gap: 10,
           }}
         >
-          <View
+          <Bump
+            trigger={count}
             style={{
               width: 28,
               height: 28,
@@ -61,7 +63,7 @@ export function MiniCartBar({ count, total, shopName, onPress }: Props) {
             <Text style={{ fontFamily: fonts.arabicBold, fontSize: 13, color: colors.ink, includeFontPadding: false }}>
               {arDigits(count)}
             </Text>
-          </View>
+          </Bump>
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.canvas }}>
               عرض السلة
@@ -80,6 +82,6 @@ export function MiniCartBar({ count, total, shopName, onPress }: Props) {
           </View>
         </View>
       </Pressable>
-    </View>
+    </StickIn>
   );
 }

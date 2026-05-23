@@ -12,7 +12,7 @@ import {
   Spinner,
 } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
-import { colors, fonts, shadow } from '@/shared/theme';
+import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { DEALS } from '@/features/catalog/data';

@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import { Dimensions, Pressable, ScrollView, Text, View } from 'react-native';
+import { Dimensions, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
-import { AppBar, Icon } from '@/shared/ui';
+import { AppBar } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
-import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { PRODUCTS, findProduct } from '@/features/catalog/data';
 
 const PHOTO_HUES = ['#F2EEE3', '#E9D7A8', '#D9DFC8', '#FAE3B6'];
 
 export default function ProductGallery() {
-  const { pick } = useRtl();
   const params = useLocalSearchParams<{ id?: string }>();
   const product = findProduct(params.id ?? '') ?? PRODUCTS[0]!;
   const [index, setIndex] = useState(0);

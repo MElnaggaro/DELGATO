@@ -10,7 +10,6 @@ import {
   Icon,
   StickyActionBar,
   STICKY_CTA_HEIGHT,
-  showToast,
 } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';

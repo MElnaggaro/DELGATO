@@ -3,11 +3,19 @@ import { Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'rea
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { AppBar, Button, Card, Icon, LiveDot, OrderProgress } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
+import { ease } from '@/shared/motion';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const MONO_FAMILY = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
 
@@ -29,6 +37,16 @@ export default function Tracking() {
   const params = useLocalSearchParams<{ orderId?: string }>();
   const orderId = params.orderId ?? 'DLN-٢٠٤٧';
   const [step, setStep] = useState<Step>(1);
+
+  // Animate the dashed delivery route once on mount.
+  const routeProgress = useSharedValue(220);
+  useEffect(() => {
+    routeProgress.value = withTiming(0, { duration: 1400, easing: ease.out });
+  }, [routeProgress]);
+
+  const routeAnimProps = useAnimatedProps(() => ({
+    strokeDashoffset: routeProgress.value,
+  }));
 
   useEffect(() => {
     if (step >= 3) return;
@@ -80,9 +98,13 @@ export default function Tracking() {
                 <Path d="M 120 -10 L 90 250" />
                 <Path d="M 260 -10 L 290 250" />
               </G>
-              {/* Dashed delivery route (origin → destination) */}
+              {/* Dashed delivery route (origin → destination) — animates in on mount */}
               <G stroke="#F2EEE3" strokeWidth={4} fill="none" strokeDasharray="6 6">
-                <Path d="M 60 220 C 90 160, 200 110, 300 40" />
+                <AnimatedPath
+                  d="M 60 220 C 90 160, 200 110, 300 40"
+                  strokeDasharray="6 6"
+                  animatedProps={routeAnimProps}
+                />
               </G>
               {/* Destination pin (olive) */}
               <G x={60} y={220}>

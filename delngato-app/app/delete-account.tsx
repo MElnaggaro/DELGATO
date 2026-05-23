@@ -90,7 +90,7 @@ export default function DeleteAccount() {
         >
           لتأكيد، اكتب{' '}
           <Text style={{ fontFamily: fonts.arabicBold, color: colors.statusIssueText }}>
-            "{PHRASE}"
+            «{PHRASE}»
           </Text>{' '}
           في الخانة:
         </Text>
