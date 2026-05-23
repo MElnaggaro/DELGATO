@@ -47,7 +47,7 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
           style={{
             position: 'absolute',
             top: 4,
-            right: 10,
+            left: 10,
             fontFamily: fonts.arabicBold,
             fontSize: 60,
             lineHeight: 60,
@@ -69,12 +69,11 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
             lineHeight: 18,
             color: colors.ink,
             minHeight: 36,
-            textAlign: isRtl ? 'right' : 'left',
           }}
         >
           {product.name}
         </Text>
-        <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
+        <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight }}>
           {product.sub}
         </Text>
       </View>
@@ -85,11 +84,11 @@ export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
           justifyContent: 'space-between',
         }}
       >
-        <View style={{ flexDirection, alignItems: 'baseline', gap: 4 }}>
-          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 15, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
+          <Text style={{ fontFamily: fonts.arabicBold, fontSize: 15, color: colors.ink }}>
             {arDigits(product.price)}
           </Text>
-          <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
+          <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight }}>
             ج.م
           </Text>
         </View>
