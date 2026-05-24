@@ -1,0 +1,16 @@
+export { HttpAuthRepository } from './HttpAuthRepository';
+export { HttpCustomerRepository } from './HttpCustomerRepository';
+export { HttpMerchantRepository } from './HttpMerchantRepository';
+export { HttpProductRepository } from './HttpProductRepository';
+export { HttpOrderRepository } from './HttpOrderRepository';
+export { HttpPromotionRepository } from './HttpPromotionRepository';
+export { HttpReviewRepository } from './HttpReviewRepository';
+export { HttpWalletRepository } from './HttpWalletRepository';
+export { HttpNotificationRepository } from './HttpNotificationRepository';
+export { HttpAddressRepository } from './HttpAddressRepository';
+export { HttpCategoryRepository } from './HttpCategoryRepository';
+export { HttpModifierRepository } from './HttpModifierRepository';
+export { HttpStaffRepository } from './HttpStaffRepository';
+export { HttpPayoutRepository } from './HttpPayoutRepository';
+export { HttpAnalyticsRepository } from './HttpAnalyticsRepository';
+export { HttpSupportRepository } from './HttpSupportRepository';

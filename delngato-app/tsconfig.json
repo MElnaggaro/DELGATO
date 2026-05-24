@@ -11,7 +11,9 @@
       "@/app/*": ["app/*"],
       "@/features/*": ["src/features/*"],
       "@/shared/*": ["src/shared/*"],
-      "@/services/*": ["src/services/*"]
+      "@/services/*": ["src/services/*"],
+      "@/domain/*": ["src/domain/*"],
+      "@/infrastructure/*": ["src/infrastructure/*"]
     }
   },
   "include": [

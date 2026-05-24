@@ -1,7 +1,7 @@
 import '../global.css';
 
 import { useEffect, useState } from 'react';
-import { View, I18nManager } from 'react-native';
+import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -12,12 +12,19 @@ import { I18nextProvider } from 'react-i18next';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { i18n, initI18n, type SupportedLocale } from '@/services/i18n';
-import { applyRtlForLocale, resolveInitialLocale } from '@/services/i18n/rtl';
+import { applyRtlForLocale } from '@/services/i18n/rtl';
 import { queryClient } from '@/services/api/queryClient';
 import { colors } from '@/shared/theme';
 import { useAuthStore, wireAuthIntoApiClient } from '@/features/auth/store';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { ToastHost } from '@/shared/ui/toast';
+
+import {
+  ContainerProvider,
+  getContainer,
+  hydratePlatformSeed,
+  installEventHandlers,
+} from '@/infrastructure';
 
 wireAuthIntoApiClient();
 
@@ -49,9 +56,17 @@ export default function RootLayout() {
       try {
         const reloaded = await applyRtlForLocale('ar');
         if (reloaded || cancelled) return;
-        
+
         await initI18n('ar');
         await hydrateSession();
+
+        // Phase 0 wiring: build container, hydrate platform store seed,
+        // install side-effect handlers. None of this changes customer
+        // behaviour — features still read from their own stores until
+        // Phase 2 migrates them to the platform store.
+        const container = getContainer();
+        await hydratePlatformSeed();
+        installEventHandlers(container);
       } catch (e) {
         console.warn('[RootLayout] init error, falling back to defaults:', e);
         await initI18n('ar');
@@ -61,7 +76,7 @@ export default function RootLayout() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [hydrateSession]);
 
   useEffect(() => {
     if ((fontsLoaded || fontError) && i18nReady) {
@@ -78,8 +93,10 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <I18nextProvider i18n={i18n}>
-            <StatusBar style="light" />
-            <RootStack />
+            <ContainerProvider>
+              <StatusBar style="light" />
+              <RootStack />
+            </ContainerProvider>
           </I18nextProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
@@ -105,4 +122,3 @@ function RootStack() {
     </View>
   );
 }
-
