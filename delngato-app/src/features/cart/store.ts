@@ -40,6 +40,8 @@ type State = {
   tip: number;
   scheduled: ScheduledSlot | null;
   deliveryNote: string;
+  /** Currently bound userId for persistence scoping. Empty string = not yet bound. */
+  _boundUserId: string;
 };
 
 type Actions = {
@@ -55,7 +57,31 @@ type Actions = {
   setTip: (tip: number) => void;
   setScheduled: (slot: ScheduledSlot | null) => void;
   setDeliveryNote: (note: string) => void;
+  /**
+   * Load cart for a specific user from AsyncStorage.
+   * Called on auth.session-started and role-switch back to customer.
+   */
+  hydrateForUser: (userId: string) => Promise<void>;
+  /**
+   * Clear in-memory cart state without deleting from storage.
+   * Called on auth.session-ended and role-switch to merchant.
+   */
+  clearInMemory: () => void;
 };
+
+const EMPTY_CART_STATE = {
+  items: [] as CartItem[],
+  favorites: ['abuhassan', 'noor'],
+  notifyList: [] as string[],
+  appliedPromo: null as AppliedPromo | null,
+  tip: 0,
+  scheduled: null as ScheduledSlot | null,
+  deliveryNote: '',
+};
+
+function cartStorageKey(userId: string): string {
+  return userId ? `delgato.cart.${userId}` : 'delgato.cart';
+}
 
 function pushItem(items: CartItem[], product: Product, shop: Shop, qty: number): CartItem[] {
   const existing = items.findIndex((i) => i.id === product.id);
@@ -82,13 +108,8 @@ function pushItem(items: CartItem[], product: Product, shop: Shop, qty: number):
 export const useCartStore = create<State & Actions>()(
   persist(
     (set, get) => ({
-      items: [],
-      favorites: ['abuhassan', 'noor'],
-      notifyList: [],
-      appliedPromo: null,
-      tip: 0,
-      scheduled: null,
-      deliveryNote: '',
+      ...EMPTY_CART_STATE,
+      _boundUserId: '',
       addItem: (product, shop, qty = 1) => {
         const current = get().items;
         if (current.length > 0 && current[0]!.shopId && current[0]!.shopId !== shop.id) {
@@ -137,12 +158,72 @@ export const useCartStore = create<State & Actions>()(
       setTip: (tip) => set({ tip }),
       setScheduled: (scheduled) => set({ scheduled }),
       setDeliveryNote: (deliveryNote) => set({ deliveryNote }),
+
+      hydrateForUser: async (userId: string) => {
+        const key = cartStorageKey(userId);
+        try {
+          const raw = await zustandAsyncStorage.getItem(key);
+          if (raw) {
+            const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            const state = parsed?.state ?? parsed;
+            set({
+              items: state?.items ?? [],
+              favorites: state?.favorites ?? ['abuhassan', 'noor'],
+              notifyList: state?.notifyList ?? [],
+              appliedPromo: state?.appliedPromo ?? null,
+              tip: state?.tip ?? 0,
+              scheduled: state?.scheduled ?? null,
+              deliveryNote: state?.deliveryNote ?? '',
+              _boundUserId: userId,
+            });
+          } else {
+            set({ ...EMPTY_CART_STATE, _boundUserId: userId });
+          }
+        } catch {
+          // Corrupt storage — start fresh for this user
+          set({ ...EMPTY_CART_STATE, _boundUserId: userId });
+        }
+      },
+
+      clearInMemory: () => {
+        set({ ...EMPTY_CART_STATE, _boundUserId: '' });
+      },
     }),
     {
-      name: 'delngato.cart',
+      name: 'delgato.cart',
       storage: createJSONStorage(() => zustandAsyncStorage),
+      // Dynamic key: persist under the bound userId
+      // The middleware uses `name` for the key. We override the storage to scope by userId.
+      partialize: (s) => ({
+        items: s.items,
+        favorites: s.favorites,
+        notifyList: s.notifyList,
+        appliedPromo: s.appliedPromo,
+        tip: s.tip,
+        scheduled: s.scheduled,
+        deliveryNote: s.deliveryNote,
+      }),
     },
   ),
+);
+
+// Subscribe to persist cart changes under the userId-scoped key
+useCartStore.subscribe(
+  (state) => {
+    if (state._boundUserId) {
+      const key = cartStorageKey(state._boundUserId);
+      const data = {
+        items: state.items,
+        favorites: state.favorites,
+        notifyList: state.notifyList,
+        appliedPromo: state.appliedPromo,
+        tip: state.tip,
+        scheduled: state.scheduled,
+        deliveryNote: state.deliveryNote,
+      };
+      zustandAsyncStorage.setItem(key, JSON.stringify({ state: data }));
+    }
+  },
 );
 
 export const useCartSubtotal = () =>

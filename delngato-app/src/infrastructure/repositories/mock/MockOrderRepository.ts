@@ -25,13 +25,15 @@ import { bus } from '@/infrastructure/events';
 import { bumpAudit, genId, newAudit, nowISO } from './_support';
 
 const TIMER_PER_STATUS: Partial<Record<OrderStatus, number>> = {
+  payment_pending: 90, // 90s to capture/hold payment before auto-cancel
   new: 300, // 5 min SLA to accept/reject
   accepted: 600, // 10 min to start preparing
   preparing: 0, // counts up; UI uses Store.prepTimeMin
 };
 
 const ALLOWED_NEXT: Record<OrderStatus, ReadonlyArray<OrderStatus>> = {
-  new: ['accepted', 'rejected'],
+  payment_pending: ['new', 'cancelled'],
+  new: ['accepted', 'rejected', 'cancelled'],
   accepted: ['preparing', 'cancelled'],
   preparing: ['ready', 'cancelled'],
   ready: ['picked', 'cancelled'],
@@ -95,6 +97,7 @@ export class MockOrderRepository implements OrderRepository {
       total,
       merchantShare: Math.round(input.subtotal * 0.93),
       payment: input.payment,
+      ...(input.paymentRef ? { paymentRef: input.paymentRef } : {}),
       address: input.address,
       distanceKm: input.distanceKm,
       customerName: input.customerName,
@@ -237,7 +240,12 @@ export class MockOrderRepository implements OrderRepository {
   private tick = (): void => {
     const state = usePlatformStore.getState();
     for (const o of Object.values(state.orders)) {
-      if (o.status === 'new' || o.status === 'accepted' || o.status === 'preparing') {
+      if (
+        o.status === 'payment_pending' ||
+        o.status === 'new' ||
+        o.status === 'accepted' ||
+        o.status === 'preparing'
+      ) {
         if (o.timerSec > 0) {
           const next: Order = { ...o, timerSec: o.timerSec - 1, ...bumpAudit(o) };
           state.applyOrder(next);
@@ -247,6 +255,18 @@ export class MockOrderRepository implements OrderRepository {
             rejectionReason: 'انتهت مهلة الرد',
           });
           bus.emit({ type: 'order.rejected', orderId: o.id, reason: 'انتهت مهلة الرد' });
+          void next;
+        } else if (o.status === 'payment_pending') {
+          // Payment hold expired — cancel and release.
+          const next = this.transition(o.id, 'cancelled', 'system', {
+            cancellationReason: 'انتهت مهلة الدفع',
+          });
+          bus.emit({
+            type: 'order.cancelled',
+            orderId: o.id,
+            reason: 'انتهت مهلة الدفع',
+            byRole: 'system',
+          });
           void next;
         }
       }

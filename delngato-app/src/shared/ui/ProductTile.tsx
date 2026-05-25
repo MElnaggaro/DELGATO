@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
-import type { Product } from '@/features/catalog/data';
+import type { Product } from '@/domain/types';
 import { Badge } from './Badge';
 import { Icon } from './Icon';
 import { Stepper } from './Stepper';
@@ -19,7 +19,7 @@ type Props = {
 export function ProductTile({ product, qty, onTap, onAdd, onChange }: Props) {
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection, pick } = useRtl();
-  const isUnavailable = product.available === false;
+  const isUnavailable = product.availability === 'out' || product.availability === 'archived';
 
   return (
     <Pressable

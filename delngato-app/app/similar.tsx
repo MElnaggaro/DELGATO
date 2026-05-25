@@ -6,27 +6,42 @@ import { Rise } from '@/shared/motion';
 import { colors } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { PRODUCTS, SHOPS, findProduct, findShop } from '@/features/catalog/data';
+import { useProductDetail, useProductsByStore, useStoreDetail } from '@/features/discovery';
 import { useCartStore } from '@/features/cart/store';
+import type { Product as DomainProduct, Store } from '@/domain/types';
+import type { Product as CatalogProduct, Shop as CatalogShop } from '@/features/catalog/data';
 
 export default function Similar() {
   const router = useRouter();
   const { flexDirection } = useRtl();
   const params = useLocalSearchParams<{ id?: string; shopId?: string }>();
-  const product = findProduct(params.id ?? '');
-  const shop = findShop(params.shopId ?? '') ?? SHOPS[0]!;
+  const product = useProductDetail(params.id);
+  const store = useStoreDetail(params.shopId);
+  const storeProducts = useProductsByStore(params.shopId);
 
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore((s) => s.addItem);
   const setItemQty = useCartStore((s) => s.setItemQty);
 
   const similar = product
-    ? PRODUCTS.filter((p) => p.id !== product.id && p.section === product.section)
-    : PRODUCTS.slice(0, 6);
+    ? storeProducts.filter((p) => p.id !== product.id && p.section === product.section)
+    : storeProducts.slice(0, 6);
+
+  /** Adapt domain types to cart store's catalog-type interface. */
+  const toCatalogProduct = (p: DomainProduct): CatalogProduct => ({
+    id: p.id, name: p.name, sub: p.sub, price: p.price, hue: p.hue,
+    tag: p.tag ?? null, section: p.section ?? '', available: p.availability !== 'out' && p.availability !== 'archived',
+  });
+  const toCatalogShop = (s: Store): CatalogShop => ({
+    id: s.id, letter: s.letter, name: s.name, cat: s.category, catKey: s.catKey as any,
+    distance: s.distance ?? '', rating: String(s.rating), eta: '', fee: '',
+    open: s.open, desc: s.desc ?? '', bgFrom: s.bg.bgFrom, bgTo: s.bg.bgTo, tags: [...s.tags],
+  });
 
   const qtyOf = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
   const setQty = (productId: string, qty: number) => {
-    const p = PRODUCTS.find((x) => x.id === productId);
+    if (!store) return;
+    const p = storeProducts.find((x) => x.id === productId);
     if (!p) return;
     if (qty <= 0) {
       setItemQty(productId, 0);
@@ -37,11 +52,11 @@ export default function Similar() {
       setItemQty(productId, qty);
       return;
     }
-    const result = addItem(p, shop, qty);
+    const result = addItem(toCatalogProduct(p), toCatalogShop(store), qty);
     if (!result.ok && result.reason === 'conflict') {
       router.push({
         pathname: '/merchant-conflict',
-        params: { newShopId: shop.id, newProductId: productId, newQty: String(qty) },
+        params: { newShopId: store.id, newProductId: productId, newQty: String(qty) },
       });
     }
   };
@@ -71,7 +86,7 @@ export default function Similar() {
                 <ProductTile
                   product={p}
                   qty={qtyOf(p.id)}
-                  onTap={() => router.replace({ pathname: '/product', params: { id: p.id, shopId: shop.id } })}
+                  onTap={() => router.replace({ pathname: '/product', params: { id: p.id, shopId: store?.id ?? '' } })}
                   onAdd={() => {
                     setQty(p.id, 1);
                     showToast('اتضاف للسلة', <Icon.check size={16} color={colors.gold} />);

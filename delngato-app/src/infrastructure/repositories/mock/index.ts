@@ -14,3 +14,5 @@ export { MockStaffRepository } from './MockStaffRepository';
 export { MockPayoutRepository } from './MockPayoutRepository';
 export { MockAnalyticsRepository } from './MockAnalyticsRepository';
 export { MockSupportRepository } from './MockSupportRepository';
+export { MockPaymentRepository } from './MockPaymentRepository';
+export { MockCartRepository } from './MockCartRepository';

@@ -17,7 +17,9 @@ import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { useCartStore, useCartSubtotal } from '@/features/cart/store';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWallet } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
+import { placeOrderWithWallet } from '@/features/checkout/placeOrder';
 
 const DELIVERY_FEE = 10;
 
@@ -27,20 +29,32 @@ export default function WalletPay() {
   const { isRtl, flexDirection } = useRtl();
   const subtotal = useCartSubtotal();
   const tip = useCartStore((s) => s.tip);
-  const walletBalance = useLoyaltyStore((s) => s.walletBalance);
-  const chargeWallet = useLoyaltyStore((s) => s.chargeWallet);
+  
+  const userId = useAuthStore((s) => s.user?.id);
+  const wallet = useWallet(userId);
+  const walletBalance = wallet?.balance ?? 0;
   const [loading, setLoading] = useState(false);
 
   const total = subtotal + DELIVERY_FEE + tip;
   const enough = walletBalance >= total;
   const after = walletBalance - total;
 
-  const pay = () => {
+  const pay = async () => {
     setLoading(true);
-    setTimeout(() => {
-      chargeWallet(total, 'DLN-٢٠٤٧');
-      router.replace('/order-success');
-    }, 1100);
+    try {
+      // Phase 6.b: placeOrderWithWallet sequences WalletRepository.hold →
+      // OrderRepository.place → legacy loyalty mirror (chargeWallet) → return.
+      // On failure the hold is released so the customer's balance is intact.
+      const result = await placeOrderWithWallet();
+      if (!result) {
+        setLoading(false);
+        return;
+      }
+      router.replace({ pathname: '/order-success', params: { orderId: result.orderId } });
+    } catch (e) {
+      setLoading(false);
+      if (__DEV__) console.warn('[wallet-pay] failed', e);
+    }
   };
 
   return (
@@ -176,7 +190,9 @@ export default function WalletPay() {
           full
           disabled={!enough || loading}
           loading={loading}
-          onPress={pay}
+          onPress={() => {
+            void pay();
+          }}
         >
           {`ادفع ${arDigits(total)} ج.م`}
         </Button>

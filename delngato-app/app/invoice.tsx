@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -6,29 +5,28 @@ import { AppBar, Badge, Button, Card, Icon } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
-import { useOrdersStore } from '@/features/orders/store';
-
-const ITEMS = [
-  { name: 'لبن جهينة', qty: 2, price: 32 },
-  { name: 'بيض بلدي', qty: 1, price: 145 },
-  { name: 'خبز فينو', qty: 3, price: 12 },
-];
-
-const FEE = 10;
+import { useOrderDetail } from '@/features/orders/hooks';
+import { usePlatformStore } from '@/domain/stores/platform';
 
 export default function Invoice() {
   const router = useRouter();
   const arDigits = useArabicDigits();
   const params = useLocalSearchParams<{ id?: string }>();
-  const orders = useOrdersStore((s) => s.orders);
-  const order = useMemo(
-    () => orders.find((o) => o.id === params.id) ?? orders[0]!,
-    [orders, params.id],
-  );
+  const order = useOrderDetail(params.id);
+  const storeName = usePlatformStore((s) => order ? (s.stores[order.storeId]?.name ?? '') : '');
 
-  const sub = ITEMS.reduce((s, i) => s + i.qty * i.price, 0);
-  const tax = Math.round(sub * 0.05);
-  const total = sub + FEE + tax;
+  if (!order) return null;
+
+  const dateLabel = order.placedAt
+    ? new Date(order.placedAt).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    : '';
+
+  // Order's subtotal already incorporates item prices; total includes tax implicitly if any,
+  // but if we want to show tax separately, we would need to know the breakdown from the domain.
+  // For now we'll match the legacy display logic which derived tax from subtotal.
+  const tax = Math.round(order.subtotal * 0.05);
+  // Total logic from domain
+  const total = order.total;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -96,10 +94,10 @@ export default function Invoice() {
               gap: 14,
             }}
           >
-            <MetaCell label="تاريخ الفاتورة" value="الأحد · ٣٠ يونيو ٢٠٢٦" />
-            <MetaCell label="المحل" value={order.shop} />
-            <MetaCell label="العميل" value="أحمد محمد" />
-            <MetaCell label="طريقة الدفع" value="كاش" />
+            <MetaCell label="تاريخ الفاتورة" value={dateLabel} />
+            <MetaCell label="المحل" value={storeName} />
+            <MetaCell label="العميل" value={order.customerName || 'أحمد محمد'} />
+            <MetaCell label="طريقة الدفع" value={order.payment === 'cash' ? 'كاش' : order.payment === 'wallet' ? 'محفظة' : 'بطاقة'} />
           </View>
 
           <View
@@ -117,9 +115,9 @@ export default function Invoice() {
               <Text style={{ width: 50, textAlign: 'center', ...header() }}>الكمية</Text>
               <Text style={{ width: 80, textAlign: 'left', ...header() }}>السعر</Text>
             </View>
-            {ITEMS.map((it, i) => (
+            {order.items.map((it, i) => (
               <View
-                key={it.name}
+                key={it.productId}
                 style={{
                   flexDirection: 'row',
                   paddingVertical: 10,
@@ -151,15 +149,15 @@ export default function Invoice() {
                     color: colors.ink,
                   }}
                 >
-                  {arDigits(it.qty * it.price)} ج.م
+                  {arDigits(it.subtotal)} ج.م
                 </Text>
               </View>
             ))}
           </View>
 
           <View style={{ paddingTop: 12 }}>
-            <Row label="إجمالي المنتجات" value={`${arDigits(sub)} ج.م`} />
-            <Row label="رسوم التوصيل" value={`${arDigits(FEE)} ج.م`} />
+            <Row label="إجمالي المنتجات" value={`${arDigits(order.subtotal)} ج.م`} />
+            <Row label="رسوم التوصيل" value={`${arDigits(order.deliveryFee)} ج.م`} />
             <Row label="ضريبة القيمة المضافة (٥٪)" value={`${arDigits(tax)} ج.م`} />
             <View style={{ height: 1, backgroundColor: colors.canvas300, marginVertical: 10 }} />
             <Row label="الإجمالي" value={`${arDigits(total)} ج.م`} bold />

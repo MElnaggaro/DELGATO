@@ -25,7 +25,7 @@ export function installNotificationHandlers(container: Container): void {
   // will look up the actual owner via session.
   const demoMerchantUserId = SEED_MERCHANTS.find((m) => m.storeId === DEMO_MERCHANT_ID)?.id ?? '';
 
-  bus.on('order.placed', ({ orderId, storeId, customerId }) => {
+  bus.on('order.placed', ({ orderId, storeId, customerId }: any) => {
     void container.notificationRepo.create({
       userId: demoMerchantUserId,
       role: 'merchant',
@@ -40,7 +40,7 @@ export function installNotificationHandlers(container: Container): void {
     });
   });
 
-  bus.on('order.accepted', ({ orderId }) => {
+  bus.on('order.accepted', ({ orderId }: any) => {
     void container.notificationRepo.create({
       userId: DEMO_CUSTOMER.id,
       role: 'customer',
@@ -54,7 +54,7 @@ export function installNotificationHandlers(container: Container): void {
     });
   });
 
-  bus.on('order.rejected', ({ orderId, reason }) => {
+  bus.on('order.rejected', ({ orderId, reason }: any) => {
     void container.notificationRepo.create({
       userId: DEMO_CUSTOMER.id,
       role: 'customer',
@@ -67,7 +67,7 @@ export function installNotificationHandlers(container: Container): void {
     });
   });
 
-  bus.on('order.ready', ({ orderId }) => {
+  bus.on('order.ready', ({ orderId }: any) => {
     void container.notificationRepo.create({
       userId: DEMO_CUSTOMER.id,
       role: 'customer',
@@ -80,7 +80,7 @@ export function installNotificationHandlers(container: Container): void {
     });
   });
 
-  bus.on('order.delivered', ({ orderId }) => {
+  bus.on('order.delivered', ({ orderId }: any) => {
     void container.notificationRepo.create({
       userId: DEMO_CUSTOMER.id,
       role: 'customer',
@@ -93,7 +93,7 @@ export function installNotificationHandlers(container: Container): void {
     });
   });
 
-  bus.on('review.responded', ({ reviewId }) => {
+  bus.on('review.responded', ({ reviewId }: any) => {
     void container.notificationRepo.create({
       userId: DEMO_CUSTOMER.id,
       role: 'customer',

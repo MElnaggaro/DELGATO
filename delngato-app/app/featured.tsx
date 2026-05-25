@@ -6,12 +6,12 @@ import { FadeUp, Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { FEATURED_IDS, SHOPS } from '@/features/catalog/data';
+import { useFeaturedStores } from '@/features/discovery';
 
 export default function Featured() {
   const router = useRouter();
   const { isRtl, flexDirection, pick } = useRtl();
-  const shops = SHOPS.filter((s) => FEATURED_IDS.includes(s.id));
+  const shops = useFeaturedStores();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>

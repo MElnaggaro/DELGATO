@@ -14,33 +14,53 @@ import { Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { PRODUCTS, SHOPS, findProduct, findShop } from '@/features/catalog/data';
+import { useProductDetail, useProductsByStore, useStoreDetail } from '@/features/discovery';
 import { useCartStore, useNotifySubscribed } from '@/features/cart/store';
+import type { Product as DomainProduct, Store } from '@/domain/types';
+import type { Product as CatalogProduct, Shop as CatalogShop } from '@/features/catalog/data';
 
 export default function Unavailable() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string; shopId?: string }>();
-  const product = useMemo(() => findProduct(params.id ?? '') ?? PRODUCTS[0]!, [params.id]);
-  const shop = useMemo(() => findShop(params.shopId ?? '') ?? SHOPS[0]!, [params.shopId]);
+  const product = useProductDetail(params.id);
+  const store = useStoreDetail(params.shopId);
+  const storeProducts = useProductsByStore(params.shopId);
   const { isRtl, flexDirection } = useRtl();
 
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore((s) => s.addItem);
   const setItemQty = useCartStore((s) => s.setItemQty);
   const toggleNotify = useCartStore((s) => s.toggleNotify);
-  const subscribed = useNotifySubscribed(product.id);
+  const subscribed = useNotifySubscribed(product?.id ?? '');
+
+  /** Adapt domain types to cart store's catalog-type interface. */
+  const toCatalogProduct = (p: DomainProduct): CatalogProduct => ({
+    id: p.id, name: p.name, sub: p.sub, price: p.price, hue: p.hue,
+    tag: p.tag ?? null, section: p.section ?? '', available: p.availability !== 'out' && p.availability !== 'archived',
+  });
+  const toCatalogShop = (s: Store): CatalogShop => ({
+    id: s.id, letter: s.letter, name: s.name, cat: s.category, catKey: s.catKey as any,
+    distance: s.distance ?? '', rating: String(s.rating), eta: '', fee: '',
+    open: s.open, desc: s.desc ?? '', bgFrom: s.bg.bgFrom, bgTo: s.bg.bgTo, tags: [...s.tags],
+  });
 
   const alternatives = useMemo(
     () =>
-      PRODUCTS.filter(
-        (p) => p.section === product.section && p.id !== product.id && p.available !== false,
-      ).slice(0, 4),
-    [product.section, product.id],
+      product
+        ? storeProducts.filter(
+            (p) => p.section === product.section && p.id !== product.id && p.availability !== 'out' && p.availability !== 'archived',
+          ).slice(0, 4)
+        : [],
+    [product, storeProducts],
   );
+
+  if (!product || !store) return null;
+
+  const shop = store; // alias for template compatibility
 
   const qtyOf = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
   const setQty = (productId: string, qty: number) => {
-    const p = PRODUCTS.find((x) => x.id === productId);
+    const p = storeProducts.find((x) => x.id === productId);
     if (!p) return;
     if (qty <= 0) {
       setItemQty(productId, 0);
@@ -50,7 +70,7 @@ export default function Unavailable() {
       setItemQty(productId, qty);
       return;
     }
-    const result = addItem(p, shop, qty);
+    const result = addItem(toCatalogProduct(p), toCatalogShop(shop), qty);
     if (!result.ok && result.reason === 'conflict') {
       router.push({
         pathname: '/merchant-conflict',

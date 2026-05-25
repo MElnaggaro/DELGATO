@@ -16,15 +16,17 @@ import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { PRODUCTS, SHOPS, findProduct, findShop } from '@/features/catalog/data';
+import { useProductDetail, useStoreDetail } from '@/features/discovery';
 import { useCartStore } from '@/features/cart/store';
 import { useDiscoveryStore } from '@/features/discovery/store';
+import type { Product as DomainProduct, Store } from '@/domain/types';
+import type { Product as CatalogProduct, Shop as CatalogShop } from '@/features/catalog/data';
 
 export default function Product() {
   const params = useLocalSearchParams<{ id?: string; shopId?: string }>();
   const router = useRouter();
-  const product = useMemo(() => findProduct(params.id ?? '') ?? PRODUCTS[0]!, [params.id]);
-  const shop = useMemo(() => findShop(params.shopId ?? '') ?? SHOPS[0]!, [params.shopId]);
+  const product = useProductDetail(params.id);
+  const shop = useStoreDetail(params.shopId);
 
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore((s) => s.addItem);
@@ -32,29 +34,42 @@ export default function Product() {
   const favorites = useCartStore((s) => s.favorites);
   const toggleFavorite = useCartStore((s) => s.toggleFavorite);
   const pushRecent = useDiscoveryStore((s) => s.pushRecent);
-  const inCart = items.find((i) => i.id === product.id);
+  const inCart = product ? items.find((i) => i.id === product.id) : undefined;
 
   const [qty, setQty] = useState(inCart?.qty ?? 1);
   const [note, setNote] = useState('');
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection, pick } = useRtl();
 
-  const isFav = favorites.includes(product.id);
+  const isFav = product ? favorites.includes(product.id) : false;
 
   // Track recently-viewed once per mount.
   useMemo(() => {
-    if (product.id) pushRecent(product.id);
-  }, [product.id, pushRecent]);
+    if (product?.id) pushRecent(product.id);
+  }, [product?.id, pushRecent]);
 
   // Redirect unavailable products to the dedicated screen.
   useEffect(() => {
-    if (product.available === false) {
+    if (product && (product.availability === 'out' || product.availability === 'archived') && shop) {
       router.replace({
         pathname: '/unavailable',
         params: { id: product.id, shopId: shop.id },
       });
     }
-  }, [product.available, product.id, shop.id, router]);
+  }, [product, shop, router]);
+
+  /** Adapt domain types to cart store's catalog-type interface. */
+  const toCatalogProduct = (p: DomainProduct): CatalogProduct => ({
+    id: p.id, name: p.name, sub: p.sub, price: p.price, hue: p.hue,
+    tag: p.tag ?? null, section: p.section ?? '', available: p.availability !== 'out' && p.availability !== 'archived',
+  });
+  const toCatalogShop = (s: Store): CatalogShop => ({
+    id: s.id, letter: s.letter, name: s.name, cat: s.category, catKey: s.catKey as any,
+    distance: s.distance ?? '', rating: String(s.rating), eta: '', fee: '',
+    open: s.open, desc: s.desc ?? '', bgFrom: s.bg.bgFrom, bgTo: s.bg.bgTo, tags: [...s.tags],
+  });
+
+  if (!product || !shop) return null;
 
   const onAdd = () => {
     if (inCart) {
@@ -63,7 +78,7 @@ export default function Product() {
       safeBack(`/shop?id=${shop.id}`);
       return;
     }
-    const result = addItem(product, shop, qty);
+    const result = addItem(toCatalogProduct(product), toCatalogShop(shop), qty);
     if (!result.ok && result.reason === 'conflict') {
       router.push({
         pathname: '/merchant-conflict',
@@ -194,7 +209,7 @@ export default function Product() {
               <Text
                 style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}
               >
-                {shop.eta}
+                {shop.prepTimeMin ? `${shop.prepTimeMin}–${shop.prepTimeMin + Math.round(shop.prepTimeMin * 0.5)} د` : ''}
               </Text>
             </View>
           </View>

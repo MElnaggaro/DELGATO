@@ -12,4 +12,5 @@ export class HttpNotificationRepository implements NotificationRepository {
   subscribe(_u: Id, _r: Role, _h: (n: readonly Notification[]) => void): Unsubscribe {
     unimplemented('HttpNotificationRepository.subscribe');
   }
+  registerDevice(_u: Id, _t: string, _p: 'ios' | 'android' | 'web'): Promise<void> { return unimplemented('HttpNotificationRepository.registerDevice'); }
 }

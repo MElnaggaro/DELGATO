@@ -1,18 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppBar, EmptyState, Icon } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
-import { useOrdersStore } from '@/features/orders/store';
-import type { Notification } from '@/features/catalog/data';
+import { useAuthStore } from '@/features/auth/store';
+import { useNotifications, useMarkAllRead } from '@/features/orders/hooks';
+import { usePlatformStore } from '@/domain/stores/platform';
+import { DEMO_CUSTOMER } from '@/infrastructure/seed/seedData';
+import type { Notification } from '@/domain/types';
 
 export default function Notifications() {
   const { t } = useTranslation();
-  const items = useOrdersStore((s) => s.notifications);
-  const markAllRead = useOrdersStore((s) => s.markAllNotificationsRead);
-  const clearAll = useOrdersStore((s) => s.clearNotifications);
+  const user = useAuthStore((s) => s.user);
+  const userId = user?.id ?? DEMO_CUSTOMER.id;
+  const items = useNotifications(userId);
+  const markAllRead = useMarkAllRead(userId);
+  const applyBatch = usePlatformStore((s) => s.applyBatch);
+
+  const clearAll = useCallback(() => {
+    // Remove all notifications for this user from the platform store
+    const remove = usePlatformStore.getState().remove;
+    items.forEach((n) => remove('notification', n.id));
+  }, [items]);
 
   useEffect(() => {
     const id = setTimeout(() => markAllRead(), 800);
@@ -54,6 +65,9 @@ export default function Notifications() {
 
 function NotificationRow({ n }: { n: Notification }) {
   const isGold = n.accent === 'gold';
+  const timeLabel = n.ts
+    ? new Date(n.ts).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })
+    : '';
   return (
     <View
       style={{
@@ -91,7 +105,7 @@ function NotificationRow({ n }: { n: Notification }) {
             {n.title}
           </Text>
           <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkMute }}>
-            {n.time}
+            {timeLabel}
           </Text>
         </View>
         <Text
@@ -126,5 +140,9 @@ function NotificationIcon({ icon, color }: { icon: Notification['icon']; color: 
   if (icon === 'tag') return <Icon.tag size={20} color={color} />;
   if (icon === 'check') return <Icon.check size={20} color={color} />;
   if (icon === 'store') return <Icon.store size={20} color={color} />;
+  if (icon === 'package') return <Icon.store size={20} color={color} />;
+  if (icon === 'wallet') return <Icon.wallet size={20} color={color} />;
+  if (icon === 'star') return <Icon.star size={20} color={color} />;
+  if (icon === 'alert') return <Icon.info size={20} color={color} />;
   return <Icon.info size={20} color={color} />;
 }

@@ -4,6 +4,7 @@ export const UserSchema = z.object({
   id: z.string(),
   phone: z.string(),
   displayName: z.string().optional(),
+  roles: z.array(z.enum(['customer', 'merchant'])).default(['customer']),
 });
 export type User = z.infer<typeof UserSchema>;
 

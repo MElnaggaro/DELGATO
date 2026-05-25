@@ -23,11 +23,14 @@ import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { useSelectedAddress } from '@/features/addresses/store';
-import { CATEGORIES, SHOPS, type CategoryKey } from '@/features/catalog/data';
-import { useOrdersStore } from '@/features/orders/store';
+import { useCustomerCategories, useStoresByCategory } from '@/features/discovery';
+import { useLiveOrders, useUnreadCount, statusText } from '@/features/orders/hooks';
+import { useAuthStore } from '@/features/auth/store';
 import { useCartCount } from '@/features/cart/store';
+import { DEMO_CUSTOMER } from '@/infrastructure/seed/seedData';
+import { usePlatformStore } from '@/domain/stores/platform';
 
-const CATEGORY_ICON: Record<NonNullable<(typeof CATEGORIES)[number]['icon']>, React.ReactNode> = {
+const CATEGORY_ICON: Record<string, React.ReactNode> = {
   store: <Icon.store size={26} color={colors.olive} />,
   pill: <Icon.pill size={26} color={colors.olive} />,
   utensils: <Icon.utensils size={26} color={colors.olive} />,
@@ -41,17 +44,19 @@ export default function Home() {
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection, pick } = useRtl();
   const addr = useSelectedAddress();
-  const [cat, setCat] = useState<CategoryKey>('all');
+  const [cat, setCat] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
 
-  const orders = useOrdersStore((s) => s.orders);
-  const liveOrder = useMemo(() => orders.find((o) => o.status === 'live'), [orders]);
-  const unreadCount = useOrdersStore((s) =>
-    s.notifications.reduce((n, x) => (x.read ? n : n + 1), 0),
-  );
-  const cartCount = useCartCount();
+  const categories = useCustomerCategories();
+  const filtered = useStoresByCategory(cat);
 
-  const filtered = cat === 'all' ? SHOPS : SHOPS.filter((s) => s.catKey === cat);
+  const user = useAuthStore((s) => s.user);
+  const userId = user?.id ?? DEMO_CUSTOMER.id;
+  const liveOrders = useLiveOrders(userId);
+  const liveOrder = liveOrders[0] ?? null;
+  const unreadCount = useUnreadCount(userId);
+  const storeName = usePlatformStore((s) => liveOrder ? (s.stores[liveOrder.storeId]?.name ?? '') : '');
+  const cartCount = useCartCount();
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -214,7 +219,7 @@ export default function Home() {
           style={{ paddingTop: 6 }}
           contentContainerStyle={{ paddingHorizontal: 18, gap: 12, paddingBottom: 14 }}
         >
-          {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
+          {categories.filter((c) => c.key !== 'all').map((c) => (
             <CategoryIconTile
               key={c.key}
               icon={c.icon ? CATEGORY_ICON[c.icon] : <Icon.store size={26} color={colors.olive} />}
@@ -228,7 +233,11 @@ export default function Home() {
         {liveOrder ? (
           <View style={{ paddingHorizontal: 18, paddingBottom: 14 }}>
             <ActiveOrderCard
-              order={liveOrder}
+              order={{
+                id: liveOrder.id,
+                statusText: statusText(liveOrder.status),
+                shop: storeName,
+              }}
               onPress={() =>
                 router.push({ pathname: '/tracking', params: { orderId: liveOrder.id } })
               }
@@ -238,7 +247,7 @@ export default function Home() {
 
         {/* Category filter chips */}
         <CategoryChipRow>
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <CategoryChip key={c.key} active={cat === c.key} onPress={() => setCat(c.key)}>
               {c.label}
             </CategoryChip>

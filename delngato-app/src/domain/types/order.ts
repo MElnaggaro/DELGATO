@@ -2,7 +2,22 @@ import type { Audit, Id, ISODateTime, Money, Quantity, Role } from './common';
 import type { PaymentMethod } from './store';
 import type { CartItemModifierSelection } from './cart';
 
+/**
+ * Canonical order lifecycle.
+ *
+ * `payment_pending` — pre-merchant state. The customer placed the order with a
+ * non-cash payment that is being authorized/held. On success the order moves
+ * to `new` (with-merchant); on failure to `cancelled`. Cash orders skip this
+ * state entirely and start at `new`.
+ *
+ * NOTE: the canonical spec uses `pending` for the with-merchant state; this
+ * codebase predates the spec and uses `new`. Names left unreconciled
+ * deliberately — renaming `new` would require touching every selector,
+ * mock seed entry, and UI label. The semantic distinction is preserved by
+ * the new `payment_pending` value.
+ */
 export type OrderStatus =
+  | 'payment_pending'
   | 'new'
   | 'accepted'
   | 'preparing'
@@ -44,6 +59,7 @@ export type Order = Audit & {
   readonly total: Money;
   readonly merchantShare: Money;
   readonly payment: PaymentMethod;
+  readonly paymentRef?: string;
   readonly address: string;
   readonly distanceKm: number;
   readonly customerName: string;
@@ -78,12 +94,14 @@ export type PlaceOrderInput = {
   readonly tip: Money;
   readonly discount: Money;
   readonly payment: PaymentMethod;
+  readonly paymentRef?: string;
   readonly address: string;
   readonly distanceKm: number;
   readonly customerName: string;
   readonly customerPhone: string;
   readonly note?: string;
   readonly promoCode?: string;
+  readonly idempotencyKey?: string;
 };
 
 export type IssueReportCategory =

@@ -152,7 +152,7 @@ export default function ResetPassword() {
           disabled={!valid}
           onPress={() => {
             showToast('اتغيرت كلمة السر بنجاح', <Icon.check size={16} color={colors.gold} />);
-            router.replace('/(onboarding)/auth');
+            router.replace('/(auth)/role?type=login');
           }}
         >
           حفظ وتسجيل الدخول

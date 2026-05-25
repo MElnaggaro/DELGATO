@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,10 @@ import { colors, fonts } from '@/shared/theme';
 import { ease } from '@/shared/motion';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
+import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { usePlatformStore } from '@/domain/stores/platform';
+import { selectOrderById } from '@/domain/selectors';
+import type { OrderStatus } from '@/domain/types';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -24,19 +28,69 @@ type Step = 0 | 1 | 2 | 3;
 const STATUS_HEAD = ['received', 'preparing', 'onTheWay', 'delivered'] as const;
 const ETA = ['0', '1', '2', '3'] as const;
 
-const ORDER_ITEMS = [
-  { name: 'لبن جهينة', qty: 2, price: 64 },
-  { name: 'بيض بلدي', qty: 1, price: 145 },
-  { name: 'خبز فينو', qty: 3, price: 36 },
-] as const;
+/**
+ * Map the canonical OrderStatus to a 0–3 UI tracking step.
+ *
+ * The tracking UI has four visual states:
+ *  0 = received (new / payment_pending)
+ *  1 = preparing (accepted / preparing)
+ *  2 = on the way (ready / picked)
+ *  3 = delivered
+ *
+ * Terminal negative states (rejected / cancelled) default to step 0 —
+ * the tracking screen shouldn't normally be shown for these, but if it
+ * is reached via deep link or history, it renders defensively.
+ */
+function statusToStep(status: OrderStatus | undefined): Step {
+  switch (status) {
+    case 'payment_pending':
+    case 'new':
+      return 0;
+    case 'accepted':
+    case 'preparing':
+      return 1;
+    case 'ready':
+    case 'picked':
+      return 2;
+    case 'delivered':
+      return 3;
+    case 'rejected':
+    case 'cancelled':
+    default:
+      return 0;
+  }
+}
 
 export default function Tracking() {
   const router = useRouter();
   const { t } = useTranslation();
+  const arDigits = useArabicDigits();
   const { isRtl, flexDirection, pick } = useRtl();
   const params = useLocalSearchParams<{ orderId?: string }>();
-  const orderId = params.orderId ?? 'DLN-٢٠٤٧';
-  const [step, setStep] = useState<Step>(1);
+  // Phase 6: no more hardcoded fallback. If a caller reaches tracking without
+  // an orderId we show "—" rather than fabricating one. The legacy "DLN-٢٠٤٧"
+  // fallback was the source of the parallel-reality bug — every customer flow
+  // landed on the same fake order.
+  const orderId = params.orderId ?? '—';
+
+  // ── Realtime subscription ──────────────────────────────────────────
+  // Subscribe to the platform store for this specific order. The
+  // MockRealtimeClient's tick() advances timers and mutates order status in
+  // the platform store. This subscription re-renders the tracking screen
+  // whenever the order changes — no local setInterval needed.
+  const order = usePlatformStore((s) => selectOrderById(s, orderId));
+
+  const step = statusToStep(order?.status);
+
+  // Derive items from the Order domain object. No more hardcoded array.
+  const orderItems = useMemo(() => {
+    if (!order?.items) return [];
+    return order.items.map((it) => ({
+      name: it.name,
+      qty: it.qty,
+      price: it.subtotal,
+    }));
+  }, [order?.items]);
 
   // Animate the dashed delivery route once on mount.
   const routeProgress = useSharedValue(220);
@@ -48,11 +102,20 @@ export default function Tracking() {
     strokeDashoffset: routeProgress.value,
   }));
 
+  // Derive courier info from Order when available (step >= 2 AND driver assigned).
+  // The user requested: "Tracking courier card at `picked`".
+  const hasCourier = order?.status === 'picked' && !!order?.driverName;
+  
+  // Stale marker / offline status
+  const [isOffline, setIsOffline] = useState(false);
   useEffect(() => {
-    if (step >= 3) return;
-    const id = setTimeout(() => setStep((s) => Math.min(3, s + 1) as Step), 5000);
-    return () => clearTimeout(id);
-  }, [step]);
+    const interval = setInterval(() => {
+      import('@/infrastructure/container').then(({ getContainer }) => {
+        setIsOffline(getContainer().realtime.status() === 'offline');
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -74,6 +137,13 @@ export default function Tracking() {
           </Pressable>
         }
       />
+      {isOffline && (
+        <View style={{ backgroundColor: colors.statusIssue, padding: 8, alignItems: 'center' }}>
+          <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 12, color: colors.statusIssueText }}>
+            انقطع الاتصال. جاري محاولة استعادة البيانات...
+          </Text>
+        </View>
+      )}
 
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
         {/* Map placeholder — SVG canvas mirroring design-reference Cart.jsx Tracking map.
@@ -194,8 +264,8 @@ export default function Tracking() {
           </Card>
         </View>
 
-        {/* Courier card */}
-        {step >= 2 && step < 3 ? (
+        {/* Courier card — shown when order has a driver and is in transit */}
+        {hasCourier ? (
           <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
             <Card padding={14}>
               <View style={{ flexDirection, alignItems: 'center', gap: 12 }}>
@@ -210,7 +280,7 @@ export default function Tracking() {
                   }}
                 >
                   <Text style={{ fontFamily: fonts.arabicBold, fontSize: 22, color: colors.canvas }}>
-                    م
+                    {(order?.driverName ?? 'م').charAt(0)}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
@@ -222,7 +292,7 @@ export default function Tracking() {
                   <Text
                     style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
                   >
-                    محمود السيد
+                    {order?.driverName ?? 'الكابتن'}
                   </Text>
                   <Text
                     style={{
@@ -248,7 +318,7 @@ export default function Tracking() {
                   onPress={() =>
                     router.push({
                       pathname: '/chat',
-                      params: { kind: 'driver', name: 'محمود السيد', avatar: 'م' },
+                      params: { kind: 'driver', name: order?.driverName ?? 'الكابتن', avatar: (order?.driverName ?? 'م').charAt(0), orderId },
                     })
                   }
                   accessibilityLabel="شات مع الكابتن"
@@ -260,7 +330,7 @@ export default function Tracking() {
           </View>
         ) : null}
 
-        {/* Order details */}
+        {/* Order details — read from the domain Order, not hardcoded */}
         <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
           <Text
             style={{
@@ -275,30 +345,55 @@ export default function Tracking() {
             {t('tracking.orderDetails')}
           </Text>
           <Card padding={14}>
-            {ORDER_ITEMS.map((it, i) => (
+            {orderItems.length > 0 ? (
+              orderItems.map((it, i) => (
+                <View
+                  key={`${it.name}-${i}`}
+                  style={{
+                    flexDirection,
+                    justifyContent: 'space-between',
+                    paddingVertical: 8,
+                    borderBottomWidth: i < orderItems.length - 1 ? 1 : 0,
+                    borderBottomColor: colors.canvas300,
+                  }}
+                >
+                  <Text style={{ fontFamily: fonts.arabic, fontSize: 14, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
+                    <Text style={{ fontFamily: fonts.arabicBold, color: colors.olive }}>
+                      {arDigits(it.qty)}×{' '}
+                    </Text>
+                    {it.name}
+                  </Text>
+                  <Text
+                    style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
+                  >
+                    {arDigits(it.price)} ج.م
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <Text style={{ fontFamily: fonts.arabic, fontSize: 13, color: colors.inkLight, textAlign: 'center', paddingVertical: 16 }}>
+                لا توجد تفاصيل للطلب
+              </Text>
+            )}
+            {order ? (
               <View
-                key={it.name}
                 style={{
+                  marginTop: 8,
+                  paddingTop: 10,
+                  borderTopWidth: 1,
+                  borderTopColor: colors.canvas300,
                   flexDirection,
                   justifyContent: 'space-between',
-                  paddingVertical: 8,
-                  borderBottomWidth: i < ORDER_ITEMS.length - 1 ? 1 : 0,
-                  borderBottomColor: colors.canvas300,
                 }}
               >
-                <Text style={{ fontFamily: fonts.arabic, fontSize: 14, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
-                  <Text style={{ fontFamily: fonts.arabicBold, color: colors.olive }}>
-                    {it.qty.toLocaleString('ar-EG')}×{' '}
-                  </Text>
-                  {it.name}
+                <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.inkLight }}>
+                  الإجمالي
                 </Text>
-                <Text
-                  style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
-                >
-                  {it.price.toLocaleString('ar-EG')} ج.م
+                <Text style={{ fontFamily: fonts.arabicBold, fontSize: 14, color: colors.ink }}>
+                  {arDigits(order.total)} ج.م
                 </Text>
               </View>
-            ))}
+            ) : null}
           </Card>
         </View>
 

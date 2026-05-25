@@ -4,6 +4,8 @@ import { installHapticHandlers } from './haptics';
 import { installAnalyticsHandlers } from './analytics';
 import { installPushHandlers } from './push';
 import { installNotificationHandlers } from './notifications';
+import { installPaymentLifecycleHandler } from './paymentLifecycle';
+import { installCartSyncHandler } from './cartSync';
 
 /**
  * Idempotent one-shot installer. Call once at app boot (after the container
@@ -15,4 +17,6 @@ export function installEventHandlers(container: Container): void {
   installAnalyticsHandlers();
   installPushHandlers();
   installNotificationHandlers(container);
+  installPaymentLifecycleHandler();
+  installCartSyncHandler();
 }

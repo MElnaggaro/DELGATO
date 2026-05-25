@@ -6,9 +6,11 @@ import { Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { PRODUCTS, SHOPS, findProduct } from '@/features/catalog/data';
+import { useAllProducts, useAllStores } from '@/features/discovery';
 import { useCartStore } from '@/features/cart/store';
 import { useDiscoveryStore } from '@/features/discovery/store';
+import type { Product as DomainProduct, Store } from '@/domain/types';
+import type { Product as CatalogProduct, Shop as CatalogShop } from '@/features/catalog/data';
 
 export default function RecentlyViewed() {
   const router = useRouter();
@@ -19,12 +21,27 @@ export default function RecentlyViewed() {
   const addItem = useCartStore((s) => s.addItem);
   const setItemQty = useCartStore((s) => s.setItemQty);
 
-  const list = recentlyViewed.map((id) => findProduct(id)).filter((p): p is NonNullable<typeof p> => !!p);
+  const allProducts = useAllProducts();
+  const allStores = useAllStores();
+
+  const list = recentlyViewed.map((id) => allProducts.find((p) => p.id === id)).filter((p): p is DomainProduct => !!p);
   const qtyOf = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
-  const defaultShop = SHOPS[0]!;
+  const defaultStore = allStores[0];
+
+  /** Adapt domain types to cart store's catalog-type interface. */
+  const toCatalogProduct = (p: DomainProduct): CatalogProduct => ({
+    id: p.id, name: p.name, sub: p.sub, price: p.price, hue: p.hue,
+    tag: p.tag ?? null, section: p.section ?? '', available: p.availability !== 'out' && p.availability !== 'archived',
+  });
+  const toCatalogShop = (s: Store): CatalogShop => ({
+    id: s.id, letter: s.letter, name: s.name, cat: s.category, catKey: s.catKey as any,
+    distance: s.distance ?? '', rating: String(s.rating), eta: '', fee: '',
+    open: s.open, desc: s.desc ?? '', bgFrom: s.bg.bgFrom, bgTo: s.bg.bgTo, tags: [...s.tags],
+  });
 
   const setQty = (productId: string, qty: number) => {
-    const product = PRODUCTS.find((p) => p.id === productId);
+    if (!defaultStore) return;
+    const product = allProducts.find((p) => p.id === productId);
     if (!product) return;
     if (qty <= 0) {
       setItemQty(productId, 0);
@@ -35,11 +52,11 @@ export default function RecentlyViewed() {
       setItemQty(productId, qty);
       return;
     }
-    const result = addItem(product, defaultShop, qty);
+    const result = addItem(toCatalogProduct(product), toCatalogShop(defaultStore), qty);
     if (!result.ok && result.reason === 'conflict') {
       router.push({
         pathname: '/merchant-conflict',
-        params: { newShopId: defaultShop.id, newProductId: productId, newQty: String(qty) },
+        params: { newShopId: defaultStore.id, newProductId: productId, newQty: String(qty) },
       });
     }
   };
@@ -86,7 +103,7 @@ export default function RecentlyViewed() {
                 <ProductTile
                   product={p}
                   qty={qtyOf(p.id)}
-                  onTap={() => router.push({ pathname: '/product', params: { id: p.id, shopId: defaultShop.id } })}
+                  onTap={() => router.push({ pathname: '/product', params: { id: p.id, shopId: defaultStore?.id ?? '' } })}
                   onAdd={() => {
                     setQty(p.id, 1);
                     showToast('اتضاف للسلة', <Icon.check size={16} color={colors.gold} />);

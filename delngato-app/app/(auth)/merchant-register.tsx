@@ -3,33 +3,25 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { AppBar, Button, FieldLabel, Icon } from '@/shared/ui';
+import { Button, FieldLabel, Icon } from '@/shared/ui';
+import { AppBar } from '@/shared/ui/AppBar';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
-import { normalizeEgyptianPhone } from '@/shared/utils/phone';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useRequestOtp } from '@/features/auth/hooks/useRequestOtp';
 
-export default function Register() {
+export default function MerchantRegisterScreen() {
   const router = useRouter();
   const { isRtl } = useRtl();
-  const { mutateAsync, isPending } = useRequestOtp();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(true);
 
-  const normalized = normalizeEgyptianPhone(phone);
-  const valid = name.length >= 3 && normalized !== null && agree;
+  const valid = name.length >= 3 && phone.length >= 5 && agree;
 
-  const onContinue = async () => {
+  const onContinue = () => {
     if (!valid) return;
-    try {
-      await mutateAsync(normalized);
-      router.push('/(onboarding)/otp');
-    } catch {
-      /* swallow */
-    }
+    router.replace('/(merchant)/(tabs)/dashboard');
   };
 
   return (
@@ -37,12 +29,12 @@ export default function Register() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, backgroundColor: colors.canvas }}
     >
-      <AppBar onBack={() => safeBack('/(onboarding)/welcome')} />
+      <AppBar onBack={() => safeBack('/(auth)/role?type=register')} />
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}>
         <FadeUp>
           <Text style={{ fontFamily: fonts.arabicBold, fontSize: 26, color: colors.ink, lineHeight: 32 }}>
-            حساب جديد
+            حساب تاجر جديد
           </Text>
           <Text style={{ fontFamily: fonts.arabic, fontSize: 14, color: colors.inkLight, marginTop: 8, lineHeight: 22 }}>
             خطوتين بس وحسابك جاهز.
@@ -74,26 +66,10 @@ export default function Register() {
 
           <FieldLabel label="رقم التليفون">
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 6,
-                  paddingHorizontal: 14,
-                  backgroundColor: colors.canvas200,
-                  borderRadius: 8,
-                  height: 56,
-                }}
-              >
-                <Text style={{ fontSize: 18 }}>🇪🇬</Text>
-                <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 15, color: colors.ink }}>
-                  +٢٠
-                </Text>
-              </View>
               <TextInput
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="١٠ ١٢٣ ٤٥٦ ٧٨"
+                placeholder="رقم الهاتف"
                 placeholderTextColor={colors.inkMute}
                 inputMode="numeric"
                 keyboardType="number-pad"
@@ -106,9 +82,8 @@ export default function Register() {
                   fontFamily: fonts.arabic,
                   fontSize: 17,
                   color: colors.ink,
-                  textAlign: 'left',
-                  writingDirection: 'ltr',
-                  letterSpacing: 1,
+                  textAlign: 'right',
+                  writingDirection: 'rtl',
                 }}
               />
             </View>
@@ -158,22 +133,10 @@ export default function Register() {
           size="lg"
           full
           disabled={!valid}
-          loading={isPending}
           onPress={onContinue}
         >
-          تابع · ابعت كود التحقق
+          متابعة
         </Button>
-        <Pressable
-          onPress={() => router.replace('/(onboarding)/auth')}
-          style={{ marginTop: 14, alignItems: 'center' }}
-        >
-          <Text style={{ fontFamily: fonts.arabic, fontSize: 13, color: colors.inkLight }}>
-            عندي حساب ·{' '}
-            <Text style={{ fontFamily: fonts.arabicSemiBold, color: colors.olive }}>
-              تسجيل الدخول
-            </Text>
-          </Text>
-        </Pressable>
       </SafeAreaView>
     </KeyboardAvoidingView>
   );

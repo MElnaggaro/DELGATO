@@ -6,13 +6,11 @@ import { AppBar, Button, Icon, IconForward, ToggleSwitch } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useSettingsStore } from '@/features/settings';
+import { showToast } from '@/shared/ui/toast';
 
 export default function Security() {
   const router = useRouter();
   const { textStart, flexDirection } = useRtl();
-  const biometricEnabled = useSettingsStore((s) => s.biometricEnabled);
-  const setBiometricEnabled = useSettingsStore((s) => s.setBiometricEnabled);
 
   // Mock state for the other two switches
   const [twoFactor, setTwoFactor] = useState(false);
@@ -28,13 +26,6 @@ export default function Security() {
             icon={<Icon.shieldCheck size={18} color={colors.olive} />}
             label="تغيير كلمة السر"
             onPress={() => router.push('/change-password')}
-          />
-          <Hairline />
-          <SwitchRow
-            label="الدخول بالبصمة"
-            sub="افتح التطبيق ببصمة الإصبع أو الوش"
-            v={biometricEnabled}
-            onChange={setBiometricEnabled}
           />
           <Hairline />
           <SwitchRow

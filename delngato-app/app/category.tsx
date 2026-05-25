@@ -5,48 +5,34 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AppBar, Button, CategoryChip, CategoryChipRow, EmptyState, Icon, ShopCard } from '@/shared/ui';
 import { colors } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
-import { CATEGORIES, SHOPS, type CategoryKey, type Shop } from '@/features/catalog/data';
+import { useStoresByCategory, useCustomerCategories } from '@/features/discovery';
+import type { Store } from '@/domain/types';
 
 type Filter = 'الأقرب' | 'الأعلى تقييماً' | 'مفتوح دلوقتي' | 'توصيل أسرع';
 const FILTERS: Filter[] = ['الأقرب', 'الأعلى تقييماً', 'مفتوح دلوقتي', 'توصيل أسرع'];
 
-const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩';
-const parseLeadingNumber = (s: string): number => {
-  const m = s.match(/[٠-٩0-9]+/);
-  if (!m) return Number.POSITIVE_INFINITY;
-  const western = m[0]
-    .split('')
-    .map((c) => {
-      const idx = AR_DIGITS.indexOf(c);
-      return idx >= 0 ? String(idx) : c;
-    })
-    .join('');
-  const n = parseInt(western, 10);
-  return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY;
-};
-
-function applyFilter(shops: Shop[], filter: Filter): Shop[] {
+function applyFilter(shops: readonly Store[], filter: Filter): readonly Store[] {
   if (filter === 'مفتوح دلوقتي') return shops.filter((s) => s.open);
   if (filter === 'الأقرب') {
-    return [...shops].sort((a, b) => parseLeadingNumber(a.distance) - parseLeadingNumber(b.distance));
+    return [...shops].sort((a, b) => (a.deliveryFee ?? 0) - (b.deliveryFee ?? 0));
   }
   if (filter === 'الأعلى تقييماً') {
-    return [...shops].sort((a, b) => parseLeadingNumber(b.rating) - parseLeadingNumber(a.rating));
+    return [...shops].sort((a, b) => b.rating - a.rating);
   }
-  return [...shops].sort((a, b) => parseLeadingNumber(a.eta) - parseLeadingNumber(b.eta));
+  // توصيل أسرع
+  return [...shops].sort((a, b) => a.prepTimeMin - b.prepTimeMin);
 }
 
 export default function Category() {
   const router = useRouter();
   const params = useLocalSearchParams<{ key?: string }>();
-  const key = (params.key as CategoryKey) ?? 'grocery';
-  const cat = CATEGORIES.find((c) => c.key === key) ?? CATEGORIES[1]!;
+  const key = params.key ?? 'grocery';
+  const categories = useCustomerCategories();
+  const cat = categories.find((c) => c.key === key) ?? categories[1]!;
+  const storesInCat = useStoresByCategory(key);
   const [filter, setFilter] = useState<Filter>(FILTERS[0]!);
 
-  const shops = useMemo(() => {
-    const inCat = SHOPS.filter((s) => s.catKey === key);
-    return applyFilter(inCat, filter);
-  }, [key, filter]);
+  const shops = useMemo(() => applyFilter(storesInCat, filter), [storesInCat, filter]);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>

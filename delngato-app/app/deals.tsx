@@ -8,7 +8,8 @@ import { FadeUp, Rise } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { DEALS, type Deal, type DealKind, findShop } from '@/features/catalog/data';
+import { DEALS, type Deal, type DealKind } from '@/features/catalog/data';
+import { useStoreDetail } from '@/features/discovery';
 import { useCartStore } from '@/features/cart/store';
 
 type Tab = 'all' | 'percent' | 'cashback' | 'bogo';
@@ -61,8 +62,7 @@ export default function Deals() {
                 setAppliedPromo({ code: d.code, title: d.title, value: d.value, shopId: d.shopId });
                 showToast(`اتفعّل كود ${d.code}`, <Icon.tag size={16} color={colors.gold} />);
                 if (d.shopId) {
-                  const sh = findShop(d.shopId);
-                  if (sh) router.push({ pathname: '/shop', params: { id: sh.id } });
+                  router.push({ pathname: '/shop', params: { id: d.shopId } });
                 } else {
                   router.back();
                 }

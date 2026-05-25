@@ -1,38 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as LocalAuthentication from 'expo-local-authentication';
 
-import { Button } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
-import { useSettingsStore } from '@/features/settings';
 
 export default function Welcome() {
   const router = useRouter();
-  const biometricEnabled = useSettingsStore((s) => s.biometricEnabled);
-  const markOnboardingComplete = useSettingsStore((s) => s.markOnboardingComplete);
-  const [biometricSupported, setBiometricSupported] = useState(false);
-
-  // Reaching the welcome hub means the user has cleared the intro carousel.
-  // Persist that so future launches skip directly to login/biometric.
-  useEffect(() => {
-    markOnboardingComplete();
-  }, [markOnboardingComplete]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const hw = await LocalAuthentication.hasHardwareAsync();
-        const enrolled = await LocalAuthentication.isEnrolledAsync();
-        setBiometricSupported(hw && enrolled);
-      } catch {
-        setBiometricSupported(false);
-      }
-    })();
-  }, []);
-
-  const showBiometric = biometricEnabled && biometricSupported;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.olive }}>
@@ -97,7 +70,7 @@ export default function Welcome() {
 
         <FadeUp delay={320} style={{ gap: 10 }}>
           <Pressable
-            onPress={() => router.push('/(onboarding)/register')}
+            onPress={() => router.push('/(auth)/role?type=register')}
             style={({ pressed }) => ({
               backgroundColor: pressed ? 'rgba(250,248,243,0.92)' : colors.canvas,
               borderRadius: 12,
@@ -113,12 +86,12 @@ export default function Welcome() {
                 color: colors.olive,
               }}
             >
-              أنشئ حساب جديد
+              إنشاء حساب جديد
             </Text>
           </Pressable>
 
           <Pressable
-            onPress={() => router.push('/(onboarding)/auth')}
+            onPress={() => router.push('/(auth)/role?type=login')}
             style={({ pressed }) => ({
               backgroundColor: pressed ? 'rgba(250,248,243,0.06)' : 'transparent',
               borderRadius: 12,
@@ -136,27 +109,10 @@ export default function Welcome() {
                 color: colors.canvas,
               }}
             >
-              عندي حساب · تسجيل الدخول
+              تسجيل الدخول
             </Text>
           </Pressable>
 
-          {showBiometric ? (
-            <Pressable
-              onPress={() => router.push('/(onboarding)/biometric')}
-              style={{ marginTop: 6, paddingVertical: 8 }}
-            >
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontFamily: fonts.arabic,
-                  fontSize: 13,
-                  color: 'rgba(250,248,243,0.7)',
-                }}
-              >
-                دخول سريع بالبصمة
-              </Text>
-            </Pressable>
-          ) : null}
         </FadeUp>
       </View>
     </View>

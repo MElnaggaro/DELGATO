@@ -198,4 +198,19 @@ export class MockProductRepository implements ProductRepository {
     if (!p) throw new NotFoundError('Product', id);
     return p;
   }
+
+  /** POST /api/v1/products/check-availability */
+  async checkAvailability(
+    productIds: readonly Id[],
+  ): Promise<readonly import('@/domain/repositories').AvailabilityCheckItem[]> {
+    await this.latency.sleep('read');
+    const state = usePlatformStore.getState();
+    return productIds.map((productId) => {
+      const p = state.products[productId];
+      if (!p) return { productId, available: false, reason: 'archived' as const };
+      if (p.availability === 'archived') return { productId, available: false, reason: 'archived' as const };
+      if (p.availability === 'out' || p.stock <= 0) return { productId, available: false, reason: 'out_of_stock' as const };
+      return { productId, available: true };
+    });
+  }
 }

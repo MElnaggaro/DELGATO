@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 
-import { ConfirmDialog, Icon, ListRow } from '@/shared/ui';
+import { ConfirmDialog, Icon, IconForward, ListRow } from '@/shared/ui';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
@@ -12,8 +12,7 @@ import { useAuthStore } from '@/features/auth/store';
 import { formatNationalDisplay } from '@/shared/utils/phone';
 import { useCartStore } from '@/features/cart/store';
 import { useAddressStore } from '@/features/addresses/store';
-import { useOrdersStore } from '@/features/orders/store';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWallet } from '@/features/wallet/hooks';
 import { REFERRAL_REWARD_AMOUNT } from '@/features/loyalty/data';
 import { useRtl } from '@/shared/hooks/useRtl';
 
@@ -24,18 +23,16 @@ export default function Profile() {
   const arDigits = useArabicDigits();
   const user = useAuthStore((s) => s.user);
   const phone = useAuthStore((s) => s.phone);
-  const signOut = useAuthStore((s) => s.signOut);
   const favorites = useCartStore((s) => s.favorites);
   const addresses = useAddressStore((s) => s.list);
-  const orders = useOrdersStore((s) => s.orders);
-  const walletBalance = useLoyaltyStore((s) => s.walletBalance);
-  const points = useLoyaltyStore((s) => s.points);
+  const wallet = useWallet(user?.id);
+  const walletBalance = wallet?.balance ?? 0;
+  const points = wallet?.points ?? 0;
   const [logoutVisible, setLogoutVisible] = useState(false);
 
   const displayName = user?.displayName ?? 'أحمد محمد';
   const initial = displayName?.[0] ?? 'أ';
   const phoneDisplay = phone ? formatNationalDisplay(phone) : '10 234 5678';
-  const doneCount = orders.filter((o) => o.status === 'done').length;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -287,6 +284,8 @@ export default function Profile() {
           />
         </Group>
 
+
+
         <View style={{ paddingHorizontal: 22, paddingTop: 8 }}>
           <Pressable onPress={() => router.push('/delete-account')}>
             {({ pressed }) => (
@@ -359,10 +358,9 @@ export default function Profile() {
         confirmLabel="خروج"
         destructive
         onCancel={() => setLogoutVisible(false)}
-        onConfirm={async () => {
+        onConfirm={() => {
           setLogoutVisible(false);
-          await signOut();
-          router.replace('/');
+          router.replace('/(onboarding)/welcome');
         }}
       />
     </View>

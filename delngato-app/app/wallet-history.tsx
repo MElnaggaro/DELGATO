@@ -4,11 +4,13 @@ import { AppBar, Icon, ListRow } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWalletTxs } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
 
 export default function WalletHistory() {
   const arDigits = useArabicDigits();
-  const walletTx = useLoyaltyStore((s) => s.walletTx);
+  const userId = useAuthStore((s) => s.user?.id);
+  const txs = useWalletTxs(userId);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -23,11 +25,11 @@ export default function WalletHistory() {
             ...shadow.card,
           }}
         >
-          {walletTx.map((tx, i) => (
+          {txs.map((tx, i) => (
             <View
               key={tx.id}
               style={{
-                borderBottomWidth: i < walletTx.length - 1 ? 1 : 0,
+                borderBottomWidth: i < txs.length - 1 ? 1 : 0,
                 borderBottomColor: colors.canvas300,
               }}
             >
@@ -40,7 +42,7 @@ export default function WalletHistory() {
                   )
                 }
                 label={tx.title}
-                sub={tx.date}
+                sub={new Date(tx.ts).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' })}
                 trailing={
                   <Text
                     style={{

@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Icon } from '@/shared/ui';
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
+import { useSettingsStore } from '@/features/settings';
 
 const SLIDE_COUNT = 3;
 const SLIDE_LETTERS = ['د', 'ل', 'ن'] as const;
@@ -23,10 +24,21 @@ export default function Intro() {
   const router = useRouter();
   const { t } = useTranslation();
   const [i, setI] = useState(0);
+  const markIntroSeen = useSettingsStore((s) => s.markIntroSeen);
+
+  // Single completion path used by Skip + Start. Persists `hasSeenIntro`,
+  // dispatches the canonical event into AppStateMachine, and (for v2-off)
+  // navigates to welcome directly. When v2 is on, RouteGuard re-resolves
+  // UNAUTHENTICATED → /(onboarding)/welcome and the redundant nav is a no-op
+  // because the pathname already matches.
+  const completeIntro = () => {
+    markIntroSeen();
+    router.replace('/(onboarding)/welcome');
+  };
 
   const next = () => {
     if (i < SLIDE_COUNT - 1) setI(i + 1);
-    else router.replace('/(onboarding)/welcome');
+    else completeIntro();
   };
 
   return (
@@ -47,7 +59,7 @@ export default function Intro() {
       >
         {/* Skip — top-start in RTL */}
         <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, insetInlineStart: 0, padding: 24 }}>
-          <Pressable onPress={() => router.replace('/(onboarding)/welcome')} hitSlop={8}>
+          <Pressable onPress={completeIntro} hitSlop={8}>
             <Text
               style={{
                 fontFamily: fonts.arabicMedium,
@@ -156,7 +168,7 @@ export default function Intro() {
             {i < SLIDE_COUNT - 1 ? t('onboarding.next') : t('onboarding.start')}
           </Button>
 
-          <Pressable onPress={() => router.push('/(onboarding)/auth')}>
+          <Pressable onPress={() => router.push('/(auth)/role?type=login')}>
             <Text
               style={{
                 textAlign: 'center',

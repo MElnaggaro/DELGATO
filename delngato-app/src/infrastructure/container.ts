@@ -32,6 +32,8 @@ import {
   MockPayoutRepository,
   MockAnalyticsRepository,
   MockSupportRepository,
+  MockPaymentRepository,
+  MockCartRepository,
 } from './repositories/mock';
 
 import {
@@ -51,18 +53,22 @@ import {
   HttpPayoutRepository,
   HttpAnalyticsRepository,
   HttpSupportRepository,
+  HttpPaymentRepository,
+  HttpCartRepository,
 } from './repositories/http';
 
 import type {
   AddressRepository,
   AnalyticsRepository,
   AuthRepository,
+  CartRepository,
   CategoryRepository,
   CustomerRepository,
   MerchantRepository,
   ModifierRepository,
   NotificationRepository,
   OrderRepository,
+  PaymentRepository,
   PayoutRepository,
   ProductRepository,
   PromotionRepository,
@@ -91,6 +97,8 @@ export type Container = {
   readonly payoutRepo: PayoutRepository;
   readonly analyticsRepo: AnalyticsRepository;
   readonly supportRepo: SupportRepository;
+  readonly paymentRepo: PaymentRepository;
+  readonly cartRepo: CartRepository;
   /** Lifecycle. Owned by ContainerProvider in dev/HMR safety. */
   readonly start: () => void;
   readonly stop: () => void;
@@ -149,6 +157,10 @@ function buildContainer(): Container {
     payoutRepo: useHttp ? new HttpPayoutRepository(api) : new MockPayoutRepository(latency),
     analyticsRepo: useHttp ? new HttpAnalyticsRepository(api) : new MockAnalyticsRepository(),
     supportRepo: useHttp ? new HttpSupportRepository(api) : new MockSupportRepository(latency),
+    paymentRepo: useHttp
+      ? new HttpPaymentRepository(api)
+      : new MockPaymentRepository(latency, config.MOCK_PAYMENT_FAIL_RATE),
+    cartRepo: useHttp ? new HttpCartRepository(api) : new MockCartRepository(latency),
     start: () => {
       if (mockRealtime) mockRealtime.start();
     },

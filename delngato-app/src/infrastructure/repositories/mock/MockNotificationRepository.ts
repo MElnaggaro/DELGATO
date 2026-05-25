@@ -78,4 +78,12 @@ export class MockNotificationRepository implements NotificationRepository {
       stopChannel();
     };
   }
+
+  async registerDevice(userId: Id, token: string, platform: 'ios' | 'android' | 'web'): Promise<void> {
+    await this.latency.sleep('write');
+    if (__DEV__) {
+      console.log(`[MockNotificationRepository] registerDevice: userId=${userId}, platform=${platform}, token=${token.slice(0, 12)}…`);
+    }
+    // Mock: no-op. In production, POST to /api/devices with { userId, token, platform }.
+  }
 }

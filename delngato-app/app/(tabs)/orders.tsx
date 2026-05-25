@@ -9,8 +9,16 @@ import { Badge, Button, CategoryChip, CategoryChipRow, EmptyState, Icon, LiveDot
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
-import { useOrdersStore } from '@/features/orders/store';
-import type { OrderHistory, OrderStatus } from '@/features/catalog/data';
+import { useAuthStore } from '@/features/auth/store';
+import {
+  useCustomerOrders,
+  toDisplayStatus,
+  statusText,
+  type OrderDisplayStatus,
+} from '@/features/orders/hooks';
+import { usePlatformStore } from '@/domain/stores/platform';
+import { DEMO_CUSTOMER } from '@/infrastructure/seed/seedData';
+import type { Order } from '@/domain/types';
 
 type Filter = 'all' | 'live' | 'done';
 
@@ -19,17 +27,18 @@ export default function OrdersTab() {
   const router = useRouter();
   const arDigits = useArabicDigits();
   const { isRtl } = useRtl();
-  const orders = useOrdersStore((s) => s.orders);
+  const user = useAuthStore((s) => s.user);
+  const orders = useCustomerOrders(user?.id ?? DEMO_CUSTOMER.id);
   const [tab, setTab] = useState<Filter>('all');
 
   const filtered = useMemo(() => {
-    if (tab === 'live') return orders.filter((o) => o.status === 'live');
-    if (tab === 'done') return orders.filter((o) => o.status === 'done');
+    if (tab === 'live') return orders.filter((o) => toDisplayStatus(o.status) === 'live');
+    if (tab === 'done') return orders.filter((o) => toDisplayStatus(o.status) === 'done');
     return orders;
   }, [orders, tab]);
 
-  const liveCount = orders.filter((o) => o.status === 'live').length;
-  const doneCount = orders.filter((o) => o.status === 'done').length;
+  const liveCount = orders.filter((o) => toDisplayStatus(o.status) === 'live').length;
+  const doneCount = orders.filter((o) => toDisplayStatus(o.status) === 'done').length;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -80,16 +89,23 @@ export default function OrdersTab() {
   );
 }
 
-function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => void }) {
+function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection } = useRtl();
-  const isLive = order.status === 'live';
-  const isCancelled = order.status === 'cancelled';
+  const storeName = usePlatformStore((s) => s.stores[order.storeId]?.name ?? '');
+  const storeLetter = usePlatformStore((s) => s.stores[order.storeId]?.letter ?? '');
+  const display = toDisplayStatus(order.status);
+  const isLive = display === 'live';
+  const isCancelled = display === 'cancelled';
   const borderColor = isLive
     ? colors.olive
     : isCancelled
       ? colors.statusIssue
       : 'transparent';
+  const itemCount = order.items.reduce((n, i) => n + i.qty, 0);
+  const dateLabel = order.placedAt
+    ? new Date(order.placedAt).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })
+    : '';
 
   return (
     <PressableScale
@@ -118,7 +134,7 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
           }}
         >
           <Text style={{ fontFamily: fonts.arabicBold, fontSize: 18, color: colors.canvas }}>
-            {order.shopLetter}
+            {storeLetter}
           </Text>
         </View>
         <View style={{ flex: 1 }}>
@@ -126,13 +142,13 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
             numberOfLines={1}
             style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}
           >
-            {order.shop}
+            {storeName}
           </Text>
           <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
-            {order.id} · {order.date}
+            {order.id} · {dateLabel}
           </Text>
         </View>
-        <StatusBadge status={order.status} text={order.statusText} />
+        <StatusBadge status={display} text={statusText(order.status)} />
       </View>
       {!isCancelled ? (
         <View
@@ -144,7 +160,7 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
           }}
         >
           <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight, textAlign: isRtl ? 'right' : 'left' }}>
-            {arDigits(order.items)} منتج
+            {arDigits(itemCount)} منتج
           </Text>
           <View style={{ flexDirection, alignItems: 'baseline', gap: 4 }}>
             <Text style={{ fontFamily: fonts.arabicBold, fontSize: 16, color: colors.ink, textAlign: isRtl ? 'right' : 'left' }}>
@@ -162,7 +178,7 @@ function OrderCard({ order, onPress }: { order: OrderHistory; onPress: () => voi
   );
 }
 
-function StatusBadge({ status, text }: { status: OrderStatus; text: string }) {
+function StatusBadge({ status, text }: { status: OrderDisplayStatus; text: string }) {
   const { isRtl, flexDirection } = useRtl();
   if (status === 'live') {
     return (

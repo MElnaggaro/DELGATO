@@ -11,7 +11,7 @@ export class DomainError extends Error {
   /** Optional opaque code for telemetry / i18n lookup. */
   readonly code?: string;
   /** Original error if this wraps a lower-layer exception. */
-  readonly cause?: unknown;
+  override readonly cause?: unknown;
 
   constructor(message: string, opts: { code?: string; cause?: unknown } = {}) {
     super(message);

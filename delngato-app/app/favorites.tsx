@@ -4,13 +4,14 @@ import { useRouter } from 'expo-router';
 import { AppBar, Button, EmptyState, Icon, ShopCard } from '@/shared/ui';
 import { colors } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
-import { SHOPS } from '@/features/catalog/data';
+import { useAllStores } from '@/features/discovery';
 import { useCartStore } from '@/features/cart/store';
 
 export default function Favorites() {
   const router = useRouter();
   const favorites = useCartStore((s) => s.favorites);
-  const favs = SHOPS.filter((s) => favorites.includes(s.id));
+  const allStores = useAllStores();
+  const favs = allStores.filter((s) => favorites.includes(s.id));
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>

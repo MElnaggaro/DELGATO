@@ -13,10 +13,10 @@ export function installPushHandlers(): void {
   if (installed) return;
   installed = true;
 
-  bus.on('order.placed', (e) => {
+  bus.on('order.placed', (e: any) => {
     if (__DEV__) console.log('[push:stub] order.placed', e.orderId);
   });
-  bus.on('order.accepted', (e) => {
+  bus.on('order.accepted', (e: any) => {
     if (__DEV__) console.log('[push:stub] order.accepted', e.orderId);
   });
 }

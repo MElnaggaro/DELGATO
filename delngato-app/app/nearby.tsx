@@ -8,7 +8,7 @@ import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { SHOPS } from '@/features/catalog/data';
+import { useAllStores } from '@/features/discovery';
 
 type View_ = 'list' | 'map';
 
@@ -25,6 +25,7 @@ export default function Nearby() {
   const arDigits = useArabicDigits();
   const { isRtl } = useRtl();
   const [view, setView] = useState<View_>('list');
+  const stores = useAllStores();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -77,7 +78,7 @@ export default function Nearby() {
               markers={MARKERS.map((m) => ({
                 ...m,
                 onPress: () => {
-                  const sh = SHOPS.find((s) => s.id === m.shopId);
+                  const sh = stores.find((s) => s.id === m.shopId);
                   if (sh) router.push({ pathname: '/shop', params: { id: sh.id } });
                 },
               }))}
@@ -95,11 +96,11 @@ export default function Nearby() {
             textAlign: isRtl ? 'right' : 'left',
           }}
         >
-          {arDigits(SHOPS.length)} محل · مرتب بالأقرب
+          {arDigits(stores.length)} محل · مرتب بالأقرب
         </Text>
 
         <View style={{ gap: 10 }}>
-          {SHOPS.map((s, i) => (
+          {stores.map((s, i) => (
             <Rise key={s.id} delay={i * 30}>
               <ShopCard shop={s} onPress={() => router.push({ pathname: '/shop', params: { id: s.id } })} />
             </Rise>

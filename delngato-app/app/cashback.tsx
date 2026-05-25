@@ -5,13 +5,15 @@ import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWallet, useWalletTxs } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
 
 export default function Cashback() {
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection } = useRtl();
-  const cashback = useLoyaltyStore((s) => s.cashbackThisMonth);
-  const tx = useLoyaltyStore((s) => s.walletTx).filter((t) => t.title.includes('كاش باك'));
+  const userId = useAuthStore((s) => s.user?.id);
+  const cashback = 0; // MVP placeholder
+  const tx = useWalletTxs(userId).filter((t) => t.title.includes('كاش باك'));
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -100,7 +102,7 @@ export default function Cashback() {
                 <ListRow
                   icon={<Icon.refresh size={18} color={colors.statusPendingText} />}
                   label={t.title}
-                  sub={t.date}
+                  sub={t.ts.split('T')[0]}
                   trailing={
                     <Text
                       style={{

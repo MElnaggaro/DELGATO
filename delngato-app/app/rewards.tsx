@@ -6,14 +6,19 @@ import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWallet } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
 import { REWARDS } from '@/features/loyalty/data';
 
 export default function Rewards() {
   const arDigits = useArabicDigits();
   const { flexDirection, isRtl } = useRtl();
-  const points = useLoyaltyStore((s) => s.points);
-  const redeem = useLoyaltyStore((s) => s.redeem);
+  const userId = useAuthStore((s) => s.user?.id);
+  const wallet = useWallet(userId);
+  const points = wallet?.points ?? 0;
+  const redeem = (cost: number, title: string) => {
+    // MVP placeholder
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>

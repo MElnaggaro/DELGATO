@@ -6,14 +6,17 @@ import { AppBar, Badge, Chip, EmptyState, Icon, MiniCartBar, ProductTile } from 
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { PRODUCTS, SHOPS, findShop } from '@/features/catalog/data';
+import { useStoreDetail, useProductsByStore } from '@/features/discovery';
 import { useCartStore } from '@/features/cart/store';
+import type { Product as DomainProduct, Store } from '@/domain/types';
+import type { Product as CatalogProduct, Shop as CatalogShop } from '@/features/catalog/data';
 
 export default function Shop() {
   const router = useRouter();
   const { isRtl, flexDirection, pick, textStart } = useRtl();
   const params = useLocalSearchParams<{ id?: string }>();
-  const shop = useMemo(() => findShop(params.id ?? '') ?? SHOPS[0]!, [params.id]);
+  const store = useStoreDetail(params.id);
+  const allProducts = useProductsByStore(params.id);
   const [section, setSection] = useState<string>('الكل');
   const [scrolled, setScrolled] = useState(false);
 
@@ -30,19 +33,33 @@ export default function Shop() {
   const toggleFavorite = useCartStore((s) => s.toggleFavorite);
 
   const sections = useMemo(() => {
-    const s = ['الكل', ...Array.from(new Set(PRODUCTS.map((p) => p.section)))];
+    const s = ['الكل', ...Array.from(new Set(allProducts.map((p) => p.section).filter(Boolean) as string[]))];
     return s;
-  }, []);
+  }, [allProducts]);
 
-  const products = section === 'الكل' ? PRODUCTS : PRODUCTS.filter((p) => p.section === section);
+  const products = section === 'الكل' ? allProducts : allProducts.filter((p) => p.section === section);
+  const shop = store; // alias for template compatibility
+  const shopId = shop?.id ?? '';
   const qtyOf = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
-  const shopCartItems = items.filter((i) => i.shopId === shop.id);
+  const shopCartItems = items.filter((i) => i.shopId === shopId);
   const cartCount = shopCartItems.reduce((n, i) => n + i.qty, 0);
   const subtotal = shopCartItems.reduce((n, i) => n + i.qty * i.price, 0);
-  const isFav = favorites.includes(shop.id);
+  const isFav = favorites.includes(shopId);
+
+  /** Adapt domain types to cart store's catalog-type interface. */
+  const toCatalogProduct = (p: DomainProduct): CatalogProduct => ({
+    id: p.id, name: p.name, sub: p.sub, price: p.price, hue: p.hue,
+    tag: p.tag ?? null, section: p.section ?? '', available: p.availability !== 'out' && p.availability !== 'archived',
+  });
+  const toCatalogShop = (s: Store): CatalogShop => ({
+    id: s.id, letter: s.letter, name: s.name, cat: s.category, catKey: s.catKey as any,
+    distance: s.distance ?? '', rating: String(s.rating), eta: '', fee: '',
+    open: s.open, desc: s.desc ?? '', bgFrom: s.bg.bgFrom, bgTo: s.bg.bgTo, tags: [...s.tags],
+  });
 
   const setQty = (productId: string, qty: number) => {
-    const product = PRODUCTS.find((p) => p.id === productId);
+    if (!shop) return;
+    const product = allProducts.find((p) => p.id === productId);
     if (!product) return;
     if (qty <= 0) {
       setItemQty(productId, 0);
@@ -53,7 +70,7 @@ export default function Shop() {
       setItemQty(productId, qty);
       return;
     }
-    const result = addItem(product, shop, qty);
+    const result = addItem(toCatalogProduct(product), toCatalogShop(shop), qty);
     if (!result.ok && result.reason === 'conflict') {
       router.push({
         pathname: '/merchant-conflict',
@@ -65,6 +82,8 @@ export default function Shop() {
       });
     }
   };
+
+  if (!shop) return null;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -108,7 +127,7 @@ export default function Shop() {
             style={{
               height: 158,
               borderRadius: 14,
-              backgroundColor: shop.bgFrom,
+              backgroundColor: shop.bg.bgFrom,
               padding: 16,
               justifyContent: 'space-between',
               overflow: 'hidden',
@@ -130,7 +149,7 @@ export default function Shop() {
             </Text>
             <View style={{ flexDirection, gap: 8 }}>
               <Badge variant="solid-gold">{shop.rating} ★</Badge>
-              <Badge variant="ghost">{shop.cat}</Badge>
+              <Badge variant="ghost">{shop.category}</Badge>
               {shop.tags[0] ? <Badge variant="ghost">{shop.tags[0]}</Badge> : null}
             </View>
             <View>
@@ -147,9 +166,9 @@ export default function Shop() {
                   marginTop: 6,
                 }}
               >
-                <Pill icon={<Icon.clock size={13} color="rgba(250,248,243,0.75)" />} text={shop.eta} />
-                <Pill icon={<Icon.bike size={13} color="rgba(250,248,243,0.75)" />} text={`توصيل ${shop.fee}`} />
-                <Pill icon={<Icon.pin size={13} color="rgba(250,248,243,0.75)" />} text={shop.distance} />
+                <Pill icon={<Icon.clock size={13} color="rgba(250,248,243,0.75)" />} text={`${shop.prepTimeMin}–${shop.prepTimeMin + Math.round(shop.prepTimeMin * 0.5)} د`} />
+                <Pill icon={<Icon.bike size={13} color="rgba(250,248,243,0.75)" />} text={`توصيل ${shop.deliveryFee} ج.م`} />
+                <Pill icon={<Icon.pin size={13} color="rgba(250,248,243,0.75)" />} text={shop.distance ?? ''} />
               </View>
             </View>
           </View>

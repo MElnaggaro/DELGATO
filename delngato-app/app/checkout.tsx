@@ -20,7 +20,9 @@ import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
 import { useCartStore, useCartSubtotal } from '@/features/cart/store';
 import { useSelectedAddress } from '@/features/addresses/store';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWallet } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
+import { placeOrder } from '@/features/checkout/placeOrder';
 
 type PayKind = 'cash' | 'card' | 'wallet';
 type Timing = 'asap' | 'sched';
@@ -40,13 +42,21 @@ export default function Checkout() {
   const scheduled = useCartStore((s) => s.scheduled);
   const deliveryNote = useCartStore((s) => s.deliveryNote);
   const setAppliedPromo = useCartStore((s) => s.setAppliedPromo);
-  const walletBalance = useLoyaltyStore((s) => s.walletBalance);
+  const userId = useAuthStore((s) => s.user?.id);
+  const wallet = useWallet(userId);
+  const walletBalance = wallet?.balance ?? 0;
   const [pay, setPay] = useState<PayKind>('cash');
   const [timing, setTiming] = useState<Timing>(scheduled ? 'sched' : 'asap');
   const [placing, setPlacing] = useState(false);
   const total = subtotal + DELIVERY_FEE + tip;
 
-  const placeOrder = () => {
+  const onPlaceOrder = async () => {
+    if (!addr) {
+      import('@/shared/ui').then(({ showToast }) => {
+        showToast('من فضلك اختار عنوان للتوصيل', <Icon.info size={16} color={colors.statusIssueText} />);
+      });
+      return;
+    }
     if (pay === 'card') {
       router.push('/payment');
       return;
@@ -56,9 +66,20 @@ export default function Checkout() {
       return;
     }
     setPlacing(true);
-    setTimeout(() => {
-      router.replace('/order-success');
-    }, 900);
+    try {
+      const result = await placeOrder({ paymentMethod: 'cash' });
+      if (!result) {
+        setPlacing(false);
+        return;
+      }
+      router.replace({ pathname: '/order-success', params: { orderId: result.orderId } });
+    } catch (e: any) {
+      setPlacing(false);
+      import('@/shared/ui').then(({ showToast }) => {
+        showToast(e.message || 'فشلت عملية الدفع', <Icon.info size={16} color={colors.statusIssueText} />);
+      });
+      if (__DEV__) console.warn('[checkout] placeOrder failed', e);
+    }
   };
 
   return (
@@ -371,7 +392,9 @@ export default function Checkout() {
           full
           disabled={placing}
           loading={placing}
-          onPress={placeOrder}
+          onPress={() => {
+            void onPlaceOrder();
+          }}
           trailing={
             !placing ? (
               <Text

@@ -2,16 +2,33 @@ import { Pressable, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { colors, fonts, shadow } from '@/shared/theme';
-import type { Shop } from '@/features/catalog/data';
+import type { Store } from '@/domain/types';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { Badge } from './Badge';
 import { Icon } from './Icon';
 
 type Props = {
-  shop: Shop;
+  shop: Store;
   onPress?: () => void;
   compact?: boolean;
 };
+
+/** Derive Arabic ETA string from prepTimeMin. */
+function formatEta(prepTime: number): string {
+  const low = prepTime;
+  const high = prepTime + Math.round(prepTime * 0.5);
+  return `${low}–${high} د`;
+}
+
+/** Derive Arabic fee string from deliveryFee number. */
+function formatFee(fee: number): string {
+  return `${fee} ج.م`;
+}
+
+/** Derive Arabic rating string from numeric rating. */
+function formatRating(rating: number): string {
+  return rating.toFixed(1).replace('.', '٫');
+}
 
 export function ShopCard({ shop, onPress, compact }: Props) {
   const { isRtl, flexDirection, pick } = useRtl();
@@ -31,7 +48,7 @@ export function ShopCard({ shop, onPress, compact }: Props) {
       >
         <View style={{ flexDirection: 'row', width: '100%', borderRadius: 12, overflow: 'hidden' }}>
           <LinearGradient
-            colors={[shop.bgFrom, shop.bgTo || colors.olive900]}
+            colors={[shop.bg.bgFrom, shop.bg.bgTo || colors.olive900]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -83,23 +100,23 @@ export function ShopCard({ shop, onPress, compact }: Props) {
               <Badge variant={shop.open ? 'active' : 'issue'}>{shop.open ? 'مفتوح' : 'مغلق'}</Badge>
             </View>
             <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight }}>
-              {shop.cat} · {shop.distance}
+              {shop.category} · {shop.distance ?? ''}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 2 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                 <Icon.star size={13} color={colors.gold} />
                 <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
-                  {shop.rating}
+                  {formatRating(shop.rating)}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Icon.clock size={13} color={colors.inkLight} />
                 <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
-                  {shop.eta}
+                  {formatEta(shop.prepTimeMin)}
                 </Text>
               </View>
               <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}>
-                توصيل {shop.fee}
+                توصيل {formatFee(shop.deliveryFee)}
               </Text>
             </View>
           </View>

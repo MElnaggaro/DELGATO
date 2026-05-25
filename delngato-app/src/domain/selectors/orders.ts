@@ -3,7 +3,14 @@ import type { usePlatformStore } from '@/domain/stores/platform';
 
 type State = ReturnType<typeof usePlatformStore.getState>;
 
-const LIVE_STATUSES: ReadonlyArray<OrderStatus> = ['new', 'accepted', 'preparing', 'ready', 'picked'];
+const LIVE_STATUSES: ReadonlyArray<OrderStatus> = [
+  'payment_pending',
+  'new',
+  'accepted',
+  'preparing',
+  'ready',
+  'picked',
+];
 const DONE_STATUSES: ReadonlyArray<OrderStatus> = ['delivered'];
 const FAILED_STATUSES: ReadonlyArray<OrderStatus> = ['rejected', 'cancelled'];
 

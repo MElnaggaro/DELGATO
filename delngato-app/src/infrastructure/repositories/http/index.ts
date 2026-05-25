@@ -14,3 +14,5 @@ export { HttpStaffRepository } from './HttpStaffRepository';
 export { HttpPayoutRepository } from './HttpPayoutRepository';
 export { HttpAnalyticsRepository } from './HttpAnalyticsRepository';
 export { HttpSupportRepository } from './HttpSupportRepository';
+export { HttpPaymentRepository } from './HttpPaymentRepository';
+export { HttpCartRepository } from './HttpCartRepository';

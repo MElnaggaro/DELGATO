@@ -233,7 +233,7 @@ export const SEED_ORDERS: readonly Order[] = ORDERS_HISTORY.map((o) => {
     distanceKm: 1,
     customerName: DEMO_CUSTOMER.name,
     customerPhone: DEMO_CUSTOMER.phone,
-    timerSec: status === 'new' ? 300 : status === 'accepted' || status === 'preparing' ? 600 : 0,
+    timerSec: (status as string) === 'new' ? 300 : status === 'accepted' || status === 'preparing' ? 600 : 0,
     timeline: [{ ts: NOW, status, byRole: 'system' }],
     ...(o.status === 'cancelled' ? { cancellationReason: 'متلغي' } : {}),
   };

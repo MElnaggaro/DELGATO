@@ -33,6 +33,12 @@ export type BulkPriceInput = {
   readonly scope: { readonly kind: 'all' } | { readonly kind: 'category'; readonly categoryId: Id };
 };
 
+export type AvailabilityCheckItem = {
+  readonly productId: Id;
+  readonly available: boolean;
+  readonly reason?: 'out_of_stock' | 'archived' | 'store_closed';
+};
+
 export interface ProductRepository {
   list(filter?: ProductFilter, ctx?: RequestContext): Promise<readonly Product[]>;
   byId(id: Id, ctx?: RequestContext): Promise<Product | null>;
@@ -43,4 +49,9 @@ export interface ProductRepository {
   setStock(id: Id, n: Quantity, ctx?: RequestContext): Promise<Product>;
   bulkAdjustPrice(input: BulkPriceInput, ctx?: RequestContext): Promise<readonly Product[]>;
   subscribeByStore(storeId: Id, onChange: (products: readonly Product[]) => void): Unsubscribe;
+  /** POST /api/v1/products/check-availability — lightweight batch check */
+  checkAvailability(
+    productIds: readonly Id[],
+    ctx?: RequestContext,
+  ): Promise<readonly AvailabilityCheckItem[]>;
 }

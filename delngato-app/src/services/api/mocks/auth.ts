@@ -20,7 +20,7 @@ export function mockRequestOtp(phone: string): RequestOtpResponse {
 
 export function mockVerifyOtp(phone: string, code: string): VerifyOtpResponse | null {
   if (code === MOCK_DEMO_INVALID_CODE) return null;
-  const user: User = { id: `mock-user-${phone.slice(-4)}`, phone };
+  const user: User = { id: `mock-user-${phone.slice(-4)}`, phone, roles: ['customer', 'merchant'] };
   return {
     sessionToken: `mock-token-${user.id}-${Date.now()}`,
     user,

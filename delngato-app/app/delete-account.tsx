@@ -178,7 +178,6 @@ export default function DeleteAccount() {
           onPress={async () => {
             await signOut();
             showToast('اتحذف حسابك', <Icon.check size={16} color={colors.gold} />);
-            router.replace('/');
           }}
         >
           متابعة

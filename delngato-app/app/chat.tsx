@@ -20,7 +20,7 @@ import { useChatStore } from '@/features/chat/store';
 import { CHAT_QUICK, type ChatPartyKind } from '@/features/chat/data';
 
 export default function Chat() {
-  const params = useLocalSearchParams<{ kind?: ChatPartyKind; name?: string; avatar?: string }>();
+  const params = useLocalSearchParams<{ kind?: ChatPartyKind; name?: string; avatar?: string; orderId?: string }>();
   const kind = (params.kind === 'merchant' ? 'merchant' : 'driver') as ChatPartyKind;
   const name = params.name ?? (kind === 'merchant' ? 'المحل' : 'محمود السيد');
   const avatar = params.avatar ?? (kind === 'merchant' ? 'م' : 'م');
@@ -126,7 +126,7 @@ export default function Chat() {
             }}
           >
             <Text style={{ fontFamily: fonts.arabicMedium, fontSize: 11, color: colors.inkLight }}>
-              الطلب DLN-٢٠٤٧ · دلوقتي
+              الطلب {params.orderId ?? 'الطلب الحالي'} · دلوقتي
             </Text>
           </View>
         </View>

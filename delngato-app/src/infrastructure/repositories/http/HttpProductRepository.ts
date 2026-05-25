@@ -1,4 +1,5 @@
 import type {
+  AvailabilityCheckItem,
   BulkPriceInput,
   ProductFilter,
   ProductRepository,
@@ -21,4 +22,5 @@ export class HttpProductRepository implements ProductRepository {
   subscribeByStore(_s: Id, _h: (p: readonly Product[]) => void): Unsubscribe {
     unimplemented('HttpProductRepository.subscribeByStore');
   }
+  checkAvailability(_ids: readonly Id[]): Promise<readonly AvailabilityCheckItem[]> { return unimplemented('HttpProductRepository.checkAvailability'); }
 }

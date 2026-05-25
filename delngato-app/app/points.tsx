@@ -8,13 +8,16 @@ import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useLoyaltyStore } from '@/features/loyalty/store';
+import { useWallet } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
 
 export default function Points() {
   const router = useRouter();
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection } = useRtl();
-  const points = useLoyaltyStore((s) => s.points);
+  const userId = useAuthStore((s) => s.user?.id);
+  const wallet = useWallet(userId);
+  const points = wallet?.points ?? 0;
   const nextTierPoints = 5000;
   const pointsRemaining = nextTierPoints - points;
   const progressPercent = (points / nextTierPoints) * 100;

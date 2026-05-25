@@ -77,7 +77,7 @@ type Entities = {
   walletTx: Record<Id, WalletTx>;
 };
 
-type State = Entities & {
+export type State = Entities & {
   hydrated: boolean;
 };
 

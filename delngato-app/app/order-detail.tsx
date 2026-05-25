@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -7,25 +6,27 @@ import { AppBar, Button, Card, Icon, LiveDot, OrderProgress, Row } from '@/share
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { safeBack } from '@/shared/utils/nav';
-import { useOrdersStore } from '@/features/orders/store';
-
-const SAMPLE_ITEMS = [
-  { name: 'لبن جهينة', qty: 2, price: 64 },
-  { name: 'بيض بلدي', qty: 1, price: 145 },
-  { name: 'خبز فينو', qty: 3, price: 36 },
-];
+import { useOrderDetail, statusText, statusStep, toDisplayStatus } from '@/features/orders/hooks';
+import { usePlatformStore } from '@/domain/stores/platform';
 
 export default function OrderDetail() {
   const router = useRouter();
   const { t } = useTranslation();
   const arDigits = useArabicDigits();
   const params = useLocalSearchParams<{ id?: string }>();
-  const orders = useOrdersStore((s) => s.orders);
-  const order = useMemo(
-    () => orders.find((o) => o.id === params.id) ?? orders[0]!,
-    [orders, params.id],
-  );
-  const isLive = order.status === 'live';
+  const order = useOrderDetail(params.id);
+  const storeName = usePlatformStore((s) => order ? (s.stores[order.storeId]?.name ?? '') : '');
+  const storeLetter = usePlatformStore((s) => order ? (s.stores[order.storeId]?.letter ?? '') : '');
+
+  if (!order) return null;
+
+  const display = toDisplayStatus(order.status);
+  const isLive = display === 'live';
+  const isDone = display === 'done';
+  const isCancelled = display === 'cancelled';
+  const dateLabel = order.placedAt
+    ? new Date(order.placedAt).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })
+    : '';
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -44,10 +45,10 @@ export default function OrderDetail() {
             >
               {isLive ? <LiveDot size={8} color={colors.olive} /> : null}
               <Text style={{ fontFamily: fonts.arabicBold, fontSize: 17, color: colors.ink }}>
-                {order.statusText}
+                {statusText(order.status)}
               </Text>
             </View>
-            <OrderProgress step={order.step} />
+            <OrderProgress step={statusStep(order.status)} />
             {isLive ? (
               <View style={{ marginTop: 14 }}>
                 <Button
@@ -96,15 +97,15 @@ export default function OrderDetail() {
               }}
             >
               <Text style={{ fontFamily: fonts.arabicBold, fontSize: 20, color: colors.canvas }}>
-                {order.shopLetter}
+                {storeLetter}
               </Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontFamily: fonts.arabicSemiBold, fontSize: 14, color: colors.ink }}>
-                {order.shop}
+                {storeName}
               </Text>
               <Text style={{ fontFamily: fonts.arabic, fontSize: 12, color: colors.inkLight }}>
-                {order.date}
+                {dateLabel}
               </Text>
             </View>
           </View>
@@ -123,15 +124,15 @@ export default function OrderDetail() {
             المنتجات
           </Text>
           <Card padding={14}>
-            {SAMPLE_ITEMS.map((it, i) => (
+            {order.items.map((it, i) => (
               <View
-                key={it.name}
+                key={it.productId}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   paddingVertical: 8,
-                  borderBottomWidth: i < SAMPLE_ITEMS.length - 1 ? 1 : 0,
+                  borderBottomWidth: i < order.items.length - 1 ? 1 : 0,
                   borderBottomColor: colors.canvas300,
                 }}
               >
@@ -144,7 +145,7 @@ export default function OrderDetail() {
                 <Text
                   style={{ fontFamily: fonts.arabicSemiBold, fontSize: 13, color: colors.ink }}
                 >
-                  {arDigits(it.price)} ج.م
+                  {arDigits(it.subtotal)} ج.م
                 </Text>
               </View>
             ))}
@@ -153,9 +154,9 @@ export default function OrderDetail() {
 
         <View style={{ paddingHorizontal: 18, paddingTop: 14 }}>
           <Card padding={14}>
-            <Row label="عنوان التوصيل" value="البيت · شارع الجلاء" />
-            <Row label="طريقة الدفع" value="كاش عند الاستلام" />
-            <Row label="رسوم التوصيل" value={`${arDigits(10)} ج.م`} />
+            <Row label="عنوان التوصيل" value={order.address || '—'} />
+            <Row label="طريقة الدفع" value={order.payment === 'cash' ? 'كاش عند الاستلام' : order.payment === 'wallet' ? 'محفظة' : 'بطاقة'} />
+            <Row label="رسوم التوصيل" value={`${arDigits(order.deliveryFee)} ج.م`} />
             <View style={{ height: 1, backgroundColor: colors.canvas300, marginVertical: 10 }} />
             <Row label="الإجمالي" value={`${arDigits(order.total)} ج.م`} bold />
           </Card>
@@ -195,7 +196,7 @@ export default function OrderDetail() {
               </Button>
             </>
           ) : null}
-          {!isLive && order.status !== 'cancelled' ? (
+          {isDone ? (
             <>
               <Button variant="primary" full onPress={() => router.push('/cart')}>
                 إعادة الطلب

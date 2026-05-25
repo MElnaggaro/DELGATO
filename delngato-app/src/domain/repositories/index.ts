@@ -10,6 +10,7 @@ export type {
   BulkPriceInput,
   BulkPriceDirection,
   BulkPriceMode,
+  AvailabilityCheckItem,
 } from './ProductRepository';
 export type { OrderRepository } from './OrderRepository';
 export type {
@@ -18,7 +19,7 @@ export type {
   UpsertPromotionInput,
 } from './PromotionRepository';
 export type { ReviewRepository } from './ReviewRepository';
-export type { WalletRepository } from './WalletRepository';
+export type { WalletRepository, WalletHold, WalletHoldId } from './WalletRepository';
 export type { NotificationRepository } from './NotificationRepository';
 export type { AddressRepository } from './AddressRepository';
 export type { CategoryRepository, UpsertCategoryInput } from './CategoryRepository';
@@ -27,4 +28,11 @@ export type { StaffRepository } from './StaffRepository';
 export type { PayoutRepository } from './PayoutRepository';
 export type { AnalyticsRepository } from './AnalyticsRepository';
 export type { SupportRepository } from './SupportRepository';
+export type { PaymentRepository, PaymentAuth, PaymentAuthRef, CardTokenizedInput } from './PaymentRepository';
+export type {
+  CartRepository,
+  CartLineDiff,
+  CartRevalidationResult,
+  RevalidateCartInput,
+} from './CartRepository';
 export type { RealtimeClient, RealtimeStatus } from './RealtimeClient';

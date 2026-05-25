@@ -3,7 +3,8 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { AppBar, Button, FieldLabel, Icon, RadioRow } from '@/shared/ui';
+import { Button, FieldLabel, Icon, RadioRow, showToast } from '@/shared/ui';
+import { AppBar } from '@/shared/ui/AppBar';
 import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { normalizeEgyptianPhone } from '@/shared/utils/phone';
@@ -25,7 +26,7 @@ export default function ForgotPassword() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, backgroundColor: colors.canvas }}
     >
-      <AppBar onBack={() => safeBack('/(onboarding)/auth')} />
+      <AppBar onBack={() => safeBack('/(auth)/role?type=login')} />
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}>
         <FadeUp>

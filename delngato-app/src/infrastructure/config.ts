@@ -35,6 +35,15 @@ export type InfrastructureConfig = {
   readonly MOCK_LATENCY: MockLatencyProfile;
   /** 0..1 — chance that a mock mutation throws NetworkError. Default 0. */
   readonly MOCK_FAIL_RATE: number;
+  /** 0..1 — chance that MockPaymentRepository.authorize declines. Default 0. */
+  readonly MOCK_PAYMENT_FAIL_RATE: number;
+};
+
+const readNumber = (envName: string, fallback: number): number => {
+  const v = process.env[envName];
+  if (!v) return fallback;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
 };
 
 export const config: InfrastructureConfig = {
@@ -46,5 +55,6 @@ export const config: InfrastructureConfig = {
     write: [400, 1200],
     auth: [600, 1500],
   },
-  MOCK_FAIL_RATE: 0,
+  MOCK_FAIL_RATE: readNumber('EXPO_PUBLIC_MOCK_FAIL_RATE', 0),
+  MOCK_PAYMENT_FAIL_RATE: readNumber('EXPO_PUBLIC_MOCK_PAYMENT_FAIL_RATE', 0),
 };

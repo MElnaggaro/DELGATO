@@ -1,39 +1,30 @@
-import { useEffect, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Icon } from '@/shared/ui';
 import { FadeUp, Pop } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
-import { useCartStore } from '@/features/cart/store';
-import { useOrdersStore } from '@/features/orders/store';
 
-const NEW_ORDER_ID = 'DLN-٢٠٤٧';
-
+/**
+ * Order success screen.
+ *
+ * Phase 6: this screen is now stateless. The order was committed by
+ * `placeOrder()` (checkout / payment / wallet-pay), which generated the
+ * `orderId`, wrote the order to the feature store, and cleared the cart.
+ * Here we just render the confirmation and forward `orderId` to tracking.
+ *
+ * If the route is opened without an `orderId` (e.g. deep link, dev menu),
+ * we surface a placeholder rather than fabricating one — the canonical
+ * spec § 7.8 forbids the previous "stateless on its own, side-effects in
+ * useEffect" pattern.
+ */
 export default function OrderSuccess() {
   const router = useRouter();
   const { t } = useTranslation();
-  const clearCart = useCartStore((s) => s.clear);
-  const addOrder = useOrdersStore((s) => s.addOrder);
-
-  useEffect(() => {
-    clearCart();
-    addOrder({
-      id: NEW_ORDER_ID,
-      shop: 'سوبر ماركت أبو حسن',
-      shopLetter: 'أ',
-      status: 'live',
-      statusText: 'يتم التحضير',
-      date: 'دلوقتي',
-      total: 187,
-      items: 3,
-      step: 1,
-    });
-  }, [addOrder, clearCart]);
-
-  const orderId = useMemo(() => NEW_ORDER_ID, []);
+  const params = useLocalSearchParams<{ orderId?: string }>();
+  const orderId = params.orderId ?? '—';
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>

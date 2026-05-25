@@ -16,4 +16,12 @@ export interface NotificationRepository {
     role: Role,
     onChange: (n: readonly Notification[]) => void,
   ): Unsubscribe;
+  /**
+   * Register the device's push token with the backend. Called once on
+   * app boot after permission is granted. The backend uses this to target
+   * push notifications to this specific device.
+   *
+   * Phase 9: added for push token registration.
+   */
+  registerDevice(userId: Id, token: string, platform: 'ios' | 'android' | 'web'): Promise<void>;
 }

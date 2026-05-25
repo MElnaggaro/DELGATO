@@ -7,30 +7,29 @@ import { useTranslation } from 'react-i18next';
 import { Chip, EmptyState, Icon, SearchField, ShopCard } from '@/shared/ui';
 import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
+import { TRENDING_SEARCHES } from '@/features/catalog/data';
 import {
-  CATEGORIES,
-  PRODUCTS,
-  RECENT_SEARCHES,
-  SHOPS,
-  TRENDING_SEARCHES,
-} from '@/features/catalog/data';
+  useSearch,
+  useCustomerCategories,
+  useDiscoveryStore,
+} from '@/features/discovery';
 
 export default function Search() {
   const router = useRouter();
   const { t } = useTranslation();
   const arDigits = useArabicDigits();
   const [q, setQ] = useState('');
-  const [recent, setRecent] = useState<string[]>(RECENT_SEARCHES);
+  const recentSearches = useDiscoveryStore((s) => s.recentSearches);
+  const pushSearch = useDiscoveryStore((s) => s.pushSearch);
+  const clearSearches = useDiscoveryStore((s) => s.clearSearches);
+  const categories = useCustomerCategories();
 
   const trimmed = q.trim();
-  const productHits = trimmed ? PRODUCTS.filter((p) => p.name.includes(trimmed)).slice(0, 8) : [];
-  const shopHits = trimmed
-    ? SHOPS.filter((s) => s.name.includes(trimmed) || s.cat.includes(trimmed)).slice(0, 4)
-    : [];
+  const { stores: shopHits, products: productHits } = useSearch(trimmed);
 
   const submit = (text: string) => {
     setQ(text);
-    if (text && !recent.includes(text)) setRecent([text, ...recent].slice(0, 6));
+    if (text) pushSearch(text);
   };
 
   return (
@@ -66,7 +65,7 @@ export default function Search() {
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         {!trimmed ? (
           <>
-            {recent.length > 0 ? (
+            {recentSearches.length > 0 ? (
               <View style={{ paddingHorizontal: 18, paddingTop: 12 }}>
                 <View
                   style={{
@@ -85,7 +84,7 @@ export default function Search() {
                   >
                     {t('search.recent')}
                   </Text>
-                  <Pressable onPress={() => setRecent([])}>
+                  <Pressable onPress={() => clearSearches()}>
                     <Text
                       style={{ fontFamily: fonts.arabicMedium, fontSize: 12, color: colors.inkLight }}
                     >
@@ -94,7 +93,7 @@ export default function Search() {
                   </Pressable>
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                  {recent.map((r) => (
+                  {recentSearches.map((r) => (
                     <Chip key={r} onPress={() => submit(r)}>
                       {r}
                     </Chip>
@@ -139,7 +138,7 @@ export default function Search() {
                 {t('search.browseCategory')}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-                {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
+                {categories.filter((c) => c.key !== 'all').map((c) => (
                   <Pressable
                     key={c.key}
                     onPress={() => router.push({ pathname: '/category', params: { key: c.key } })}
@@ -248,7 +247,7 @@ export default function Search() {
                         submit(q);
                         router.push({
                           pathname: '/product',
-                          params: { id: p.id, shopId: SHOPS[0]!.id },
+                          params: { id: p.id, shopId: p.storeId },
                         });
                       }}
                     >

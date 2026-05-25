@@ -12,6 +12,7 @@ import { detectAddress } from '@/services/api/endpoints/addressClient';
 import type { AddressLabel } from '@/services/api/schemas/address';
 import { useAddressStore } from '@/features/addresses/store';
 
+
 type Step = 'detecting' | 'confirm' | 'detectFailed';
 
 export default function AddressSetup() {
@@ -107,7 +108,7 @@ export default function AddressSetup() {
       street: street.trim(),
       detail: detail.trim(),
     });
-    router.replace('/');
+    router.replace('/(tabs)/home');
   };
 
   return (

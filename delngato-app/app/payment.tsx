@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { AppBar, Button, Icon, StickyActionBar, STICKY_CTA_HEIGHT } from '@/shared/ui';
 import { colors, fonts } from '@/shared/theme';
 import { safeBack } from '@/shared/utils/nav';
+import { placeOrderWithCard } from '@/features/checkout/placeOrder';
 
 const MONO_FAMILY = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
 
@@ -30,9 +31,34 @@ export default function Payment() {
   };
   const masked = (fmtNum(num).padEnd(19, '•').replace(/•{4}/g, '•••• ')).trim();
 
-  const submit = () => {
+  const submit = async () => {
     setLoading(true);
-    setTimeout(() => router.replace('/order-success'), 900);
+    try {
+      const cardToken = `tok-${num.replace(/\s/g, '').slice(-4)}-${Date.now()}`;
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 15000)
+      );
+      const result = await Promise.race([
+        placeOrderWithCard({ cardToken }),
+        timeoutPromise,
+      ]) as any;
+
+      if (!result) {
+        setLoading(false);
+        return;
+      }
+      router.replace({ pathname: '/order-success', params: { orderId: result.orderId } });
+    } catch (e: any) {
+      setLoading(false);
+      import('@/shared/ui').then(({ showToast }) => {
+        if (e.message === 'timeout') {
+          showToast('انتهى وقت الدفع، برجاء المحاولة مرة أخرى', <Icon.info size={16} color={colors.statusIssueText} />);
+        } else {
+          showToast(e.message || 'فشلت عملية الدفع', <Icon.info size={16} color={colors.statusIssueText} />);
+        }
+      });
+      if (__DEV__) console.warn('[payment] submit failed', e);
+    }
   };
 
   return (
@@ -196,7 +222,9 @@ export default function Payment() {
           full
           disabled={!valid}
           loading={loading}
-          onPress={submit}
+          onPress={() => {
+            void submit();
+          }}
         >
           {t('payment.payNow')}
         </Button>

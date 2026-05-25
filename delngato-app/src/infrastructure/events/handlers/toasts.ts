@@ -18,7 +18,7 @@ export function installToastHandlers(): void {
   bus.on('order.accepted', () => {
     showToast('المحل قبل طلبك');
   });
-  bus.on('order.rejected', ({ reason }) => {
+  bus.on('order.rejected', ({ reason }: any) => {
     showToast(`المحل رفض الطلب: ${reason}`);
   });
   bus.on('order.preparing.started', () => {
@@ -27,7 +27,7 @@ export function installToastHandlers(): void {
   bus.on('order.ready', () => {
     showToast('الطلب جاهز للتوصيل');
   });
-  bus.on('order.handed-over', ({ driverName }) => {
+  bus.on('order.handed-over', ({ driverName }: any) => {
     showToast(`الكابتن ${driverName} في الطريق`);
   });
   bus.on('order.delivered', () => {

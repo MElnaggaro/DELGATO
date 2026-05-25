@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -17,13 +17,9 @@ import { colors, fonts } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useOrdersStore } from '@/features/orders/store';
-
-const ITEMS = [
-  { name: 'لبن جهينة', qty: 2, price: 64 },
-  { name: 'بيض بلدي', qty: 1, price: 145 },
-  { name: 'خبز فينو', qty: 3, price: 36 },
-];
+import { getContainer } from '@/infrastructure/container';
+import { usePlatformStore } from '@/domain/stores/platform';
+import { selectOrderById } from '@/domain/selectors';
 
 const REASONS = ['منتج تالف', 'منتج ناقص', 'منتج غلط', 'منتج منتهي الصلاحية', 'تغليف ضعيف'];
 
@@ -31,14 +27,25 @@ export default function Refund() {
   const router = useRouter();
   const arDigits = useArabicDigits();
   const params = useLocalSearchParams<{ id?: string }>();
-  const requestRefund = useOrdersStore((s) => s.requestRefund);
+
+  // Read items from the platform store Order instead of hardcoding.
+  const order = usePlatformStore((s) => (params.id ? selectOrderById(s, params.id) : null));
+  const items = useMemo(
+    () =>
+      (order?.items ?? []).map((it) => ({
+        name: it.name,
+        qty: it.qty,
+        price: it.subtotal,
+      })),
+    [order?.items],
+  );
 
   const [selected, setSelected] = useState<string[]>([]);
   const [reason, setReason] = useState('');
   const [photos, setPhotos] = useState<number[]>([]);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
 
-  const refundTotal = ITEMS.filter((it) => selected.includes(it.name)).reduce(
+  const refundTotal = items.filter((it) => selected.includes(it.name)).reduce(
     (s, it) => s + it.price,
     0,
   );
@@ -106,7 +113,7 @@ export default function Refund() {
       >
         <SectionLabel>المنتجات اللي عايز ترجعها</SectionLabel>
         <View style={{ gap: 8 }}>
-          {ITEMS.map((it) => {
+          {items.map((it) => {
             const sel = selected.includes(it.name);
             return (
               <CheckboxRow
@@ -208,10 +215,18 @@ export default function Refund() {
           variant="primary"
           size="lg"
           full
-          disabled={selected.length === 0 || !reason}
-          onPress={() => {
-            const rfd = requestRefund(params.id ?? 'DLN-٢٠٤٧', selected, reason, photos.length);
-            setSubmittedId(rfd.id);
+          disabled={selected.length === 0 || !reason || !params.id || submittedId !== null}
+          onPress={async () => {
+            if (!params.id) return;
+            try {
+              await getContainer().orderRepo.reportIssue(params.id, {
+                category: 'other',
+                description: `استرجاع لسبب: ${reason}. المنتجات: ${selected.join(', ')}`,
+              });
+              setSubmittedId(`REF-${Math.floor(Math.random() * 10000)}`);
+            } catch (e) {
+              console.error('Failed to submit refund request', e);
+            }
           }}
         >
           إرسال الطلب

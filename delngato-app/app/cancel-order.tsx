@@ -16,7 +16,7 @@ import { FadeUp } from '@/shared/motion';
 import { colors, fonts } from '@/shared/theme';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useOrdersStore } from '@/features/orders/store';
+import { getContainer } from '@/infrastructure/container';
 
 const REASONS = [
   'غلطت في الطلب',
@@ -30,11 +30,27 @@ export default function CancelOrder() {
   const router = useRouter();
   const { isRtl } = useRtl();
   const params = useLocalSearchParams<{ id?: string }>();
-  const cancelOrder = useOrdersStore((s) => s.cancelOrder);
 
   const [reason, setReason] = useState<string>(REASONS[0]);
   const [detail, setDetail] = useState('');
   const [confirm, setConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleCancel = async () => {
+    if (!params.id) return;
+    setConfirm(false);
+    setLoading(true);
+    try {
+      const finalReason = reason === 'سبب تاني' ? detail : reason;
+      await getContainer().orderRepo.cancel(params.id, finalReason || 'بدون سبب', 'customer');
+      showToast('اتلغى الطلب', <Icon.x size={16} color={colors.gold} />);
+      router.replace('/(tabs)/orders');
+    } catch (e) {
+      showToast('حدث خطأ، حاول مرة أخرى', <Icon.info size={16} color={colors.statusIssueText} />);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas }}>
@@ -129,10 +145,10 @@ export default function CancelOrder() {
       </ScrollView>
 
       <StickyActionBar style={{ flexDirection: 'row', gap: 10 }}>
-        <Button variant="ghost" style={{ flex: 1 }} onPress={() => router.back()}>
+        <Button variant="ghost" style={{ flex: 1 }} onPress={() => router.back()} disabled={loading}>
           رجوع
         </Button>
-        <Button variant="destructive" style={{ flex: 1 }} onPress={() => setConfirm(true)}>
+        <Button variant="destructive" style={{ flex: 1 }} onPress={() => setConfirm(true)} disabled={loading}>
           أكّد الإلغاء
         </Button>
       </StickyActionBar>
@@ -145,13 +161,9 @@ export default function CancelOrder() {
         confirmLabel="إلغاء الطلب"
         destructive
         onCancel={() => setConfirm(false)}
-        onConfirm={() => {
-          setConfirm(false);
-          if (params.id) cancelOrder(params.id, reason);
-          showToast('اتلغى الطلب', <Icon.x size={16} color={colors.gold} />);
-          router.replace('/(tabs)/orders');
-        }}
+        onConfirm={handleCancel}
       />
     </View>
   );
 }
+

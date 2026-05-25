@@ -9,19 +9,25 @@ import { colors, fonts, shadow } from '@/shared/theme';
 import { useArabicDigits } from '@/shared/hooks/useArabicDigits';
 import { useRtl } from '@/shared/hooks/useRtl';
 import { safeBack } from '@/shared/utils/nav';
-import { useLoyaltyStore } from '@/features/loyalty/store';
-import { TopupSheet } from '@/features/loyalty/TopupSheet';
+import { TopupSheet } from '@/features/wallet/TopupSheet';
+import { useWallet, useWalletTxs } from '@/features/wallet/hooks';
+import { useAuthStore } from '@/features/auth/store';
+import { useContainer, getContainer } from '@/infrastructure';
 
 export default function Wallet() {
   const router = useRouter();
   const arDigits = useArabicDigits();
   const { isRtl, flexDirection } = useRtl();
-  const walletBalance = useLoyaltyStore((s) => s.walletBalance);
-  const cashback = useLoyaltyStore((s) => s.cashbackThisMonth);
-  const walletTx = useLoyaltyStore((s) => s.walletTx);
-  const topUp = useLoyaltyStore((s) => s.topUp);
+  
+  const userId = useAuthStore((s) => s.user?.id);
+  const wallet = useWallet(userId);
+  const txs = useWalletTxs(userId);
 
-  const recent = walletTx.slice(0, 5);
+  const walletBalance = wallet?.balance ?? 0;
+  const cashback = wallet?.cashbackThisMonth ?? 0;
+  const points = wallet?.points ?? 0;
+
+  const recent = txs.slice(0, 5);
   const [topupOpen, setTopupOpen] = useState(false);
 
   return (
@@ -134,7 +140,7 @@ export default function Wallet() {
                   نقاط
                 </Text>
                 <Text style={{ fontFamily: fonts.arabicBold, fontSize: 15, color: colors.gold, marginTop: 2, textAlign: isRtl ? 'right' : 'left' }}>
-                  {arDigits(1820)}
+                  {arDigits(points)}
                 </Text>
               </View>
             </View>
@@ -286,7 +292,7 @@ export default function Wallet() {
                       {tx.title}
                     </Text>
                     <Text style={{ fontFamily: fonts.arabic, fontSize: 11, color: colors.inkLight, marginTop: 2, textAlign: isRtl ? 'right' : 'left' }}>
-                      {tx.date}
+                      {new Date(tx.ts).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}
                     </Text>
                   </View>
                   <Text style={{ fontFamily: fonts.arabicBold, fontSize: 15, color: isIn ? colors.olive : colors.ink }}>
@@ -313,12 +319,17 @@ export default function Wallet() {
       <TopupSheet
         visible={topupOpen}
         onClose={() => setTopupOpen(false)}
-        onConfirm={({ amount, method }) => {
-          topUp(amount, method);
-          showToast(
-            `اتشحنت المحفظة بـ ${arDigits(amount)} ج.م`,
-            <Icon.check size={16} color={colors.gold} />,
-          );
+        onConfirm={async ({ amount, method }) => {
+          if (!userId) return;
+          try {
+            await getContainer().walletRepo.topUp({ userId, amount, method: method.id as any });
+            showToast(
+              `اتشحنت المحفظة بـ ${arDigits(amount)} ج.م`,
+              <Icon.check size={16} color={colors.gold} />,
+            );
+          } catch (e: any) {
+            showToast(e.message || 'فشلت عملية الشحن', <Icon.info size={16} color={colors.statusIssueText} />);
+          }
         }}
       />
     </View>
